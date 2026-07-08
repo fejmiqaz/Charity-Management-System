@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+  <title>Donation Form</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+  <h1 th:text="${donation.id == null} ? 'Add Donation' : 'Edit Donation'"></h1>
+
+  <form class="form-card"
+        th:action="@{${donation.id == null ? '/years/' + year.id + '/donations/add' : '/years/' + year.id + '/donations/' + donation.id + '/edit'}}"
+        th:object="${donation}"
+        method="post">
+
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:field="*{yearId}">
+
+    <label for="donationAmount">Amount</label>
+    <input id="donationAmount" type="number" step="0.01" th:field="*{donationAmount}">
+    <div class="error" th:if="${#fields.hasErrors('donationAmount')}" th:errors="*{donationAmount}"></div>
+
+    <label for="members">Select Members</label>
+    <select id="members" th:field="*{memberIds}" multiple size="6">
+      <option th:each="member : ${members}"
+              th:value="${member.id}"
+              th:text="${member.name + ' ' + member.surname}">
+      </option>
+    </select>
+    <div class="error" th:if="${#fields.hasErrors('memberIds')}" th:errors="*{memberIds}"></div>
+
+    <div class="error" th:if="${#fields.hasErrors('yearId')}" th:errors="*{yearId}"></div>
+
+    <button type="submit">Save</button>
+  </form>
+
+  <div class="back-link">
+    <a th:href="@{/years/{yearId}/donations(yearId=${year.id})}">Back</a>
+  </div>
+
+</div>
+</body>
+</html>

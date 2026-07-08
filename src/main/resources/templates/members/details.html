@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Member Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Member Details</h1>
+
+    <div class="details-card">
+        <p><strong>ID:</strong> <span th:text="${member.id}"></span></p>
+        <p><strong>Name:</strong> <span th:text="${member.name}"></span></p>
+        <p><strong>Surname:</strong> <span th:text="${member.surname}"></span></p>
+        <p><strong>Country:</strong><span th:text="${member.country}"></span></p>
+        <p><strong>City:</strong><span th:text="${member.city}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${member.email}"></span></p>
+        <p><strong>Phone number:</strong> <span th:text="${member.phone}"></span></p>
+    </div>
+
+    <div class="back-link">
+        <a th:href="@{/members}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

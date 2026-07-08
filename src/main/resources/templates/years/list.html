@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Years</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>All Years</h1>
+
+    <div class="top-bar actions">
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/years/add-form}">Add Year</a>
+    </div>
+
+    <div class="empty-message" th:if="${#lists.isEmpty(years)}">
+        <p>No years found.</p>
+        <a th:href="@{/years/add-form}">Create first year</a>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(years)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Year</th>
+            <th>Budget</th>
+            <th>Projects</th>
+            <th>Donations</th>
+            <th>Events</th>
+            <th>Year Details</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="year : ${years}">
+            <td th:text="${year.id}"></td>
+            <td th:text="${year.yearValue}"></td>
+
+            <td>
+                <a class="table-btn details-btn" th:href="@{/years/{yearId}/budget(yearId=${year.id})}">View Budget</a>
+            </td>
+
+            <td>
+                <a class="table-btn details-btn" th:href="@{/years/{yearId}/projects(yearId=${year.id})}">View Projects</a>
+            </td>
+
+            <td>
+                <a class="table-btn details-btn" th:href="@{/years/{yearId}/donations(yearId=${year.id})}">View Donations</a>
+            </td>
+
+            <td>
+                <a class="table-btn details-btn"
+                   th:href="@{/years/{yearId}/events(yearId=${year.id})}">
+                    View Events
+                </a>
+            </td>
+
+            <td>
+                <a class="table-btn details-btn" th:href="@{/years/{id}(id=${year.id})}">View Details</a>
+            </td>
+
+            <td>
+                <div class="table-actions">
+                    <a class="table-btn edit-btn" th:href="@{/years/edit-form/{id}(id=${year.id})}">Edit</a>
+                    <form class=" inline-form"
+                          th:action="@{/years/delete/{id}(id=${year.id})}"
+                          method="post">
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

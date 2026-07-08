@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Project Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Project Details</h1>
+
+    <div class="details-card">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Date Created</th>
+                <th>Price</th>
+                <th>Year</th>
+                <th>Members</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td th:text="${project.id}"></td>
+                <td th:text="${project.name}"></td>
+                <td th:text="${project.description}"></td>
+                <td th:text="${project.status}"></td>
+                <td th:text="${project.dateCreated}"></td>
+                <td th:text="${project.projectPrice} + ' €'"></td>
+                <td th:text="${project.yearValue != null ? project.yearValue : 'No year'}"></td>
+                <td>
+                    <span th:if="${project.memberNames == null or #lists.isEmpty(project.memberNames)}">
+                        No Members
+                    </span>
+
+                    <span th:if="${project.memberNames != null and !#lists.isEmpty(project.memberNames)}"
+                          th:text="${#strings.listJoin(project.memberNames, ', ')}">
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="back-link">
+        <a th:href="@{/years/{yearId}/projects(yearId=${year.id})}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

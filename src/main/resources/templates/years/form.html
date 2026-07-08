@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Year Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1 th:text="${year.id == null} ? 'Add Year' : 'Edit Year'"></h1>
+
+    <form class="form-card"
+          th:action="@{${year.id == null ? '/years/add' : '/years/edit/' + year.id}}"
+          th:object="${year}"
+          method="post">
+
+        <input type="hidden" th:field="*{id}">
+
+        <label for="yearValue">Year</label>
+        <input id="yearValue" type="number" th:field="*{yearValue}">
+        <div class="error" th:if="${#fields.hasErrors('yearValue')}" th:errors="*{yearValue}"></div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <div class="back-link">
+        <a th:href="@{/years}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+  <title>Members</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+  <h1>All Members</h1>
+
+  <div class="top-bar actions">
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/members/add}">Add Member</a>
+  </div>
+
+  <div class="empty-message" th:if="${#lists.isEmpty(members)}">
+    <p>No members found.</p>
+    <a th:href="@{/members/add}">Create first member</a>
+  </div>
+
+  <table th:if="${!#lists.isEmpty(members)}">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Surname</th>
+      <th>Country</th>
+      <th>City</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="member : ${members}">
+      <td th:text="${member.id}"></td>
+      <td th:text="${member.name}"></td>
+      <td th:text="${member.surname}"></td>
+      <td th:text="${member.country}"></td>
+      <td th:text="${member.city}"></td>
+      <td>
+        <div class="table-actions">
+          <a class="table-btn details-btn" th:href="@{/members/{memberId}(memberId=${member.id})}">Details</a>
+          <a class="table-btn edit-btn" th:href="@{/members/{memberId}/edit(memberId=${member.id})}">Edit</a>
+          <form class="inline-form"
+                th:action="@{/members/{memberId}/delete(memberId=${member.id})}"
+                method="post">
+            <button type="submit" class="delete-btn">Delete</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

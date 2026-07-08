@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Project Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1 th:text="${project.id == null} ? 'Add Project' : 'Edit Project'"></h1>
+
+    <form class="form-card"
+          th:action="@{${project.id == null ? '/years/' + year.id + '/projects/add' : '/years/' + year.id + '/projects/' + project.id + '/edit'}}"
+          th:object="${project}"
+          method="post">
+
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{yearId}">
+
+        <label for="name">Name</label>
+        <input id="name" type="text" th:field="*{name}">
+        <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+
+        <label for="description">Description</label>
+        <input id="description" type="text" th:field="*{description}">
+        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+
+        <label for="status">Status</label>
+        <select id="status" th:field="*{status}">
+            <option value="" disabled>Select status</option>
+            <option th:each="status : ${statuses}"
+                    th:value="${status}"
+                    th:text="${status}">
+            </option>
+        </select>
+        <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+
+        <label for="members">Members</label>
+        <select id="members" th:field="*{memberIds}" multiple size="6">
+            <option th:each="member : ${members}"
+                    th:value="${member.id}"
+                    th:text="${member.name + ' ' + member.surname}">
+            </option>
+        </select>
+        <div class="error" th:if="${#fields.hasErrors('memberIds')}" th:errors="*{memberIds}"></div>
+
+        <label for="projectPrice">Price</label>
+        <input id="projectPrice" type="number" step="0.01" th:field="*{projectPrice}">
+        <div class="error" th:if="${#fields.hasErrors('projectPrice')}" th:errors="*{projectPrice}"></div>
+
+        <div class="error" th:if="${#fields.hasErrors('yearId')}" th:errors="*{yearId}"></div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <div class="back-link">
+        <a th:href="@{/years/{yearId}/projects(yearId=${year.id})}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

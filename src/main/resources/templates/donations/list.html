@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+  <title>Donations</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+
+  <h1>Donations for Year <span th:text="${year.yearValue}"></span></h1>
+
+  <div class="top-bar actions">
+    <a class="action-btn secondary" th:href="@{/years}">Back</a>
+    <a class="action-btn secondary" th:href="@{/years/{yearId}(yearId=${year.id})}">Year Details</a>
+    <a th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}">Add Donation</a>
+  </div>
+
+  <div class="empty-message" th:if="${#lists.isEmpty(donations)}">
+    <p>No donations found for this year.</p>
+    <a th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}">Add first donation</a>
+  </div>
+
+  <table th:if="${!#lists.isEmpty(donations)}">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Amount</th>
+      <th>Member</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="donation : ${donations}">
+      <td th:text="${donation.id}"></td>
+      <td th:text="${donation.donationAmount}"></td>
+      <td>
+          <span th:if="${donation.memberNames == null or #lists.isEmpty(donation.memberNames)}">
+              No members
+          </span>
+
+              <span th:if="${donation.memberNames != null and !#lists.isEmpty(donation.memberNames)}"
+                    th:text="${#strings.listJoin(donation.memberNames, ', ')}">
+          </span>
+      </td>
+      <td>
+        <div class="table-actions">
+          <a class="table-btn details-btn" th:href="@{/years/{yearId}/donations/{donationId}(yearId=${year.id}, donationId=${donation.id})}">Details</a>
+          <a class="table-btn edit-btn" th:href="@{/years/{yearId}/donations/{donationId}/edit(yearId=${year.id}, donationId=${donation.id})}">Edit</a>
+          <form class=" inline-form"
+                th:action="@{/years/{yearId}/donations/{donationId}/delete(yearId=${year.id}, donationId=${donation.id})}"
+                method="post">
+            <button type="submit" class="delete-btn">Delete</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 10px;">
+    <p>
+      <strong>Total donations amount:</strong>
+      <span th:text="${totalDonationsAmount}"></span>
+    </p>
+  </div>
+
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

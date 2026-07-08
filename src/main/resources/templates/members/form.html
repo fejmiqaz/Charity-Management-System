@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Member Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1 th:text="${member.id == null} ? 'Add Member' : 'Edit Member'"></h1>
+
+    <form class="form-card"
+          th:action="@{${member.id == null ? '/members/add' : '/members/' + member.id + '/edit'}}"
+          th:object="${member}"
+          method="post">
+
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{yearId}">
+
+        <label for="name">Name</label>
+        <input id="name" type="text" th:field="*{name}">
+        <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+
+        <label for="surname">Surname</label>
+        <input id="surname" type="text" th:field="*{surname}">
+        <div class="error" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
+
+        <label for="country">Country</label>
+        <input id="country" type="text" th:field="*{country}">
+        <div class="error" th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></div>
+
+        <label for="city">City</label>
+        <input id="city" type="text" th:field="*{city}">
+        <div class="error" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></div>
+
+        <label for="email">Email</label>
+        <input id="email" type="email" th:field="*{email}">
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="Enter password">
+            <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></small>
+        </div>
+
+        <label for="phone">Phone</label>
+        <input id="phone" type="text" th:field="*{phone}">
+        <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+        <label for="role">Role</label>
+        <select id="role" th:field="*{role}">
+            <option value="" disabled>Select role</option>
+
+            <option th:each="r : ${roles}"
+                    th:value="${r}"
+                    th:text="${r}">
+            </option>
+        </select>
+        <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+
+        <div class="error" th:if="${#fields.hasErrors('yearId')}" th:errors="*{yearId}"></div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <div class="back-link">
+        <a th:href="@{/members}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

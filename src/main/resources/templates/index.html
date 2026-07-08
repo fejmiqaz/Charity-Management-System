@@ -1,0 +1,165 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org"-->
+<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Charity Organization Management System</title>-->
+<!--    <link rel="stylesheet" th:href="@{/css/style.css}">-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="container">-->
+
+<!--    <div class="header">-->
+<!--        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">-->
+<!--            <div>-->
+<!--                <h1>Charity Organization</h1>-->
+<!--                <h3>Management Dashboard</h3>-->
+<!--            </div>-->
+
+<!--            <form th:action="@{/logout}" method="post">-->
+<!--                <button type="submit" class="btn danger">Logout</button>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="actions">-->
+<!--        <a href="/years" class="action-btn primary">Manage Years</a>-->
+<!--        <a href="/members" class="action-btn primary">Manage Members</a>-->
+<!--        <a href="/years/add-form" class="btn success">Add New Year</a>-->
+<!--    </div>-->
+
+<!--    <h2>System Overview</h2>-->
+
+<!--    <div class="stats-grid">-->
+
+<!--        <div class="card">-->
+<!--            <h3>Total Years</h3>-->
+<!--            <p th:text="${totalYears}"></p>-->
+<!--        </div>-->
+
+<!--        <div class="card">-->
+<!--            <h3>Total Members</h3>-->
+<!--            <p th:text="${totalMembers}"></p>-->
+<!--        </div>-->
+
+<!--        <div class="card">-->
+<!--            <h3>Total Projects</h3>-->
+<!--            <p th:text="${totalProjects}"></p>-->
+<!--        </div>-->
+
+<!--        <div class="card">-->
+<!--            <h3>Total Donations</h3>-->
+<!--            <p th:text="${totalDonationsCount}"></p>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--    <h2>Financial Overview</h2>-->
+
+<!--    <div class="stats-grid">-->
+
+<!--        <div class="card money">-->
+<!--            <h3>Donations Amount</h3>-->
+<!--            <p th:text="${totalDonationsAmount} + ' €'"></p>-->
+<!--        </div>-->
+
+<!--        <div class="card money">-->
+<!--            <h3>Total Project Cost</h3>-->
+<!--            <p th:text="${totalProjectCost} + ' €'"></p>-->
+<!--        </div>-->
+
+<!--        <div class="card budget">-->
+<!--            <h3>Remaining Budget</h3>-->
+<!--            <p th:text="${remainingBudget} + ' €'"></p>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Charity Organization Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1>Charity Organization</h1>
+                <h3>Management Dashboard</h3>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn danger">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="/years" class="action-btn primary">Manage Years</a>
+        <a href="/members" class="action-btn primary">Manage Members</a>
+        <a href="/years/add-form" class="btn success">Add New Year</a>
+    </div>
+
+    <h2>System Overview</h2>
+
+    <div class="stats-grid">
+
+        <div class="card">
+            <h3>Total Years</h3>
+            <p th:text="${totalYears}"></p>
+        </div>
+
+        <div class="card">
+            <h3>Total Members</h3>
+            <p th:text="${totalMembers}"></p>
+        </div>
+
+        <div class="card">
+            <h3>Total Projects</h3>
+            <p th:text="${totalProjects}"></p>
+        </div>
+
+        <div class="card">
+            <h3>Total Donations</h3>
+            <p th:text="${totalDonationsCount}"></p>
+        </div>
+
+    </div>
+
+    <h2>Financial Overview</h2>
+
+    <div class="stats-grid">
+
+        <div class="card money">
+            <h3>Donations Amount</h3>
+            <p th:text="${totalDonationsAmount} + ' €'"></p>
+        </div>
+
+        <div class="card money">
+            <h3>Total Project Cost</h3>
+            <p th:text="${totalProjectCost} + ' €'"></p>
+        </div>
+
+        <div class="card budget">
+            <h3>Remaining Budget</h3>
+            <p th:text="${remainingBudget} + ' €'"></p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

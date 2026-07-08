@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Budgets</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Budgets for Year <span th:text="${year.yearValue}"></span></h1>
+
+    <div class="top-bar actions">
+        <a class="action-btn secondary" th:href="@{/years}">Back</a>
+        <a class="action-btn secondary" th:href="@{/years/{yearId}(yearId=${year.id})}">Year Details</a>
+        <a th:href="@{/years/{yearId}/budget/add-form(yearId=${year.id})}"
+           th:if="${#lists.isEmpty(budgets)}">Add Budget</a>
+    </div>
+
+    <div class="empty-message" th:if="${#lists.isEmpty(budgets)}">
+        <p>No budgets found for this year.</p>
+        <a th:href="@{/years/{yearId}/budget/add-form(yearId=${year.id})}">Add first budget</a>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(budgets)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="budget : ${budgets}">
+            <td th:text="${budget.id}"></td>
+            <td th:text="${budget.budgetAmount}"></td>
+            <td th:text="${budget.description}"></td>
+            <td>
+                <div class="table-actions">
+                    <a class="table-btn details-btn" th:href="@{/years/{yearId}/budget/details/{budgetId}(yearId=${year.id}, budgetId=${budget.id})}">Details</a>
+                    <a class="table-btn edit-btn" th:href="@{/years/{yearId}/budget/edit-form/{budgetId}(yearId=${year.id}, budgetId=${budget.id})}">Edit</a>
+                    <form class="form-card inline-form"
+                          th:action="@{/years/{yearId}/budget/delete/{budgetId}(yearId=${year.id}, budgetId=${budget.id})}"
+                          method="post">
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Add / Edit Event</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+
+    <h1 th:text="${event.id != null ? 'Edit Event' : 'Add Event'}"></h1>
+
+    <form th:action="@{/years/{yearId}/events/add(yearId=${year.id})}"
+          th:object="${event}"
+          method="post">
+
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{yearId}">
+
+        <label for="purpose">Purpose</label>
+        <input type="text" id="purpose" th:field="*{purpose}">
+        <div class="error"
+             th:if="${#fields.hasErrors('purpose')}"
+             th:errors="*{purpose}">
+        </div>
+
+        <br><br>
+
+        <label for="date">Date</label>
+        <input type="datetime-local" id="date" th:field="*{date}">
+        <div class="error"
+             th:if="${#fields.hasErrors('date')}"
+             th:errors="*{date}">
+        </div>
+
+        <br><br>
+
+        <label for="memberIds">Members</label>
+        <select id="memberIds" th:field="*{memberIds}" multiple size="6">
+            <option th:each="member : ${members}"
+                    th:value="${member.id}"
+                    th:text="${member.name + ' ' + member.surname}">
+            </option>
+        </select>
+        <div class="error"
+             th:if="${#fields.hasErrors('memberIds')}"
+             th:errors="*{memberIds}">
+        </div>
+
+        <div class="error"
+             th:if="${#fields.hasErrors('yearId')}"
+             th:errors="*{yearId}">
+        </div>
+
+        <br><br>
+
+        <button type="submit">Save</button>
+        <a th:href="@{/years/{yearId}/events(yearId=${year.id})}">Back</a>
+
+    </form>
+
+</div>
+</body>
+</html>

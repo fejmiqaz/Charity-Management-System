@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Event Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Event Details</h1>
+
+    <div class="details-card">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Purpose</th>
+                <th>Date</th>
+                <th>Year</th>
+                <th>Members</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td th:text="${event.id}"></td>
+                <td th:text="${event.purpose}"></td>
+                <td th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></td>
+
+
+                <td th:text="${event.yearValue != null ? event.yearValue : 'No year'}"></td>
+                <td>
+                    <span th:if="${event.memberNames == null or #lists.isEmpty(event.memberNames)}">No Members</span>
+
+                    <select th:if="${event.memberNames != null and !#lists.isEmpty(event.memberNames)}" size="4" disabled>
+                        <option th:each="memberName : ${event.memberNames}"
+                                th:text="${memberName}">
+                        </option>
+                    </select>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="back-link">
+        <a th:href="@{/years/{yearId}/events(yearId=${year.id})}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

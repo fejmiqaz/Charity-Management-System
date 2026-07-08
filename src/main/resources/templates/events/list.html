@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Events</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Events for Year <span th:text="${year.yearValue}"></span></h1>
+
+    <div class="top-bar actions">
+        <a class="action-btn secondary" th:href="@{/years}">Back</a>
+
+        <a class="action-btn secondary"
+           th:href="@{/years/{yearId}(yearId=${year.id})}">
+            Year Details
+        </a>
+
+        <a class="action-btn" th:href="@{/years/{yearId}/events/add-form(yearId=${year.id})}">
+            Add Event
+        </a>
+    </div>
+
+    <div class="empty-message" th:if="${#lists.isEmpty(events)}">
+        <p>No events found for this year.</p>
+        <a th:href="@{/years/{yearId}/events/add-form(yearId=${year.id})}">Add first event</a>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(events)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Purpose</th>
+            <th>Date</th>
+            <th>Members</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td th:text="${event.id}"></td>
+            <td th:text="${event.purpose}"></td>
+            <td th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <span th:if="${event.memberNames == null or #lists.isEmpty(event.memberNames)}">No Members</span>
+                <span th:if="${event.memberNames != null and !#lists.isEmpty(event.memberNames)}"
+                      th:text="${#strings.listJoin(event.memberNames, ', ')}"></span>
+            </td>
+            <td>
+                <a th:href="@{/years/{yearId}/events/{id}(yearId=${year.id}, id=${event.id})}">Details</a>
+                <a th:href="@{/years/{yearId}/events/{id}/edit-form(yearId=${year.id}, id=${event.id})}">Edit</a>
+                <form th:action="@{/years/{yearId}/events/{id}/delete(yearId=${year.id}, id=${event.id})}"
+                      method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

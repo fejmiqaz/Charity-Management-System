@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+  <title>Year Details</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+  <h1>Year Details</h1>
+
+  <div class="top-bar actions">
+    <a th:href="@{/years}">Back to Years</a>
+  </div>
+
+  <div class="details-card" style="text-align: center; font-size: 50px">
+    <h2><span th:text="${year.yearValue}"></span></h2>
+  </div>
+
+  <div class="details-card">
+    <h2>Budget</h2>
+
+    <div class="empty-message" th:if="${year.budgetAmount == null}">
+      <p>No budget defined for this year.</p>
+    </div>
+
+    <table th:if="${year.budgetAmount != null}">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Budget Amount</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td th:text="${year.budgetId}"></td>
+        <td th:text="${year.budgetAmount} + ' €'"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="details-card">
+    <h2>Projects</h2>
+
+    <div class="empty-message" th:if="${year.totalProjects == 0}">
+      <p>No projects for this year.</p>
+    </div>
+
+    <table th:if="${year.totalProjects > 0}">
+      <thead>
+      <tr>
+        <th>Projects Summary</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td style="text-align: center; font-weight: bold;">
+          This year has <span th:text="${year.totalProjects}"></span> project(s).
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="details-card">
+    <h2>Events</h2>
+
+    <div class="empty-message" th:if="${year.totalEvents == 0}">
+      <p>No events for this year.</p>
+    </div>
+
+    <table th:if="${year.totalEvents > 0}">
+      <thead>
+      <tr>
+        <th>Events Summary</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td style="text-align: center; font-weight: bold;">
+          This year has <span th:text="${year.totalEvents}"></span> event(s).
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="details-card">
+    <h2>Donations</h2>
+
+    <div class="empty-message" th:if="${year.totalDonations == 0}">
+      <p>No donations for this year.</p>
+    </div>
+
+    <table th:if="${year.totalDonations > 0}">
+      <thead>
+      <tr>
+        <th>Donations Summary</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td style="text-align: center; font-weight: bold;">
+          This year has <span th:text="${year.totalDonations}"></span> donation(s).
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="details-card">
+    <h2>Members Who Donated</h2>
+
+    <div class="empty-message" th:if="${year.totalDonations == 0}">
+      <p>No members have donated this year.</p>
+    </div>
+
+    <table th:if="${year.totalDonations > 0}">
+      <thead>
+      <tr>
+        <th>Donation Members Summary</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td style="text-align: center; font-weight: bold;">
+          Donation records exist for this year. View the donations page for full donor details.
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="summary-card">
+    <h2>Financial Summary</h2>
+
+    <div class="summary-row">
+      <span>Budget</span>
+      <strong th:text="${budgetAmount} + ' €'"></strong>
+    </div>
+
+    <div class="summary-row">
+      <span>Total Donations</span>
+      <strong th:text="${totalDonations} + ' €'"></strong>
+    </div>
+
+    <div class="summary-row">
+      <span>Total Project Costs</span>
+      <strong th:text="${totalProjectCosts} + ' €'"></strong>
+    </div>
+
+    <hr>
+
+    <div class="summary-row total">
+      <span>Remaining Budget</span>
+      <strong th:text="${remainingBudget} + ' €'"></strong>
+    </div>
+
+    <p class="budget-status"
+       th:text="${exceedsBudget ? 'Over Budget' : 'Within Budget'}"
+       th:classappend="${exceedsBudget} ? ' status-bad' : ' status-ok'">
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

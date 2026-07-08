@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Donation Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Donation Details</h1>
+
+    <div class="details-card">
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <!-- If donation has no members -->
+            <tr th:if="${members == null or #lists.isEmpty(members)}">
+                <td th:text="${donation.id}"></td>
+                <td colspan="2">No Members</td>
+                <td th:text="${donation.donationAmount} + ' €'"></td>
+            </tr>
+
+            <!-- If donation has members -->
+            <tr th:each="member : ${members}">
+                <td th:text="${donation.id}"></td>
+                <td th:text="${member.name}"></td>
+                <td th:text="${member.surname}"></td>
+                <td th:text="${member.email}"></td>
+                <td th:text="${member.phone}"></td>
+                <td th:text="${member.country}"></td>
+                <td th:text="${member.city}"></td>
+                <td th:text="${donation.donationAmount} + ' €'"></td>
+            </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="back-link">
+        <a th:href="@{/years/{yearId}/donations(yearId=${year.id})}">Back</a>
+    </div>
+
+</div>
+</body>
+</html>

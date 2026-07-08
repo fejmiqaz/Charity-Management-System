@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+    <title>Projects</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/main.js}" defer></script>
+</head>
+<body>
+<div class="container">
+
+    <h1>Projects for Year <span th:text="${year.yearValue}"></span></h1>
+
+    <div class="top-bar page-actions">
+        <a class="action-btn secondary" th:href="@{/years}">
+            Back
+        </a>
+
+        <a class="action-btn secondary" th:href="@{/years/{yearId}(yearId=${year.id})}">
+            Year Details
+        </a>
+
+        <a class="action-btn primary" th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
+            Add Project
+        </a>
+    </div>
+
+    <div class="empty-message" th:if="${#lists.isEmpty(projects)}">
+        <p>No projects found for this year.</p>
+        <a class="action-btn primary" th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
+            Add first project
+        </a>
+    </div>
+
+    <div class="table-wrapper" th:if="${!#lists.isEmpty(projects)}">
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Date Created</th>
+                <th>Price</th>
+                <th>Members Count</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="project : ${projects}">
+                <td th:text="${project.name}"></td>
+                <td>
+                    <span class="status-badge" th:text="${project.status}"></span>
+                </td>
+                <td th:text="${project.dateCreated}"></td>
+                <td th:text="${project.projectPrice} + ' €'"></td>
+                <td th:text="${project.memberIds != null ? #lists.size(project.memberIds) : 0}"></td>
+                <td>
+                    <div class="table-actions">
+                        <a class="table-btn details-btn"
+                           th:href="@{/years/{yearId}/projects/{id}(yearId=${year.id}, id=${project.id})}">
+                            Details
+                        </a>
+
+                        <a class="table-btn edit-btn"
+                           th:href="@{/years/{yearId}/projects/{id}/edit(yearId=${year.id}, id=${project.id})}">
+                            Edit
+                        </a>
+
+                        <form th:action="@{/years/{yearId}/projects/{id}/delete(yearId=${year.id}, id=${project.id})}"
+                              method="post"
+                              class="inline-form"
+                              onsubmit="return confirm('Delete this project?');">
+                            <button type="submit" class="table-btn delete-btn">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary-card">
+        <p>
+            <strong>Total projects price:</strong>
+            <span th:text="${totalProjectPrice} + ' €'"></span>
+        </p>
+
+        <p>
+            <strong>Year budget:</strong>
+            <span th:text="${yearBudget} + ' €'"></span>
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            <span th:if="${withinBudget}" class="budget-ok">Within budget</span>
+            <span th:unless="${withinBudget}" class="budget-bad">Exceeded budget</span>
+        </p>
+    </div>
+
+</div>
+</body>
+</html>
