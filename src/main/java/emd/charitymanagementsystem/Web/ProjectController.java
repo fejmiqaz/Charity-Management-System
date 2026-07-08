@@ -89,7 +89,7 @@ public class ProjectController {
         return "redirect:/years/" + yearId + "/projects";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/{projectId}")
     public String details(@PathVariable Long yearId,
                           @PathVariable Long projectId,
@@ -99,6 +99,7 @@ public class ProjectController {
         return "projects/details";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER')")
     @GetMapping("/{projectId}/edit")
     public String showEditForm(@PathVariable Long yearId,
                                @PathVariable Long projectId,

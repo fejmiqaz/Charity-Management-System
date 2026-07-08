@@ -22,7 +22,7 @@ public class YearsController {
     private final DonationService donationService;
     private final ProjectService projectService;
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
     public String getYearsPage(Model model) {
         model.addAttribute("years", yearsService.listAll());
@@ -48,7 +48,7 @@ public class YearsController {
         return "redirect:/years";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/{id}")
     public String getYearDetails(@PathVariable Long id, Model model) {
         YearsDetailsDto year = yearsService.findById(id);

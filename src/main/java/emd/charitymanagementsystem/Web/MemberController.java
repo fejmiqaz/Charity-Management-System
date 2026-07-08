@@ -18,7 +18,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
     public String listMembers(Model model) {
         model.addAttribute("members", memberService.listAll());
@@ -47,7 +47,7 @@ public class MemberController {
         return "redirect:/members";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/{memberId}")
     public String details(@PathVariable Long memberId, Model model) {
         model.addAttribute("member", memberService.findById(memberId));

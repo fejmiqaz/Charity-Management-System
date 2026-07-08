@@ -8,6 +8,7 @@ import emd.charitymanagementsystem.Service.MemberService;
 import emd.charitymanagementsystem.Service.YearsService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +35,7 @@ public class EventController {
         return "events/list";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/{id}")
     public String details(@PathVariable Long yearId,
                           @PathVariable Long id,
@@ -46,6 +48,7 @@ public class EventController {
         return "events/details";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'MEMBER')")
     @GetMapping("/add-form")
     public String addForm(@PathVariable Long yearId, Model model) {
         Years year = yearsService.findEntityById(yearId);
@@ -60,6 +63,7 @@ public class EventController {
         return "events/form";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER')")
     @GetMapping("/{id}/edit-form")
     public String editForm(@PathVariable Long yearId,
                            @PathVariable Long id,
@@ -74,6 +78,7 @@ public class EventController {
         return "events/form";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER')")
     @PostMapping("/add")
     public String saveEvent(@PathVariable Long yearId,
                             @Valid @ModelAttribute("event") EventFormDto eventFormDto,
@@ -97,6 +102,7 @@ public class EventController {
         return "redirect:/years/" + yearId + "/events";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER')")
     @PostMapping("/{id}/delete")
     public String deleteEvent(@PathVariable Long yearId,
                               @PathVariable Long id) {

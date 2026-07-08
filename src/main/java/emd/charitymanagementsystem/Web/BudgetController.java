@@ -23,7 +23,7 @@ public class BudgetController {
     private final BudgetService budgetService;
     private final YearsService yearsService;
 
-    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD', 'TREASURER')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
     public String getBudgetPage(@PathVariable Long yearId, Model model) {
         Years year = yearsService.findEntityById(yearId);
@@ -70,7 +70,7 @@ public class BudgetController {
         return "redirect:/years/" + yearId + "/budget";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD', 'TREASURER')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/details/{budgetId}")
     public String getDetailsPage(@PathVariable Long yearId,
                                  @PathVariable Long budgetId,

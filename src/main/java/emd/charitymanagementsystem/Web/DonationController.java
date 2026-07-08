@@ -22,6 +22,7 @@ public class DonationController {
     private final YearsService yearsService;
     private final MemberService memberService;
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
     public String listDonations(@PathVariable Long yearId, Model model) {
         Years year = yearsService.findEntityById(yearId);
@@ -63,6 +64,7 @@ public class DonationController {
         return "redirect:/years/" + yearId + "/donations";
     }
 
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/{donationId}")
     public String details(@PathVariable Long yearId,
                           @PathVariable Long donationId,

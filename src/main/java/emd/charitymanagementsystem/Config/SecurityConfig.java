@@ -35,18 +35,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
 
                         .requestMatchers("/", "/home").authenticated()
 
-                        .requestMatchers("/members/**").hasAnyRole("HEAD", "SUBHEAD")
-                        .requestMatchers("/years/**").hasAnyRole("HEAD", "SUBHEAD")
-                        .requestMatchers("/years/*/budget/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER")
-                        .requestMatchers("/years/*/donations/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "DONOR", "SPONSOR")
+                        // VIEW ACCESS
+                        .requestMatchers("/members/**").hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
+
+                        .requestMatchers("/years/*/budget/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")
+                        .requestMatchers("/years/*/donations/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "DONOR", "SPONSOR", "MEMBER")
                         .requestMatchers("/years/*/projects/**").hasAnyRole("HEAD", "SUBHEAD", "PROJECT_MANAGER", "VOLUNTEER", "MEMBER")
                         .requestMatchers("/years/*/events/**").hasAnyRole("HEAD", "SUBHEAD", "EVENT_MANAGER", "VOLUNTEER", "MEMBER")
+
+                        .requestMatchers("/years/**").hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
 
                         .anyRequest().authenticated()
                 )
@@ -58,7 +60,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login")
                         .permitAll()
                 );
 
