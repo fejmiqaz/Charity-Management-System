@@ -24,7 +24,11 @@ public interface MemberService {
     MemberResponseDto findById(Long id);
     MemberFormDto findByIdForEdit(Long id);
     MemberResponseDto create(MemberFormDto memberFormDto);
-    MemberResponseDto update(Long id, MemberFormDto memberFormDto);
+    MemberResponseDto update(
+            Long id,
+            MemberFormDto memberFormDto,
+            String authenticatedEmail
+    );
     void delete(Long id);
 
     long membersCount();

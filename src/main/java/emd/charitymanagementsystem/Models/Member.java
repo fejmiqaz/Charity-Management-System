@@ -12,6 +12,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Member {
@@ -48,5 +49,9 @@ public class Member {
 
     @ManyToMany(mappedBy = "members")
     private Set<Project> projects;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true)
+    private UserAccount userAccount;
 
 }

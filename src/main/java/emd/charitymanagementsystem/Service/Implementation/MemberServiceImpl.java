@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
     private final DonationRepository donationRepository;
     private final EventRepository eventRepository;
     private final ProjectRepository projectRepository;
+    private final UserAccountRepository userAccountRepository;
 
     @Override
     public List<MemberResponseDto> listAll() {
@@ -130,16 +132,44 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponseDto update(Long id, MemberFormDto memberFormDto) {
+    @Transactional
+    public MemberResponseDto update(
+            Long id,
+            MemberFormDto memberFormDto,
+            String authenticatedEmail
+    ) throws AccessDeniedException {
         log.info("Updating member with ID: {}", id);
+
+        Member memberToUpdate = memberRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Member not found with ID: " + id
+                        )
+                );
+
+        UserAccount userAccount = memberToUpdate.getUserAccount();
+
+        if (userAccount == null ||
+                !userAccount.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+
+            throw new AccessDeniedException(
+                    "You cannot edit another member's account."
+            );
+        }
 
         validateMemberFormDtoForUpdate(memberFormDto);
 
-        Member memberToUpdate = memberRepository.findById(id).orElseThrow();
-
         Years year = null;
+
         if (memberFormDto.getYearId() != null) {
-            year = yearsRepository.findById(memberFormDto.getYearId()).orElseThrow();
+            year = yearsRepository
+                    .findById(memberFormDto.getYearId())
+                    .orElseThrow(() ->
+                            new IllegalArgumentException(
+                                    "Year not found with ID: "
+                                            + memberFormDto.getYearId()
+                            )
+                    );
         }
 
         memberToUpdate.setName(memberFormDto.getName());
@@ -148,15 +178,44 @@ public class MemberServiceImpl implements MemberService {
         memberToUpdate.setPhone(memberFormDto.getPhone());
         memberToUpdate.setCountry(memberFormDto.getCountry());
         memberToUpdate.setCity(memberFormDto.getCity());
-        memberToUpdate.setRole(memberFormDto.getRole());
         memberToUpdate.setYear(year);
 
-        if (memberFormDto.getPassword() != null && !memberFormDto.getPassword().isBlank()) {
-            memberToUpdate.setPassword(passwordEncoder.encode(memberFormDto.getPassword()));
+        String fullName = memberFormDto.getName();
+
+        if (memberFormDto.getSurname() != null &&
+                !memberFormDto.getSurname().isBlank()) {
+            fullName += " " + memberFormDto.getSurname();
+        }
+
+        userAccount.setName(fullName);
+        userAccount.setEmail(memberFormDto.getEmail());
+
+        /*
+         * Do not update the role here.
+         * Otherwise, users could change themselves to HEAD.
+         */
+
+        if (memberFormDto.getPassword() != null &&
+                !memberFormDto.getPassword().isBlank()) {
+
+            if (memberFormDto.getPassword().length() < 6) {
+                throw new IllegalArgumentException(
+                        "Password must contain at least 6 characters."
+                );
+            }
+
+            String encodedPassword =
+                    passwordEncoder.encode(memberFormDto.getPassword());
+
+            memberToUpdate.setPassword(encodedPassword);
+            userAccount.setPassword(encodedPassword);
         }
 
         Member updated = memberRepository.save(memberToUpdate);
+        userAccountRepository.save(userAccount);
+
         log.info("Updated member with ID: {}", id);
+
         return MemberMapper.toDto(updated);
     }
 
@@ -212,12 +271,19 @@ public class MemberServiceImpl implements MemberService {
         if (dto.getName() == null || dto.getName().isBlank() ||
                 dto.getSurname() == null || dto.getSurname().isBlank() ||
                 dto.getEmail() == null || dto.getEmail().isBlank() ||
-                dto.getPassword() == null || dto.getPassword().isBlank() ||
                 dto.getPhone() == null || dto.getPhone().isBlank() ||
                 dto.getCountry() == null || dto.getCountry().isBlank() ||
                 dto.getCity() == null || dto.getCity().isBlank() ||
                 dto.getRole() == null) {
             throw new IllegalArgumentException("All required fields must be filled");
+        }
+        if (dto.getPassword() != null &&
+                !dto.getPassword().isBlank() &&
+                dto.getPassword().length() < 6) {
+
+            throw new IllegalArgumentException(
+                    "Password must contain at least 6 characters."
+            );
         }
     }
 

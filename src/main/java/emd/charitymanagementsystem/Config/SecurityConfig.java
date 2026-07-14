@@ -36,36 +36,79 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .authenticationProvider(authenticationProvider())
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/access-denied","/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/access-denied",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll()
 
                         .requestMatchers("/", "/home").authenticated()
 
-                        // VIEW ACCESS
-                        .requestMatchers("/members/**").hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
+                        .requestMatchers("/members/**")
+                        .hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
 
-                        .requestMatchers("/years/*/budget/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")
-                        .requestMatchers("/years/*/donations/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "DONOR", "SPONSOR", "MEMBER")
-                        .requestMatchers("/years/*/projects/**").hasAnyRole("HEAD", "SUBHEAD", "PROJECT_MANAGER", "VOLUNTEER", "MEMBER")
-                        .requestMatchers("/years/*/events/**").hasAnyRole("HEAD", "SUBHEAD", "EVENT_MANAGER", "VOLUNTEER", "MEMBER")
+                        .requestMatchers("/years/*/budget/**")
+                        .hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")
 
-                        .requestMatchers("/years/**").hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
+                        .requestMatchers("/years/*/donations/**")
+                        .hasAnyRole(
+                                "HEAD",
+                                "SUBHEAD",
+                                "TREASURER",
+                                "DONOR",
+                                "SPONSOR",
+                                "MEMBER"
+                        )
+
+                        .requestMatchers("/years/*/projects/**")
+                        .hasAnyRole(
+                                "HEAD",
+                                "SUBHEAD",
+                                "PROJECT_MANAGER",
+                                "VOLUNTEER",
+                                "MEMBER"
+                        )
+
+                        .requestMatchers("/years/*/events/**")
+                        .hasAnyRole(
+                                "HEAD",
+                                "SUBHEAD",
+                                "EVENT_MANAGER",
+                                "VOLUNTEER",
+                                "MEMBER"
+                        )
+
+                        .requestMatchers("/years/**")
+                        .hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
 
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error")
                         .permitAll()
                 )
+
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
-                ).exceptionHandling(exception -> exception
-                        .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendRedirect("/access-denied"))
+                )
+
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, exceptionThrown) ->
+                                response.sendRedirect("/access-denied")
+                        )
                 );
 
         return http.build();

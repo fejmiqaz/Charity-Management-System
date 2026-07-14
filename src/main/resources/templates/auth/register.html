@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .auth-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .auth-card h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .auth-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .alert-danger {
+            background: #ffe5e5;
+            color: #b30000;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2c7be5;
+            box-shadow: 0 0 0 3px rgba(44,123,229,.15);
+        }
+
+        .field-error {
+            display: block;
+            color: #d32f2f;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .submit-button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2c7be5;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: #1a68d1;
+        }
+
+        .submit-button:disabled,
+        .form-control:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 22px;
+        }
+
+        .auth-footer a {
+            color: #6c2bd9;
+            text-decoration: none;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 650px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <h1>Create Account</h1>
+
+        <p class="auth-description">
+            Register to access the Charity Management System.
+        </p>
+
+        <div class="alert alert-warning"
+             th:if="${!registrationEnabled}">
+            Registration is disabled in the hosted demo.
+            This page is displayed only to demonstrate the registration interface.
+        </div>
+
+        <div class="alert alert-danger"
+             th:if="${registrationError}"
+             th:text="${registrationError}">
+        </div>
+
+        <form th:action="@{/register}"
+              th:object="${registrationDto}"
+              method="post">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="name">First Name</label>
+                    <input id="name"
+                           type="text"
+                           th:field="*{name}"
+                           class="form-control"
+                           placeholder="Enter your first name"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('name')}"
+                           th:errors="*{name}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="surname">Last Name</label>
+                    <input id="surname"
+                           type="text"
+                           th:field="*{surname}"
+                           class="form-control"
+                           placeholder="Enter your last name"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('surname')}"
+                           th:errors="*{surname}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input id="country"
+                           type="text"
+                           th:field="*{country}"
+                           class="form-control"
+                           placeholder="Country"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('country')}"
+                           th:errors="*{country}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input id="city"
+                           type="text"
+                           th:field="*{city}"
+                           class="form-control"
+                           placeholder="City"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('city')}"
+                           th:errors="*{city}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input id="phone"
+                           type="text"
+                           th:field="*{phone}"
+                           class="form-control"
+                           placeholder="Phone number"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('phone')}"
+                           th:errors="*{phone}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email"
+                           type="email"
+                           th:field="*{email}"
+                           class="form-control"
+                           placeholder="Enter your email"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('email')}"
+                           th:errors="*{email}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password"
+                           type="password"
+                           th:field="*{password}"
+                           class="form-control"
+                           placeholder="Minimum 8 characters"
+                           autocomplete="new-password"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('password')}"
+                           th:errors="*{password}">
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input id="confirmPassword"
+                           type="password"
+                           th:field="*{confirmPassword}"
+                           class="form-control"
+                           placeholder="Repeat your password"
+                           autocomplete="new-password"
+                           th:disabled="${!registrationEnabled}">
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('confirmPassword')}"
+                           th:errors="*{confirmPassword}">
+                    </small>
+                </div>
+
+            </div>
+
+            <button type="submit"
+                    class="submit-button"
+                    th:disabled="${!registrationEnabled}"
+                    th:text="${registrationEnabled} ? 'Create Account' : 'Registration Disabled'">
+                Create Account
+            </button>
+
+        </form>
+
+        <p class="auth-footer">
+            Already have an account?
+            <a th:href="@{/login}">Log in</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

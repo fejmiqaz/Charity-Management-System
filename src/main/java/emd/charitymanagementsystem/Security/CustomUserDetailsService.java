@@ -1,8 +1,8 @@
 package emd.charitymanagementsystem.Security;
 
-import emd.charitymanagementsystem.Models.Member;
-import emd.charitymanagementsystem.Repository.MemberRepository;
-import lombok.AllArgsConstructor;
+import emd.charitymanagementsystem.Models.UserAccount;
+import emd.charitymanagementsystem.Repository.UserAccountRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -10,20 +10,36 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+@RequiredArgsConstructor
+public class CustomUserDetailsService
+        implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    private final UserAccountRepository userAccountRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("No user found with email: " + email));
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
+
+        UserAccount account = userAccountRepository
+                .findByEmailIgnoreCase(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "Account not found."
+                        )
+                );
 
         return new User(
-                member.getEmail(),
-                member.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + member.getRole().name()))
+                account.getEmail(),
+                account.getPassword(),
+                account.isEnabled(),
+                true,
+                true,
+                true,
+                List.of(
+                        new SimpleGrantedAuthority(
+                                "ROLE_" + account.getRole().name()
+                        )
+                )
         );
     }
 }
