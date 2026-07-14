@@ -216,6 +216,7 @@ src
 - Exception Handling
 - Logging
 - Validation
+- Audit Logging
 
 ### Features
 
@@ -269,7 +270,6 @@ src/main/resources/application.properties
 - REST API
 - Email Notifications
 - Dashboard Analytics
-- Audit Logging
 - Unit Tests
 - Integration Tests
 
