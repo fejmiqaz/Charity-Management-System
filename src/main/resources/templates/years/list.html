@@ -1,6 +1,5 @@
 <!--
   Save as: src/main/resources/templates/years/list.html
-  (adjust path to match your controller's return value)
 -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
@@ -8,104 +7,225 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Të Gjitha Vitet</title>
+    <title>Të Gjitha Vitet</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4">
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="mb-1">Të Gjitha Vitet</h1>
-      <p class="text-secondary mb-0">Menaxho vitet e organizatës dhe të dhënat e tyre</p>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Të Gjitha Vitet</h1>
+            <p class="text-secondary mb-0">Kërko, filtro dhe menaxho vitet e organizatës</p>
+        </div>
     </div>
-  </div>
 
-  <div class="d-flex flex-wrap gap-2 mb-4">
-    <a class="btn btn-dark" th:href="@{/}">
-      <i class="bi bi-house-door me-1"></i> Ballina
-    </a>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a class="btn btn-dark" th:href="@{/}">
+            <i class="bi bi-house-door me-1"></i> Ballina
+        </a>
 
-    <a class="btn btn-success" th:href="@{/years/add-form}">
-      <i class="bi bi-plus-lg me-1"></i> Shto Vit
-    </a>
-  </div>
+        <a class="btn btn-success" th:href="@{/years/add-form}">
+            <i class="bi bi-plus-lg me-1"></i> Shto Vit
+        </a>
+    </div>
 
-  <div class="empty-state" th:if="${#lists.isEmpty(years)}">
-    <i class="bi bi-calendar-x display-6"></i>
-    <p class="mt-3 mb-2">Nuk u gjetën vite.</p>
-    <a class="btn btn-success btn-sm" th:href="@{/years/add-form}">Krijo vitin e parë</a>
-  </div>
+    <!-- Search and filtering -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Kërkimi dhe Filtrimi</h2>
 
-  <div class="card p-0" th:if="${!#lists.isEmpty(years)}">
-    <div class="table-responsive">
-      <table class="table table-branded table-hover align-middle mb-0">
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>Viti</th>
-          <th>Buxheti</th>
-          <th>Projektet</th>
-          <th>Donacionet</th>
-          <th>Eventet</th>
-          <th>Detajet e Vitit</th>
-          <th>Veprimet</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="year : ${years}">
-          <td th:text="${year.id}"></td>
-          <td class="fw-bold" th:text="${year.yearValue}"></td>
+        <form method="get" th:action="@{/years}" class="row g-3 align-items-end">
 
-          <td>
-            <a class="btn btn-sm btn-primary" th:href="@{/years/{yearId}/budget(yearId=${year.id})}">
-              <i class="bi bi-cash-coin me-1"></i> Shiko Buxhetin
-            </a>
-          </td>
-
-          <td>
-            <a class="btn btn-sm btn-primary" th:href="@{/years/{yearId}/projects(yearId=${year.id})}">
-              <i class="bi bi-kanban me-1"></i> Shiko Projektet
-            </a>
-          </td>
-
-          <td>
-            <a class="btn btn-sm btn-primary" th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
-              <i class="bi bi-heart me-1"></i> Shiko Donacionet
-            </a>
-          </td>
-
-          <td>
-            <a class="btn btn-sm btn-primary" th:href="@{/years/{yearId}/events(yearId=${year.id})}">
-              <i class="bi bi-calendar-event me-1"></i> Shiko Eventet
-            </a>
-          </td>
-
-          <td>
-            <a class="btn btn-sm btn-outline-dark" th:href="@{/years/{id}(id=${year.id})}">
-              <i class="bi bi-info-circle me-1"></i> Shiko Detajet
-            </a>
-          </td>
-
-          <td>
-            <div class="d-flex gap-2">
-              <a class="btn btn-sm btn-warning" th:href="@{/years/edit-form/{id}(id=${year.id})}">
-                <i class="bi bi-pencil me-1"></i> Ndrysho
-              </a>
-              <form th:action="@{/years/delete/{id}(id=${year.id})}" method="post">
-                <button type="button"
-                        class="btn btn-sm btn-danger co-delete-trigger"
-                        th:attr="data-item-label=${year.yearValue}">
-                  <i class="bi bi-trash me-1"></i> Fshij
-                </button>
-              </form>
+            <div class="col-md-4">
+                <label for="yearValue" class="form-label">Kërko sipas Vitit</label>
+                <input id="yearValue"
+                       name="yearValue"
+                       type="number"
+                       min="2000"
+                       max="2100"
+                       class="form-control"
+                       placeholder="Shembull: 2026"
+                       th:value="${yearValue}">
             </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+
+            <div class="col-md-3">
+                <label for="sortDir" class="form-label">Renditja</label>
+                <select id="sortDir" name="sortDir" class="form-select">
+                    <option value="desc" th:selected="${sortDir == 'desc'}">Më i riu fillimisht</option>
+                    <option value="asc" th:selected="${sortDir == 'asc'}">Më i vjetri fillimisht</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="size" class="form-label">Për Faqe</label>
+                <select id="size" name="size" class="form-select">
+                    <option value="5" th:selected="${selectedSize == 5}">5</option>
+                    <option value="10" th:selected="${selectedSize == 10}">10</option>
+                    <option value="20" th:selected="${selectedSize == 20}">20</option>
+                    <option value="50" th:selected="${selectedSize == 50}">50</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Kërko
+                </button>
+
+                <a class="btn btn-secondary" th:href="@{/years}">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Pastro
+                </a>
+            </div>
+        </form>
     </div>
-  </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3"
+         th:if="${yearsPage.totalElements > 0}">
+    <span class="text-secondary">
+      Gjithsej:
+      <strong th:text="${yearsPage.totalElements}"></strong>
+      vit(e)
+    </span>
+
+        <span class="text-secondary">
+      Faqja
+      <strong th:text="${yearsPage.number + 1}"></strong>
+      nga
+      <strong th:text="${yearsPage.totalPages}"></strong>
+    </span>
+    </div>
+
+    <div class="empty-state" th:if="${yearsPage.totalElements == 0}">
+        <i class="bi bi-calendar-x display-6"></i>
+        <p class="mt-3 mb-2">Nuk u gjetën vite që përputhen me kërkimin.</p>
+        <a class="btn btn-secondary btn-sm" th:href="@{/years}">
+            Pastro filtrat
+        </a>
+    </div>
+
+    <div class="card p-0" th:if="${yearsPage.totalElements > 0}">
+        <div class="table-responsive">
+            <table class="table table-branded table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Viti</th>
+                    <th>Buxheti</th>
+                    <th>Projektet</th>
+                    <th>Donacionet</th>
+                    <th>Eventet</th>
+                    <th>Detajet e Vitit</th>
+                    <th>Veprimet</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="year : ${years}">
+                    <td th:text="${year.id}"></td>
+                    <td class="fw-bold" th:text="${year.yearValue}"></td>
+
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/years/{yearId}/budget(yearId=${year.id})}">
+                            <i class="bi bi-cash-coin me-1"></i> Shiko Buxhetin
+                        </a>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/years/{yearId}/projects(yearId=${year.id})}">
+                            <i class="bi bi-kanban me-1"></i> Shiko Projektet
+                        </a>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
+                            <i class="bi bi-heart me-1"></i> Shiko Donacionet
+                        </a>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/years/{yearId}/events(yearId=${year.id})}">
+                            <i class="bi bi-calendar-event me-1"></i> Shiko Eventet
+                        </a>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-outline-dark"
+                           th:href="@{/years/{id}(id=${year.id})}">
+                            <i class="bi bi-info-circle me-1"></i> Shiko Detajet
+                        </a>
+                    </td>
+
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-sm btn-warning"
+                               th:href="@{/years/edit-form/{id}(id=${year.id})}">
+                                <i class="bi bi-pencil me-1"></i> Ndrysho
+                            </a>
+
+                            <form th:action="@{/years/delete/{id}(id=${year.id})}" method="post">
+                                <button type="button"
+                                        class="btn btn-sm btn-danger co-delete-trigger"
+                                        th:attr="data-item-label=${year.yearValue}">
+                                    <i class="bi bi-trash me-1"></i> Fshij
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="mt-4"
+         aria-label="Faqëzimi i viteve"
+         th:if="${yearsPage.totalPages > 1}">
+        <ul class="pagination justify-content-center flex-wrap">
+
+            <li class="page-item" th:classappend="${yearsPage.first} ? ' disabled'">
+                <a class="page-link"
+                   th:href="@{/years(
+                page=${yearsPage.number - 1},
+                size=${selectedSize},
+                yearValue=${yearValue},
+                sortDir=${sortDir}
+           )}">
+                    <i class="bi bi-chevron-left"></i> Para
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="pageNumber : ${#numbers.sequence(0, yearsPage.totalPages - 1)}"
+                th:classappend="${pageNumber == yearsPage.number} ? ' active'">
+                <a class="page-link"
+                   th:text="${pageNumber + 1}"
+                   th:href="@{/years(
+                page=${pageNumber},
+                size=${selectedSize},
+                yearValue=${yearValue},
+                sortDir=${sortDir}
+           )}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${yearsPage.last} ? ' disabled'">
+                <a class="page-link"
+                   th:href="@{/years(
+                page=${yearsPage.number + 1},
+                size=${selectedSize},
+                yearValue=${yearValue},
+                sortDir=${sortDir}
+           )}">
+                    Pas <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
 
 </div>
 

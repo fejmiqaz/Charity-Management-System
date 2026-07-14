@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-layout:decorate="~{base}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
 <head><title>Detajet e Buxhetit</title></head>
-<body><div layout:fragment="content" class="container py-4" style="max-width:800px;">
-<h1 class="mb-3">Detajet e Buxhetit</h1>
-<div class="mb-4"><a class="btn btn-dark" th:href="@{/years/{yearId}/budget(yearId=${year.id})}"><i class="bi bi-arrow-left me-1"></i>Kthehu</a></div>
-<div class="card p-4">
-<h2 class="section-title">Informacioni i Buxhetit</h2>
-<div class="kv-row"><span class="kv-label">ID</span><span class="kv-value" th:text="${budget.id}"></span></div>
-<div class="kv-row"><span class="kv-label">Shuma</span><span class="kv-value" th:text="${budget.budgetAmount}+' €'"></span></div>
-<div class="kv-row"><span class="kv-label">Përshkrimi</span><span class="kv-value" th:text="${budget.description}"></span></div>
-</div></div></body></html>
+<body>
+<div layout:fragment="content" class="container py-4" style="max-width:800px;">
+    <h1 class="mb-3">Detajet e Buxhetit</h1>
+    <div class="mb-4">
+        <a class="btn btn-dark" th:href="@{/years/{yearId}/budget(yearId=${year.id})}"><i
+                class="bi bi-arrow-left me-1"></i>Kthehu</a>
+        <a class="btn btn-danger"
+           th:href="@{/pdf/years/{yearId}/budgets(yearId=${year.id})}">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            Export Budget PDF
+        </a>
+    </div>
+    <div class="card p-4">
+        <h2 class="section-title">Informacioni i Buxhetit</h2>
+        <div class="kv-row"><span class="kv-label">ID</span><span class="kv-value" th:text="${budget.id}"></span></div>
+        <div class="kv-row"><span class="kv-label">Shuma</span><span class="kv-value"
+                                                                     th:text="${budget.budgetAmount}+' €'"></span></div>
+        <div class="kv-row"><span class="kv-label">Përshkrimi</span><span class="kv-value"
+                                                                          th:text="${budget.description}"></span></div>
+    </div>
+
+</div>
+</body>
+</html>

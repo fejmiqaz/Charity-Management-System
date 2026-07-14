@@ -7,182 +7,195 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Detajet e Vitit</title>
+    <title>Detajet e Vitit</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4" style="max-width: 800px;">
 
-  <h1 class="mb-3">Detajet e Vitit</h1>
+    <h1 class="mb-3">Detajet e Vitit</h1>
 
-  <div class="mb-4">
-    <a class="btn btn-dark" th:href="@{/years}">
-      <i class="bi bi-arrow-left me-1"></i> Kthehu te Vitet
-    </a>
-  </div>
-
-  <!-- Year hero -->
-  <div class="card text-center p-4 mb-4">
-    <span class="display-serif" style="font-size: 42px;" th:text="${year.yearValue}"></span>
-  </div>
-
-  <!-- Budget -->
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Buxheti</h2>
-
-    <div class="empty-state" th:if="${year.budgetAmount == null}">
-      <i class="bi bi-cash-coin display-6"></i>
-      <p class="mb-0 mt-2">Nuk është përcaktuar buxhet për këtë vit.</p>
+    <div class="mb-4">
+        <a class="btn btn-dark" th:href="@{/years}">
+            <i class="bi bi-arrow-left me-1"></i> Kthehu te Vitet
+        </a>
+        <a class="btn btn-danger"
+           th:href="@{/pdf/years/{yearId}(yearId=${year.id})}">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            Export Complete Year Report
+        </a>
     </div>
 
-    <div class="table-responsive" th:if="${year.budgetAmount != null}">
-      <table class="table table-branded align-middle mb-0">
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>Shuma e Buxhetit</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td th:text="${year.budgetId}"></td>
-          <td class="fw-bold" th:text="${year.budgetAmount} + ' €'"></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Projects -->
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Projektet</h2>
-
-    <div class="empty-state" th:if="${year.totalProjects == 0}">
-      <i class="bi bi-kanban display-6"></i>
-      <p class="mb-0 mt-2">Nuk ka projekte për këtë vit.</p>
+    <!-- Year hero -->
+    <div class="card text-center p-4 mb-4">
+        <span class="display-serif" style="font-size: 42px;" th:text="${year.yearValue}"></span>
     </div>
 
-    <div class="table-responsive" th:if="${year.totalProjects > 0}">
-      <table class="table table-branded mb-0">
-        <thead>
-        <tr><th>Përmbledhja e Projekteve</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="text-center fw-bold">
-            Ky vit ka <span th:text="${year.totalProjects}"></span> projekt(e).
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <!-- Budget -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Buxheti</h2>
 
-  <!-- Events -->
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Eventet</h2>
+        <div class="empty-state" th:if="${year.budgetAmount == null}">
+            <i class="bi bi-cash-coin display-6"></i>
+            <p class="mb-0 mt-2">Nuk është përcaktuar buxhet për këtë vit.</p>
+        </div>
 
-    <div class="empty-state" th:if="${year.totalEvents == 0}">
-      <i class="bi bi-calendar-event display-6"></i>
-      <p class="mb-0 mt-2">Nuk ka evente për këtë vit.</p>
-    </div>
-
-    <div class="table-responsive" th:if="${year.totalEvents > 0}">
-      <table class="table table-branded mb-0">
-        <thead>
-        <tr><th>Përmbledhja e Eventeve</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="text-center fw-bold">
-            Ky vit ka <span th:text="${year.totalEvents}"></span> evente.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Donations -->
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Donacionet</h2>
-
-    <div class="empty-state" th:if="${year.totalDonations == 0}">
-      <i class="bi bi-heart display-6"></i>
-      <p class="mb-0 mt-2">Nuk ka donacione për këtë vit.</p>
+        <div class="table-responsive" th:if="${year.budgetAmount != null}">
+            <table class="table table-branded align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Shuma e Buxhetit</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td th:text="${year.budgetId}"></td>
+                    <td class="fw-bold" th:text="${year.budgetAmount} + ' €'"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="table-responsive" th:if="${year.totalDonations > 0}">
-      <table class="table table-branded mb-0">
-        <thead>
-        <tr><th>Përmbledhja e Donacioneve</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="text-center fw-bold">
-            Ky vit ka <span th:text="${year.totalDonations}"></span> donacione.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <!-- Projects -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Projektet</h2>
 
-  <!-- Members who donated -->
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Anëtarët që Donuan</h2>
+        <div class="empty-state" th:if="${year.totalProjects == 0}">
+            <i class="bi bi-kanban display-6"></i>
+            <p class="mb-0 mt-2">Nuk ka projekte për këtë vit.</p>
+        </div>
 
-    <div class="empty-state" th:if="${year.totalDonations == 0}">
-      <i class="bi bi-people display-6"></i>
-      <p class="mb-0 mt-2">Asnjë anëtar nuk ka donuar këtë vit.</p>
-    </div>
-
-    <div class="table-responsive" th:if="${year.totalDonations > 0}">
-      <table class="table table-branded mb-0">
-        <thead>
-        <tr><th>Përmbledhja e Anëtarëve Donatorë</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="text-center fw-bold">
-            Ekzistojnë të dhëna donacionesh për këtë vit. Shiko faqen e donacioneve për detaje të plota.
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Financial summary -->
-  <div class="card card-accent-top budget p-4 mb-4" style="max-width: 520px; margin: 30px auto 0 auto;">
-    <h2 class="section-title" style="border-bottom-color: var(--ink-900);">Përmbledhja Financiare</h2>
-
-    <div class="summary-row">
-      <span>Buxheti</span>
-      <strong th:text="${budgetAmount} + ' €'"></strong>
+        <div class="table-responsive" th:if="${year.totalProjects > 0}">
+            <table class="table table-branded mb-0">
+                <thead>
+                <tr>
+                    <th>Përmbledhja e Projekteve</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center fw-bold">
+                        Ky vit ka <span th:text="${year.totalProjects}"></span> projekt(e).
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="summary-row">
-      <span>Totali i Donacioneve</span>
-      <strong th:text="${totalDonations} + ' €'"></strong>
+    <!-- Events -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Eventet</h2>
+
+        <div class="empty-state" th:if="${year.totalEvents == 0}">
+            <i class="bi bi-calendar-event display-6"></i>
+            <p class="mb-0 mt-2">Nuk ka evente për këtë vit.</p>
+        </div>
+
+        <div class="table-responsive" th:if="${year.totalEvents > 0}">
+            <table class="table table-branded mb-0">
+                <thead>
+                <tr>
+                    <th>Përmbledhja e Eventeve</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center fw-bold">
+                        Ky vit ka <span th:text="${year.totalEvents}"></span> evente.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="summary-row">
-      <span>Kostoja Totale e Projekteve</span>
-      <strong th:text="${totalProjectCosts} + ' €'"></strong>
+    <!-- Donations -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Donacionet</h2>
+
+        <div class="empty-state" th:if="${year.totalDonations == 0}">
+            <i class="bi bi-heart display-6"></i>
+            <p class="mb-0 mt-2">Nuk ka donacione për këtë vit.</p>
+        </div>
+
+        <div class="table-responsive" th:if="${year.totalDonations > 0}">
+            <table class="table table-branded mb-0">
+                <thead>
+                <tr>
+                    <th>Përmbledhja e Donacioneve</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center fw-bold">
+                        Ky vit ka <span th:text="${year.totalDonations}"></span> donacione.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="summary-row total">
-      <span>Buxheti i Mbetur</span>
-      <strong th:text="${remainingBudget} + ' €'"></strong>
+    <!-- Members who donated -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Anëtarët që Donuan</h2>
+
+        <div class="empty-state" th:if="${year.totalDonations == 0}">
+            <i class="bi bi-people display-6"></i>
+            <p class="mb-0 mt-2">Asnjë anëtar nuk ka donuar këtë vit.</p>
+        </div>
+
+        <div class="table-responsive" th:if="${year.totalDonations > 0}">
+            <table class="table table-branded mb-0">
+                <thead>
+                <tr>
+                    <th>Përmbledhja e Anëtarëve Donatorë</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center fw-bold">
+                        Ekzistojnë të dhëna donacionesh për këtë vit. Shiko faqen e donacioneve për detaje të plota.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <p class="text-center mt-3 mb-0"
-       th:text="${exceedsBudget ? 'Mbi Buxhet' : 'Brenda Buxhetit'}"
-       th:classappend="${exceedsBudget} ? ' status-bad' : ' status-ok'"
-       style="font-size: 22px;">
-    </p>
-  </div>
+    <!-- Financial summary -->
+    <div class="card card-accent-top budget p-4 mb-4" style="max-width: 520px; margin: 30px auto 0 auto;">
+        <h2 class="section-title" style="border-bottom-color: var(--ink-900);">Përmbledhja Financiare</h2>
+
+        <div class="summary-row">
+            <span>Buxheti</span>
+            <strong th:text="${budgetAmount} + ' €'"></strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Totali i Donacioneve</span>
+            <strong th:text="${totalDonations} + ' €'"></strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Kostoja Totale e Projekteve</span>
+            <strong th:text="${totalProjectCosts} + ' €'"></strong>
+        </div>
+
+        <div class="summary-row total">
+            <span>Buxheti i Mbetur</span>
+            <strong th:text="${remainingBudget} + ' €'"></strong>
+        </div>
+
+        <p class="text-center mt-3 mb-0"
+           th:text="${exceedsBudget ? 'Mbi Buxhet' : 'Brenda Buxhetit'}"
+           th:classappend="${exceedsBudget} ? ' status-bad' : ' status-ok'"
+           style="font-size: 22px;">
+        </p>
+    </div>
 
 </div>
 

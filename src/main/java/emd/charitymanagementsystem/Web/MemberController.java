@@ -20,8 +20,45 @@ public class MemberController {
 
     @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
-    public String listMembers(Model model) {
-        model.addAttribute("members", memberService.listAll());
+    public String listMembers(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Role role,
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize,
+            Model model
+    ) {
+        if (pageNum < 1) {
+            pageNum = 1;
+        }
+
+        if (pageSize < 1) {
+            pageSize = 10;
+        }
+
+        var memberPage = memberService.findPage(
+                search,
+                country,
+                city,
+                role,
+                pageNum,
+                pageSize
+        );
+
+        model.addAttribute("members", memberPage.getContent());
+        model.addAttribute("roles", Role.values());
+
+        model.addAttribute("currentPage", pageNum);
+        model.addAttribute("totalPages", memberPage.getTotalPages());
+        model.addAttribute("totalItems", memberPage.getTotalElements());
+        model.addAttribute("pageSize", pageSize);
+
+        model.addAttribute("search", search);
+        model.addAttribute("country", country);
+        model.addAttribute("city", city);
+        model.addAttribute("selectedRole", role);
+
         return "members/list";
     }
 

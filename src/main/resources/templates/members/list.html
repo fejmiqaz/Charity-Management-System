@@ -13,74 +13,309 @@
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
     <div>
       <h1 class="mb-1">Të Gjithë Anëtarët</h1>
-      <p class="text-secondary mb-0">Menaxho anëtarët dhe të dhënat e tyre personale</p>
+      <p class="text-secondary mb-0">
+        Menaxho anëtarët dhe të dhënat e tyre personale
+      </p>
+    </div>
+
+    <div class="text-secondary mt-2 mt-md-0">
+      Gjithsej:
+      <strong th:text="${totalItems}">0</strong>
     </div>
   </div>
 
   <div class="d-flex flex-wrap gap-2 mb-4">
     <a class="btn btn-dark" th:href="@{/}">
-      <i class="bi bi-house-door me-1"></i> Ballina
+      <i class="bi bi-house-door me-1"></i>
+      Ballina
     </a>
-    <a class="btn btn-success" th:href="@{/members/add}">
-      <i class="bi bi-person-plus me-1"></i> Shto Anëtar
+
+    <a class="btn btn-success"
+       th:href="@{/members/add}"
+       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
+      <i class="bi bi-person-plus me-1"></i>
+      Shto Anëtar
     </a>
   </div>
 
-  <div class="empty-state" th:if="${#lists.isEmpty(members)}">
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+
+      <form method="get"
+            th:action="@{/members}"
+            class="row g-3 align-items-end">
+
+        <div class="col-12 col-md-4">
+          <label for="search" class="form-label">
+            Kërko anëtar
+          </label>
+
+          <input type="text"
+                 id="search"
+                 name="search"
+                 class="form-control"
+                 placeholder="Emri, mbiemri ose email..."
+                 th:value="${search}">
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label for="country" class="form-label">
+            Shteti
+          </label>
+
+          <input type="text"
+                 id="country"
+                 name="country"
+                 class="form-control"
+                 placeholder="Shteti"
+                 th:value="${country}">
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label for="city" class="form-label">
+            Qyteti
+          </label>
+
+          <input type="text"
+                 id="city"
+                 name="city"
+                 class="form-control"
+                 placeholder="Qyteti"
+                 th:value="${city}">
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label for="role" class="form-label">
+            Roli
+          </label>
+
+          <select id="role"
+                  name="role"
+                  class="form-select">
+
+            <option value="">Të gjitha rolet</option>
+
+            <option th:each="roleOption : ${roles}"
+                    th:value="${roleOption}"
+                    th:text="${roleOption}"
+                    th:selected="${selectedRole == roleOption}">
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label for="pageSize" class="form-label">
+            Për faqe
+          </label>
+
+          <select id="pageSize"
+                  name="pageSize"
+                  class="form-select">
+
+            <option value="5"
+                    th:selected="${pageSize == 5}">
+              5
+            </option>
+
+            <option value="10"
+                    th:selected="${pageSize == 10}">
+              10
+            </option>
+
+            <option value="20"
+                    th:selected="${pageSize == 20}">
+              20
+            </option>
+
+            <option value="50"
+                    th:selected="${pageSize == 50}">
+              50
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 d-flex flex-wrap gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search me-1"></i>
+            Kërko
+          </button>
+
+          <a class="btn btn-outline-secondary"
+             th:href="@{/members}">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Pastro filtrat
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state"
+       th:if="${#lists.isEmpty(members)}">
+
     <i class="bi bi-people display-6"></i>
-    <p class="mt-3 mb-2">Nuk u gjetën anëtarë.</p>
-    <a class="btn btn-success btn-sm" th:href="@{/members/add}">
-      Krijo anëtarin e parë
+
+    <p class="mt-3 mb-2">
+      Nuk u gjetën anëtarë që përputhen me filtrat.
+    </p>
+
+    <a class="btn btn-outline-dark btn-sm"
+       th:href="@{/members}">
+      Pastro filtrat
     </a>
   </div>
 
-  <div class="card p-0" th:if="${!#lists.isEmpty(members)}">
+  <!-- Members table -->
+  <div class="card p-0"
+       th:if="${!#lists.isEmpty(members)}">
+
     <div class="table-responsive">
       <table class="table table-branded table-hover align-middle mb-0">
+
         <thead>
         <tr>
           <th>ID</th>
           <th>Emri</th>
           <th>Mbiemri</th>
+          <th>Email</th>
           <th>Shteti</th>
           <th>Qyteti</th>
+          <th>Roli</th>
           <th>Veprimet</th>
         </tr>
         </thead>
+
         <tbody>
         <tr th:each="member : ${members}">
+
           <td th:text="${member.id}"></td>
-          <td class="fw-bold" th:text="${member.name}"></td>
+
+          <td class="fw-bold"
+              th:text="${member.name}">
+          </td>
+
           <td th:text="${member.surname}"></td>
+
+          <td th:text="${member.email}"></td>
+
           <td th:text="${member.country}"></td>
+
           <td th:text="${member.city}"></td>
+
+          <td>
+                        <span class="badge text-bg-dark"
+                              th:text="${member.role}">
+                        </span>
+          </td>
+
           <td>
             <div class="d-flex flex-wrap gap-2">
+
               <a class="btn btn-sm btn-outline-dark"
-                 th:href="@{/members/{memberId}(memberId=${member.id})}">
-                <i class="bi bi-info-circle me-1"></i> Detajet
+                 th:href="@{/members/{memberId}
+                               (memberId=${member.id})}">
+                <i class="bi bi-info-circle me-1"></i>
+                Detajet
               </a>
 
               <a class="btn btn-sm btn-warning"
-                 th:href="@{/members/{memberId}/edit(memberId=${member.id})}">
-                <i class="bi bi-pencil me-1"></i> Ndrysho
+                 sec:authorize="hasRole('HEAD')"
+                 th:href="@{/members/{memberId}/edit
+                               (memberId=${member.id})}">
+                <i class="bi bi-pencil me-1"></i>
+                Ndrysho
               </a>
 
-              <form th:action="@{/members/{memberId}/delete(memberId=${member.id})}"
+              <form sec:authorize="hasRole('HEAD')"
+                    th:action="@{/members/{memberId}/delete
+                                  (memberId=${member.id})}"
                     method="post">
+
                 <button type="button"
                         class="btn btn-sm btn-danger co-delete-trigger"
-                        th:attr="data-item-label=${member.name + ' ' + member.surname}">
-                  <i class="bi bi-trash me-1"></i> Fshij
+                        th:attr="data-item-label=
+                                        ${member.name + ' ' + member.surname}">
+
+                  <i class="bi bi-trash me-1"></i>
+                  Fshij
                 </button>
               </form>
+
             </div>
           </td>
         </tr>
         </tbody>
+
       </table>
     </div>
   </div>
+
+  <!-- Pagination -->
+  <nav class="mt-4"
+       th:if="${totalPages > 1}"
+       aria-label="Member pagination">
+
+    <ul class="pagination justify-content-center flex-wrap">
+
+      <!-- Previous -->
+      <li class="page-item"
+          th:classappend="${currentPage == 1} ? 'disabled'">
+
+        <a class="page-link"
+           th:href="@{/members(
+                       pageNum=${currentPage - 1},
+                       pageSize=${pageSize},
+                       search=${search},
+                       country=${country},
+                       city=${city},
+                       role=${selectedRole}
+                   )}">
+          <i class="bi bi-chevron-left"></i>
+          Para
+        </a>
+      </li>
+
+      <!-- Page numbers -->
+      <li class="page-item"
+          th:each="page : ${#numbers.sequence(1, totalPages)}"
+          th:classappend="${page == currentPage} ? 'active'">
+
+        <a class="page-link"
+           th:text="${page}"
+           th:href="@{/members(
+                       pageNum=${page},
+                       pageSize=${pageSize},
+                       search=${search},
+                       country=${country},
+                       city=${city},
+                       role=${selectedRole}
+                   )}">
+        </a>
+      </li>
+
+      <!-- Next -->
+      <li class="page-item"
+          th:classappend="${currentPage == totalPages} ? 'disabled'">
+
+        <a class="page-link"
+           th:href="@{/members(
+                       pageNum=${currentPage + 1},
+                       pageSize=${pageSize},
+                       search=${search},
+                       country=${country},
+                       city=${city},
+                       role=${selectedRole}
+                   )}">
+          Pas
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      </li>
+
+    </ul>
+  </nav>
 
 </div>
 

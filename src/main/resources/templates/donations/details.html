@@ -4,81 +4,87 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Detajet e Donacionit</title>
+    <title>Detajet e Donacionit</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4" style="max-width: 1000px;">
 
-  <h1 class="mb-3">Detajet e Donacionit</h1>
+    <h1 class="mb-3">Detajet e Donacionit</h1>
 
-  <div class="mb-4">
-    <a class="btn btn-dark"
-       th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
-      <i class="bi bi-arrow-left me-1"></i> Kthehu te Donacionet
-    </a>
-  </div>
+    <div class="mb-4">
+        <a class="btn btn-dark"
+           th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
+            <i class="bi bi-arrow-left me-1"></i> Kthehu te Donacionet
+        </a>
+        <a class="btn btn-sm btn-danger"
+           th:href="@{/pdf/years/{yearId}/donations/{donationId}(
+        yearId=${year.id}, donationId=${donation.id})}">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            PDF
+        </a>
+    </div>
 
-  <div class="card text-center p-4 mb-4">
-    <i class="bi bi-heart-fill display-4 mb-2"></i>
-    <span class="display-serif"
-          style="font-size: 36px;"
-          th:text="${donation.donationAmount} + ' €'">
+    <div class="card text-center p-4 mb-4">
+        <i class="bi bi-heart-fill display-4 mb-2"></i>
+        <span class="display-serif"
+              style="font-size: 36px;"
+              th:text="${donation.donationAmount} + ' €'">
       0 €
     </span>
-  </div>
-
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Të Dhënat e Donacionit</h2>
-
-    <div class="kv-row">
-      <span class="kv-label">ID</span>
-      <span class="kv-value" th:text="${donation.id}"></span>
     </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Shuma</span>
-      <span class="kv-value" th:text="${donation.donationAmount} + ' €'"></span>
-    </div>
-  </div>
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Të Dhënat e Donacionit</h2>
 
-  <div class="card p-4">
-    <h2 class="section-title">Anëtarët Donatorë</h2>
+        <div class="kv-row">
+            <span class="kv-label">ID</span>
+            <span class="kv-value" th:text="${donation.id}"></span>
+        </div>
 
-    <div class="empty-state"
-         th:if="${members == null or #lists.isEmpty(members)}">
-      <i class="bi bi-people display-6"></i>
-      <p class="mb-0 mt-2">Nuk ka anëtarë të lidhur me këtë donacion.</p>
+        <div class="kv-row">
+            <span class="kv-label">Shuma</span>
+            <span class="kv-value" th:text="${donation.donationAmount} + ' €'"></span>
+        </div>
     </div>
 
-    <div class="table-responsive"
-         th:if="${members != null and !#lists.isEmpty(members)}">
-      <table class="table table-branded table-hover align-middle mb-0">
-        <thead>
-        <tr>
-          <th>Emri</th>
-          <th>Mbiemri</th>
-          <th>Email</th>
-          <th>Numri i Telefonit</th>
-          <th>Shteti</th>
-          <th>Qyteti</th>
-          <th>Shuma</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="member : ${members}">
-          <td class="fw-bold" th:text="${member.name}"></td>
-          <td th:text="${member.surname}"></td>
-          <td th:text="${member.email}"></td>
-          <td th:text="${member.phone}"></td>
-          <td th:text="${member.country}"></td>
-          <td th:text="${member.city}"></td>
-          <td class="fw-bold" th:text="${donation.donationAmount} + ' €'"></td>
-        </tr>
-        </tbody>
-      </table>
+    <div class="card p-4">
+        <h2 class="section-title">Anëtarët Donatorë</h2>
+
+        <div class="empty-state"
+             th:if="${members == null or #lists.isEmpty(members)}">
+            <i class="bi bi-people display-6"></i>
+            <p class="mb-0 mt-2">Nuk ka anëtarë të lidhur me këtë donacion.</p>
+        </div>
+
+        <div class="table-responsive"
+             th:if="${members != null and !#lists.isEmpty(members)}">
+            <table class="table table-branded table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Emri</th>
+                    <th>Mbiemri</th>
+                    <th>Email</th>
+                    <th>Numri i Telefonit</th>
+                    <th>Shteti</th>
+                    <th>Qyteti</th>
+                    <th>Shuma</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member : ${members}">
+                    <td class="fw-bold" th:text="${member.name}"></td>
+                    <td th:text="${member.surname}"></td>
+                    <td th:text="${member.email}"></td>
+                    <td th:text="${member.phone}"></td>
+                    <td th:text="${member.country}"></td>
+                    <td th:text="${member.city}"></td>
+                    <td class="fw-bold" th:text="${donation.donationAmount} + ' €'"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 
 </div>
 

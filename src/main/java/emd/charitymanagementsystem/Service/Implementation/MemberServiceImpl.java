@@ -8,14 +8,21 @@ import emd.charitymanagementsystem.Repository.*;
 import emd.charitymanagementsystem.Service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final YearsRepository yearsRepository;
@@ -32,9 +39,63 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
+
+    @Override
+    public Page<MemberResponseDto> findPage(
+            String search,
+            String country,
+            String city,
+            Role role,
+            int pageNum,
+            int pageSize
+    ) {
+        log.debug("Filtering members. Search: {}, country: {}, city: {}, role: {}, page: {}, size: {}",
+                search, country, city, role, pageNum, pageSize);
+
+        Specification<Member> specification = Specification.allOf();
+
+        if (search != null && !search.isBlank()) {
+            String value = "%" + search.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, cb) ->
+                    cb.or(
+                            cb.like(cb.lower(root.get("name")), value),
+                            cb.like(cb.lower(root.get("surname")), value),
+                            cb.like(cb.lower(root.get("email")), value)
+                    ));
+        }
+
+        if (country != null && !country.isBlank()) {
+            String value = "%" + country.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("country")), value));
+        }
+
+        if (city != null && !city.isBlank()) {
+            String value = "%" + city.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("city")), value));
+        }
+
+        if (role != null) {
+            specification = specification.and((root, query, cb) ->
+                    cb.equal(root.get("role"), role));
+        }
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("id").descending());
+        Page<Member> members = memberRepository.findAll(specification, pageable);
+
+        log.debug("Member filtering completed. Found {} total members", members.getTotalElements());
+
+        return members.map(MemberMapper::toDto);
+    }
+
     @Override
     public MemberResponseDto findById(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow();
+        log.debug("Finding member with ID: {}", id);
+        Member member = memberRepository.findById(id).orElseThrow(() -> {
+            log.warn("Member not found with ID: {}", id);
+            return new RuntimeException("Member not found");
+        });
         return MemberMapper.toDto(member);
     }
 
@@ -70,6 +131,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberResponseDto update(Long id, MemberFormDto memberFormDto) {
+        log.info("Updating member with ID: {}", id);
+
         validateMemberFormDtoForUpdate(memberFormDto);
 
         Member memberToUpdate = memberRepository.findById(id).orElseThrow();
@@ -93,11 +156,13 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member updated = memberRepository.save(memberToUpdate);
+        log.info("Updated member with ID: {}", id);
         return MemberMapper.toDto(updated);
     }
 
     @Transactional
     public void delete(Long id) {
+        log.info("Deleting member with ID: {}", id);
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
@@ -123,6 +188,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         memberRepository.delete(member);
+        log.info("Deleted member with ID: {}", id);
     }
 
     @Override

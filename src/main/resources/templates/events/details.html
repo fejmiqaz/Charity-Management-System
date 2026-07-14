@@ -4,73 +4,81 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Detajet e Eventit</title>
+    <title>Detajet e Eventit</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4" style="max-width: 900px;">
 
-  <h1 class="mb-3">Detajet e Eventit</h1>
+    <h1 class="mb-3">Detajet e Eventit</h1>
 
-  <div class="mb-4">
-    <a class="btn btn-dark"
-       th:href="@{/years/{yearId}/events(yearId=${year.id})}">
-      <i class="bi bi-arrow-left me-1"></i> Kthehu te Eventet
-    </a>
-  </div>
+    <div class="mb-4">
+        <a class="btn btn-dark"
+           th:href="@{/years/{yearId}/events(yearId=${year.id})}">
+            <i class="bi bi-arrow-left me-1"></i> Kthehu te Eventet
+        </a>
+        <a class="btn btn-sm btn-danger"
+           th:href="@{/pdf/years/{yearId}/events/{eventId}(
+        yearId=${year.id},
+        eventId=${event.id}
+   )}">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            PDF
+        </a>
+    </div>
 
-  <div class="card text-center p-4 mb-4">
-    <i class="bi bi-calendar-event display-4 mb-2"></i>
-    <span class="display-serif"
-          style="font-size: 36px;"
-          th:text="${event.purpose}">
+    <div class="card text-center p-4 mb-4">
+        <i class="bi bi-calendar-event display-4 mb-2"></i>
+        <span class="display-serif"
+              style="font-size: 36px;"
+              th:text="${event.purpose}">
       Qëllimi i Eventit
     </span>
-  </div>
-
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Të Dhënat e Eventit</h2>
-
-    <div class="kv-row">
-      <span class="kv-label">ID</span>
-      <span class="kv-value" th:text="${event.id}"></span>
     </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Qëllimi</span>
-      <span class="kv-value text-end" th:text="${event.purpose}"></span>
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Të Dhënat e Eventit</h2>
+
+        <div class="kv-row">
+            <span class="kv-label">ID</span>
+            <span class="kv-value" th:text="${event.id}"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Qëllimi</span>
+            <span class="kv-value text-end" th:text="${event.purpose}"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Data dhe Ora</span>
+            <span class="kv-value"
+                  th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Viti</span>
+            <span class="kv-value"
+                  th:text="${event.yearValue != null ? event.yearValue : 'Pa vit'}"></span>
+        </div>
     </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Data dhe Ora</span>
-      <span class="kv-value"
-            th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></span>
-    </div>
+    <div class="card p-4">
+        <h2 class="section-title">Anëtarët Pjesëmarrës</h2>
 
-    <div class="kv-row">
-      <span class="kv-label">Viti</span>
-      <span class="kv-value"
-            th:text="${event.yearValue != null ? event.yearValue : 'Pa vit'}"></span>
-    </div>
-  </div>
+        <div class="empty-state"
+             th:if="${event.memberNames == null or #lists.isEmpty(event.memberNames)}">
+            <i class="bi bi-people display-6"></i>
+            <p class="mb-0 mt-2">Nuk ka anëtarë të caktuar në këtë event.</p>
+        </div>
 
-  <div class="card p-4">
-    <h2 class="section-title">Anëtarët Pjesëmarrës</h2>
-
-    <div class="empty-state"
-         th:if="${event.memberNames == null or #lists.isEmpty(event.memberNames)}">
-      <i class="bi bi-people display-6"></i>
-      <p class="mb-0 mt-2">Nuk ka anëtarë të caktuar në këtë event.</p>
-    </div>
-
-    <div class="d-flex flex-wrap gap-2"
-         th:if="${event.memberNames != null and !#lists.isEmpty(event.memberNames)}">
+        <div class="d-flex flex-wrap gap-2"
+             th:if="${event.memberNames != null and !#lists.isEmpty(event.memberNames)}">
       <span class="badge text-bg-light border p-2"
             th:each="memberName : ${event.memberNames}"
             th:text="${memberName}">
       </span>
+        </div>
     </div>
-  </div>
 
 </div>
 

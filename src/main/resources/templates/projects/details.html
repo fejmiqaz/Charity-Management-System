@@ -4,92 +4,100 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Detajet e Projektit</title>
+    <title>Detajet e Projektit</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4" style="max-width: 900px;">
 
-  <h1 class="mb-3">Detajet e Projektit</h1>
+    <h1 class="mb-3">Detajet e Projektit</h1>
 
-  <div class="mb-4">
-    <a class="btn btn-dark"
-       th:href="@{/years/{yearId}/projects(yearId=${year.id})}">
-      <i class="bi bi-arrow-left me-1"></i> Kthehu te Projektet
-    </a>
-  </div>
+    <div class="mb-4">
+        <a class="btn btn-dark"
+           th:href="@{/years/{yearId}/projects(yearId=${year.id})}">
+            <i class="bi bi-arrow-left me-1"></i> Kthehu te Projektet
+        </a>
+        <a class="btn btn-sm btn-danger"
+           th:href="@{/pdf/years/{yearId}/projects/{projectId}(
+        yearId=${year.id},
+        projectId=${project.id}
+   )}">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            PDF
+        </a>
+    </div>
 
-  <div class="card text-center p-4 mb-4">
-    <i class="bi bi-kanban display-4 mb-2"></i>
-    <span class="display-serif"
-          style="font-size: 36px;"
-          th:text="${project.name}">
+    <div class="card text-center p-4 mb-4">
+        <i class="bi bi-kanban display-4 mb-2"></i>
+        <span class="display-serif"
+              style="font-size: 36px;"
+              th:text="${project.name}">
       Emri i Projektit
     </span>
-  </div>
-
-  <div class="card p-4 mb-4">
-    <h2 class="section-title">Të Dhënat e Projektit</h2>
-
-    <div class="kv-row">
-      <span class="kv-label">ID</span>
-      <span class="kv-value" th:text="${project.id}"></span>
     </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Emri</span>
-      <span class="kv-value" th:text="${project.name}"></span>
-    </div>
+    <div class="card p-4 mb-4">
+        <h2 class="section-title">Të Dhënat e Projektit</h2>
 
-    <div class="kv-row">
-      <span class="kv-label">Përshkrimi</span>
-      <span class="kv-value text-end" th:text="${project.description}"></span>
-    </div>
+        <div class="kv-row">
+            <span class="kv-label">ID</span>
+            <span class="kv-value" th:text="${project.id}"></span>
+        </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Statusi</span>
-      <span class="badge rounded-pill"
-            th:text="${project.status}"
-            th:classappend="${project.status != null and project.status.name() == 'FINISHED'} ? ' badge-finished' :
+        <div class="kv-row">
+            <span class="kv-label">Emri</span>
+            <span class="kv-value" th:text="${project.name}"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Përshkrimi</span>
+            <span class="kv-value text-end" th:text="${project.description}"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Statusi</span>
+            <span class="badge rounded-pill"
+                  th:text="${project.status}"
+                  th:classappend="${project.status != null and project.status.name() == 'FINISHED'} ? ' badge-finished' :
                             (${project.status != null and project.status.name() == 'CANCELLED'} ? ' badge-cancelled' :
                             (${project.status != null and project.status.name() == 'ONGOING'} ? ' badge-ongoing' : ' badge-pending'))">
       </span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Data e Krijimit</span>
+            <span class="kv-value" th:text="${project.dateCreated}"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Çmimi</span>
+            <span class="kv-value" th:text="${project.projectPrice} + ' €'"></span>
+        </div>
+
+        <div class="kv-row">
+            <span class="kv-label">Viti</span>
+            <span class="kv-value"
+                  th:text="${project.yearValue != null ? project.yearValue : 'Pa vit'}"></span>
+        </div>
     </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Data e Krijimit</span>
-      <span class="kv-value" th:text="${project.dateCreated}"></span>
-    </div>
+    <div class="card p-4">
+        <h2 class="section-title">Anëtarët e Projektit</h2>
 
-    <div class="kv-row">
-      <span class="kv-label">Çmimi</span>
-      <span class="kv-value" th:text="${project.projectPrice} + ' €'"></span>
-    </div>
+        <div class="empty-state"
+             th:if="${project.memberNames == null or #lists.isEmpty(project.memberNames)}">
+            <i class="bi bi-people display-6"></i>
+            <p class="mb-0 mt-2">Nuk ka anëtarë të caktuar në këtë projekt.</p>
+        </div>
 
-    <div class="kv-row">
-      <span class="kv-label">Viti</span>
-      <span class="kv-value"
-            th:text="${project.yearValue != null ? project.yearValue : 'Pa vit'}"></span>
-    </div>
-  </div>
-
-  <div class="card p-4">
-    <h2 class="section-title">Anëtarët e Projektit</h2>
-
-    <div class="empty-state"
-         th:if="${project.memberNames == null or #lists.isEmpty(project.memberNames)}">
-      <i class="bi bi-people display-6"></i>
-      <p class="mb-0 mt-2">Nuk ka anëtarë të caktuar në këtë projekt.</p>
-    </div>
-
-    <div class="d-flex flex-wrap gap-2"
-         th:if="${project.memberNames != null and !#lists.isEmpty(project.memberNames)}">
+        <div class="d-flex flex-wrap gap-2"
+             th:if="${project.memberNames != null and !#lists.isEmpty(project.memberNames)}">
       <span class="badge text-bg-light border p-2"
             th:each="memberName : ${project.memberNames}"
             th:text="${memberName}">
       </span>
+        </div>
     </div>
-  </div>
 
 </div>
 

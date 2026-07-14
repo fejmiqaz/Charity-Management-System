@@ -8,6 +8,11 @@ import emd.charitymanagementsystem.Models.Years;
 import emd.charitymanagementsystem.Repository.YearsRepository;
 import emd.charitymanagementsystem.Service.YearsService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,21 +25,61 @@ public class YearsServiceImpl implements YearsService {
 
     @Override
     public List<YearsResponseDto> listAll() {
-        return yearsRepository.findAll()
+        return yearsRepository.findAll(Sort.by(Sort.Direction.DESC, "yearValue"))
                 .stream()
-                .map(this::toResponseDto)
+                .map(YearsMapper::toResponseDto)
                 .toList();
     }
 
     @Override
+    public Page<YearsResponseDto> listAll(
+            Integer yearValue,
+            int page,
+            int size,
+            String sortDir) {
+
+        int safePage = Math.max(page, 0);
+        int safeSize = switch (size) {
+            case 5, 10, 20, 50 -> size;
+            default -> 10;
+        };
+
+        Sort.Direction direction =
+                "asc".equalsIgnoreCase(sortDir)
+                        ? Sort.Direction.ASC
+                        : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(
+                safePage,
+                safeSize,
+                Sort.by(direction, "yearValue")
+        );
+
+        Specification<Years> specification = Specification.allOf();
+
+        if (yearValue != null) {
+            specification = specification.and(
+                    (root, query, criteriaBuilder) ->
+                            criteriaBuilder.equal(root.get("yearValue"), yearValue)
+            );
+        }
+
+        return yearsRepository.findAll(specification, pageable)
+                .map(YearsMapper::toResponseDto);
+    }
+
+    @Override
     public YearsDetailsDto findById(Long id) {
-        Years year = yearsRepository.findById(id).orElseThrow();
+        Years year = yearsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Year not found with id: " + id));
+
         return YearsMapper.toDetailsDto(year);
     }
 
     @Override
     public Years findEntityById(Long id) {
-        return yearsRepository.findById(id).orElseThrow();
+        return yearsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Year not found with id: " + id));
     }
 
     @Override
@@ -42,7 +87,7 @@ public class YearsServiceImpl implements YearsService {
         Years year = yearsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Year not found with id: " + id));
 
-        return toFormDto(year);
+        return YearsMapper.toFormDto(year);
     }
 
     @Override
@@ -54,8 +99,7 @@ public class YearsServiceImpl implements YearsService {
         Years year = new Years();
         year.setYearValue(yearsFormDto.getYearValue());
 
-        Years savedYear = yearsRepository.save(year);
-        return toResponseDto(savedYear);
+        return YearsMapper.toResponseDto(yearsRepository.save(year));
     }
 
     @Override
@@ -69,8 +113,7 @@ public class YearsServiceImpl implements YearsService {
 
         yearToUpdate.setYearValue(yearsFormDto.getYearValue());
 
-        Years updatedYear = yearsRepository.save(yearToUpdate);
-        return toResponseDto(updatedYear);
+        return YearsMapper.toResponseDto(yearsRepository.save(yearToUpdate));
     }
 
     @Override
@@ -84,23 +127,5 @@ public class YearsServiceImpl implements YearsService {
     @Override
     public long yearsCount() {
         return yearsRepository.count();
-    }
-
-    private YearsResponseDto toResponseDto(Years year) {
-        return new YearsResponseDto(
-                year.getId(),
-                year.getYearValue()
-        );
-    }
-
-    private YearsFormDto toFormDto(Years year) {
-        return new YearsFormDto(
-                year.getId(),
-                year.getYearValue()
-        );
-    }
-
-    private YearsDetailsDto toDetailsDto(Years year) {
-        return YearsMapper.toDetailsDto(year);
     }
 }
