@@ -1,102 +1,131 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Projects</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script th:src="@{/js/main.js}" defer></script>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title>Projektet</title>
 </head>
 <body>
-<div class="container">
 
-    <h1>Projects for Year <span th:text="${year.yearValue}"></span></h1>
+<div layout:fragment="content" class="container py-4">
 
-    <div class="top-bar page-actions">
-        <a class="action-btn secondary" th:href="@{/years}">
-            Back
-        </a>
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">
+        Projektet për Vitin <span th:text="${year.yearValue}"></span>
+      </h1>
+      <p class="text-secondary mb-0">Menaxho projektet dhe shpenzimet e këtij viti</p>
+    </div>
+  </div>
 
-        <a class="action-btn secondary" th:href="@{/years/{yearId}(yearId=${year.id})}">
-            Year Details
-        </a>
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="btn btn-dark" th:href="@{/years}">
+      <i class="bi bi-arrow-left me-1"></i> Kthehu te Vitet
+    </a>
 
-        <a class="action-btn primary" th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
-            Add Project
-        </a>
+    <a class="btn btn-outline-dark"
+       th:href="@{/years/{yearId}(yearId=${year.id})}">
+      <i class="bi bi-info-circle me-1"></i> Detajet e Vitit
+    </a>
+
+    <a class="btn btn-success"
+       th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
+      <i class="bi bi-plus-lg me-1"></i> Shto Projekt
+    </a>
+  </div>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(projects)}">
+    <i class="bi bi-kanban display-6"></i>
+    <p class="mt-3 mb-2">Nuk u gjetën projekte për këtë vit.</p>
+    <a class="btn btn-success btn-sm"
+       th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
+      Krijo projektin e parë
+    </a>
+  </div>
+
+  <div class="card p-0 mb-4" th:if="${!#lists.isEmpty(projects)}">
+    <div class="table-responsive">
+      <table class="table table-branded table-hover align-middle mb-0">
+        <thead>
+        <tr>
+          <th>Emri</th>
+          <th>Statusi</th>
+          <th>Data e Krijimit</th>
+          <th>Çmimi</th>
+          <th>Numri i Anëtarëve</th>
+          <th>Veprimet</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="project : ${projects}">
+          <td class="fw-bold" th:text="${project.name}"></td>
+
+          <td>
+            <span class="badge rounded-pill"
+                  th:text="${project.status}"
+                  th:classappend="${project.status != null and project.status.name() == 'FINISHED'} ? ' badge-finished' :
+                                  (${project.status != null and project.status.name() == 'CANCELLED'} ? ' badge-cancelled' :
+                                  (${project.status != null and project.status.name() == 'ONGOING'} ? ' badge-ongoing' : ' badge-pending'))">
+            </span>
+          </td>
+
+          <td th:text="${project.dateCreated}"></td>
+          <td class="fw-bold" th:text="${project.projectPrice} + ' €'"></td>
+          <td th:text="${project.memberIds != null ? #lists.size(project.memberIds) : 0}"></td>
+
+          <td>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-sm btn-outline-dark"
+                 th:href="@{/years/{yearId}/projects/{id}(yearId=${year.id}, id=${project.id})}">
+                <i class="bi bi-info-circle me-1"></i> Detajet
+              </a>
+
+              <a class="btn btn-sm btn-warning"
+                 th:href="@{/years/{yearId}/projects/{id}/edit(yearId=${year.id}, id=${project.id})}">
+                <i class="bi bi-pencil me-1"></i> Ndrysho
+              </a>
+
+              <form th:action="@{/years/{yearId}/projects/{id}/delete(yearId=${year.id}, id=${project.id})}"
+                    method="post">
+                <button type="button"
+                        class="btn btn-sm btn-danger co-delete-trigger"
+                        th:attr="data-item-label=${project.name}">
+                  <i class="bi bi-trash me-1"></i> Fshij
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-accent-top budget p-4"
+       style="max-width: 560px; margin: 30px auto 0 auto;">
+    <h2 class="section-title" style="border-bottom-color: var(--ink-900);">
+      Përmbledhja Financiare
+    </h2>
+
+    <div class="summary-row">
+      <span>Çmimi Total i Projekteve</span>
+      <strong th:text="${totalProjectPrice} + ' €'"></strong>
     </div>
 
-    <div class="empty-message" th:if="${#lists.isEmpty(projects)}">
-        <p>No projects found for this year.</p>
-        <a class="action-btn primary" th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
-            Add first project
-        </a>
+    <div class="summary-row">
+      <span>Buxheti i Vitit</span>
+      <strong th:text="${yearBudget} + ' €'"></strong>
     </div>
 
-    <div class="table-wrapper" th:if="${!#lists.isEmpty(projects)}">
-        <table class="styled-table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Date Created</th>
-                <th>Price</th>
-                <th>Members Count</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="project : ${projects}">
-                <td th:text="${project.name}"></td>
-                <td>
-                    <span class="status-badge" th:text="${project.status}"></span>
-                </td>
-                <td th:text="${project.dateCreated}"></td>
-                <td th:text="${project.projectPrice} + ' €'"></td>
-                <td th:text="${project.memberIds != null ? #lists.size(project.memberIds) : 0}"></td>
-                <td>
-                    <div class="table-actions">
-                        <a class="table-btn details-btn"
-                           th:href="@{/years/{yearId}/projects/{id}(yearId=${year.id}, id=${project.id})}">
-                            Details
-                        </a>
-
-                        <a class="table-btn edit-btn"
-                           th:href="@{/years/{yearId}/projects/{id}/edit(yearId=${year.id}, id=${project.id})}">
-                            Edit
-                        </a>
-
-                        <form th:action="@{/years/{yearId}/projects/{id}/delete(yearId=${year.id}, id=${project.id})}"
-                              method="post"
-                              class="inline-form"
-                              onsubmit="return confirm('Delete this project?');">
-                            <button type="submit" class="table-btn delete-btn">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="summary-row total">
+      <span>Statusi</span>
+      <strong th:if="${withinBudget}" class="status-ok">Brenda Buxhetit</strong>
+      <strong th:unless="${withinBudget}" class="status-bad">Mbi Buxhet</strong>
     </div>
-
-    <div class="summary-card">
-        <p>
-            <strong>Total projects price:</strong>
-            <span th:text="${totalProjectPrice} + ' €'"></span>
-        </p>
-
-        <p>
-            <strong>Year budget:</strong>
-            <span th:text="${yearBudget} + ' €'"></span>
-        </p>
-
-        <p>
-            <strong>Status:</strong>
-            <span th:if="${withinBudget}" class="budget-ok">Within budget</span>
-            <span th:unless="${withinBudget}" class="budget-bad">Exceeded budget</span>
-        </p>
-    </div>
+  </div>
 
 </div>
+
 </body>
 </html>

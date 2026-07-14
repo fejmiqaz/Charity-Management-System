@@ -1,61 +1,86 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Donation Details</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script th:src="@{/js/main.js}" defer></script>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title>Detajet e Donacionit</title>
 </head>
 <body>
-<div class="container">
 
-    <h1>Donation Details</h1>
+<div layout:fragment="content" class="container py-4" style="max-width: 1000px;">
 
-    <div class="details-card">
+  <h1 class="mb-3">Detajet e Donacionit</h1>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Country</th>
-                <th>City</th>
-                <th>Amount</th>
-            </tr>
-            </thead>
+  <div class="mb-4">
+    <a class="btn btn-dark"
+       th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
+      <i class="bi bi-arrow-left me-1"></i> Kthehu te Donacionet
+    </a>
+  </div>
 
-            <tbody>
+  <div class="card text-center p-4 mb-4">
+    <i class="bi bi-heart-fill display-4 mb-2"></i>
+    <span class="display-serif"
+          style="font-size: 36px;"
+          th:text="${donation.donationAmount} + ' €'">
+      0 €
+    </span>
+  </div>
 
-            <!-- If donation has no members -->
-            <tr th:if="${members == null or #lists.isEmpty(members)}">
-                <td th:text="${donation.id}"></td>
-                <td colspan="2">No Members</td>
-                <td th:text="${donation.donationAmount} + ' €'"></td>
-            </tr>
+  <div class="card p-4 mb-4">
+    <h2 class="section-title">Të Dhënat e Donacionit</h2>
 
-            <!-- If donation has members -->
-            <tr th:each="member : ${members}">
-                <td th:text="${donation.id}"></td>
-                <td th:text="${member.name}"></td>
-                <td th:text="${member.surname}"></td>
-                <td th:text="${member.email}"></td>
-                <td th:text="${member.phone}"></td>
-                <td th:text="${member.country}"></td>
-                <td th:text="${member.city}"></td>
-                <td th:text="${donation.donationAmount} + ' €'"></td>
-            </tr>
-
-            </tbody>
-        </table>
-
+    <div class="kv-row">
+      <span class="kv-label">ID</span>
+      <span class="kv-value" th:text="${donation.id}"></span>
     </div>
 
-    <div class="back-link">
-        <a th:href="@{/years/{yearId}/donations(yearId=${year.id})}">Back</a>
+    <div class="kv-row">
+      <span class="kv-label">Shuma</span>
+      <span class="kv-value" th:text="${donation.donationAmount} + ' €'"></span>
     </div>
+  </div>
+
+  <div class="card p-4">
+    <h2 class="section-title">Anëtarët Donatorë</h2>
+
+    <div class="empty-state"
+         th:if="${members == null or #lists.isEmpty(members)}">
+      <i class="bi bi-people display-6"></i>
+      <p class="mb-0 mt-2">Nuk ka anëtarë të lidhur me këtë donacion.</p>
+    </div>
+
+    <div class="table-responsive"
+         th:if="${members != null and !#lists.isEmpty(members)}">
+      <table class="table table-branded table-hover align-middle mb-0">
+        <thead>
+        <tr>
+          <th>Emri</th>
+          <th>Mbiemri</th>
+          <th>Email</th>
+          <th>Numri i Telefonit</th>
+          <th>Shteti</th>
+          <th>Qyteti</th>
+          <th>Shuma</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="member : ${members}">
+          <td class="fw-bold" th:text="${member.name}"></td>
+          <td th:text="${member.surname}"></td>
+          <td th:text="${member.email}"></td>
+          <td th:text="${member.phone}"></td>
+          <td th:text="${member.country}"></td>
+          <td th:text="${member.city}"></td>
+          <td class="fw-bold" th:text="${donation.donationAmount} + ' €'"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
 </div>
+
 </body>
 </html>

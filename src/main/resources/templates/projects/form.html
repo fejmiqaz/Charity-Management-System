@@ -1,63 +1,121 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Project Form</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script th:src="@{/js/main.js}" defer></script>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title th:text="${project.id == null} ? 'Shto Projekt' : 'Ndrysho Projektin'">Projekt</title>
 </head>
 <body>
-<div class="container">
 
-    <h1 th:text="${project.id == null} ? 'Add Project' : 'Edit Project'"></h1>
+<div layout:fragment="content" class="container py-4">
 
-    <form class="form-card"
-          th:action="@{${project.id == null ? '/years/' + year.id + '/projects/add' : '/years/' + year.id + '/projects/' + project.id + '/edit'}}"
+  <h1 class="mb-4"
+      th:text="${project.id == null} ? 'Shto Projekt' : 'Ndrysho Projektin'"></h1>
+
+  <div class="card p-4" style="max-width: 760px;">
+    <form th:action="@{${project.id == null ? '/years/' + year.id + '/projects/add' : '/years/' + year.id + '/projects/' + project.id + '/edit'}}"
           th:object="${project}"
-          method="post">
+          method="post"
+          novalidate>
 
-        <input type="hidden" th:field="*{id}">
-        <input type="hidden" th:field="*{yearId}">
+      <input type="hidden" th:field="*{id}">
+      <input type="hidden" th:field="*{yearId}">
 
-        <label for="name">Name</label>
-        <input id="name" type="text" th:field="*{name}">
-        <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+      <div class="mb-3">
+        <label for="name" class="form-label">Emri</label>
+        <input id="name"
+               type="text"
+               class="form-control"
+               th:field="*{name}"
+               th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'">
+        <div class="invalid-feedback d-block"
+             th:if="${#fields.hasErrors('name')}"
+             th:errors="*{name}"></div>
+      </div>
 
-        <label for="description">Description</label>
-        <input id="description" type="text" th:field="*{description}">
-        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Përshkrimi</label>
+        <textarea id="description"
+                  class="form-control"
+                  rows="4"
+                  th:field="*{description}"
+                  th:classappend="${#fields.hasErrors('description')} ? ' is-invalid'"></textarea>
+        <div class="invalid-feedback d-block"
+             th:if="${#fields.hasErrors('description')}"
+             th:errors="*{description}"></div>
+      </div>
 
-        <label for="status">Status</label>
-        <select id="status" th:field="*{status}">
-            <option value="" disabled>Select status</option>
-            <option th:each="status : ${statuses}"
-                    th:value="${status}"
-                    th:text="${status}">
-            </option>
+      <div class="mb-3">
+        <label for="status" class="form-label">Statusi</label>
+        <select id="status"
+                class="form-select"
+                th:field="*{status}"
+                th:classappend="${#fields.hasErrors('status')} ? ' is-invalid'">
+          <option value="" disabled>Zgjidh statusin</option>
+          <option th:each="status : ${statuses}"
+                  th:value="${status}"
+                  th:text="${status}">
+          </option>
         </select>
-        <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+        <div class="invalid-feedback d-block"
+             th:if="${#fields.hasErrors('status')}"
+             th:errors="*{status}"></div>
+      </div>
 
-        <label for="members">Members</label>
-        <select id="members" th:field="*{memberIds}" multiple size="6">
-            <option th:each="member : ${members}"
-                    th:value="${member.id}"
-                    th:text="${member.name + ' ' + member.surname}">
-            </option>
+      <div class="mb-3">
+        <label for="members" class="form-label">Anëtarët</label>
+        <select id="members"
+                class="form-select"
+                th:field="*{memberIds}"
+                multiple
+                size="6"
+                th:classappend="${#fields.hasErrors('memberIds')} ? ' is-invalid'">
+          <option th:each="member : ${members}"
+                  th:value="${member.id}"
+                  th:text="${member.name + ' ' + member.surname}">
+          </option>
         </select>
-        <div class="error" th:if="${#fields.hasErrors('memberIds')}" th:errors="*{memberIds}"></div>
+        <div class="form-text">Mbaj shtypur Ctrl për të zgjedhur më shumë se një anëtar.</div>
+        <div class="invalid-feedback d-block"
+             th:if="${#fields.hasErrors('memberIds')}"
+             th:errors="*{memberIds}"></div>
+      </div>
 
-        <label for="projectPrice">Price</label>
-        <input id="projectPrice" type="number" step="0.01" th:field="*{projectPrice}">
-        <div class="error" th:if="${#fields.hasErrors('projectPrice')}" th:errors="*{projectPrice}"></div>
+      <div class="mb-3">
+        <label for="projectPrice" class="form-label">Çmimi</label>
+        <div class="input-group">
+          <input id="projectPrice"
+                 type="number"
+                 step="0.01"
+                 class="form-control"
+                 th:field="*{projectPrice}"
+                 th:classappend="${#fields.hasErrors('projectPrice')} ? ' is-invalid'">
+          <span class="input-group-text">€</span>
+        </div>
+        <div class="invalid-feedback d-block"
+             th:if="${#fields.hasErrors('projectPrice')}"
+             th:errors="*{projectPrice}"></div>
+      </div>
 
-        <div class="error" th:if="${#fields.hasErrors('yearId')}" th:errors="*{yearId}"></div>
+      <div class="invalid-feedback d-block mb-3"
+           th:if="${#fields.hasErrors('yearId')}"
+           th:errors="*{yearId}"></div>
 
-        <button type="submit">Save</button>
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-lg me-1"></i> Ruaj
+      </button>
     </form>
+  </div>
 
-    <div class="back-link">
-        <a th:href="@{/years/{yearId}/projects(yearId=${year.id})}">Back</a>
-    </div>
+  <div class="mt-3">
+    <a class="btn btn-dark"
+       th:href="@{/years/{yearId}/projects(yearId=${year.id})}">
+      <i class="bi bi-arrow-left me-1"></i> Kthehu
+    </a>
+  </div>
 
 </div>
+
 </body>
 </html>

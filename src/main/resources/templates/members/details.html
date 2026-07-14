@@ -1,29 +1,82 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Member Details</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script th:src="@{/js/main.js}" defer></script>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title>Detajet e Anëtarit</title>
 </head>
 <body>
-<div class="container">
 
-    <h1>Member Details</h1>
+<div layout:fragment="content" class="container py-4" style="max-width: 800px;">
 
-    <div class="details-card">
-        <p><strong>ID:</strong> <span th:text="${member.id}"></span></p>
-        <p><strong>Name:</strong> <span th:text="${member.name}"></span></p>
-        <p><strong>Surname:</strong> <span th:text="${member.surname}"></span></p>
-        <p><strong>Country:</strong><span th:text="${member.country}"></span></p>
-        <p><strong>City:</strong><span th:text="${member.city}"></span></p>
-        <p><strong>Email:</strong> <span th:text="${member.email}"></span></p>
-        <p><strong>Phone number:</strong> <span th:text="${member.phone}"></span></p>
+  <h1 class="mb-3">Detajet e Anëtarit</h1>
+
+  <div class="mb-4">
+    <a class="btn btn-dark" th:href="@{/members}">
+      <i class="bi bi-arrow-left me-1"></i> Kthehu te Anëtarët
+    </a>
+  </div>
+
+  <div class="card text-center p-4 mb-4">
+    <i class="bi bi-person-circle display-4 mb-2"></i>
+    <span class="display-serif"
+          style="font-size: 36px;"
+          th:text="${member.name + ' ' + member.surname}">
+      Emri Mbiemri
+    </span>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <h2 class="section-title">Të Dhënat Personale</h2>
+
+    <div class="kv-row">
+      <span class="kv-label">ID</span>
+      <span class="kv-value" th:text="${member.id}"></span>
     </div>
 
-    <div class="back-link">
-        <a th:href="@{/members}">Back</a>
+    <div class="kv-row">
+      <span class="kv-label">Emri</span>
+      <span class="kv-value" th:text="${member.name}"></span>
     </div>
+
+    <div class="kv-row">
+      <span class="kv-label">Mbiemri</span>
+      <span class="kv-value" th:text="${member.surname}"></span>
+    </div>
+
+    <div class="kv-row">
+      <span class="kv-label">Shteti</span>
+      <span class="kv-value" th:text="${member.country}"></span>
+    </div>
+
+    <div class="kv-row">
+      <span class="kv-label">Qyteti</span>
+      <span class="kv-value" th:text="${member.city}"></span>
+    </div>
+  </div>
+
+  <div class="card p-4">
+    <h2 class="section-title">Kontakti</h2>
+
+    <div class="kv-row">
+      <span class="kv-label">Email</span>
+      <a class="kv-value text-decoration-none"
+         th:href="'mailto:' + ${member.email}"
+         th:text="${member.email}">
+      </a>
+    </div>
+
+    <div class="kv-row">
+      <span class="kv-label">Numri i Telefonit</span>
+      <a class="kv-value text-decoration-none"
+         th:href="'tel:' + ${member.phone}"
+         th:text="${member.phone}">
+      </a>
+    </div>
+  </div>
 
 </div>
+
 </body>
 </html>

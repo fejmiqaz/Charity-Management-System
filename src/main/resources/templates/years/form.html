@@ -1,33 +1,48 @@
+<!--
+  Save as: src/main/resources/templates/years/form.html
+-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Year Form</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script th:src="@{/js/main.js}" defer></script>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title th:text="${year.id == null} ? 'Shto Vit' : 'Ndrysho Vitin'">Vit</title>
 </head>
 <body>
-<div class="container">
 
-    <h1 th:text="${year.id == null} ? 'Add Year' : 'Edit Year'"></h1>
+<div layout:fragment="content" class="container py-4">
 
-    <form class="form-card"
-          th:action="@{${year.id == null ? '/years/add' : '/years/edit/' + year.id}}"
+  <h1 class="mb-4" th:text="${year.id == null} ? 'Shto Vit' : 'Ndrysho Vitin'"></h1>
+
+  <div class="card p-4" style="max-width: 650px;">
+    <form th:action="@{${year.id == null ? '/years/add' : '/years/edit/' + year.id}}"
           th:object="${year}"
-          method="post">
+          method="post"
+          novalidate>
 
-        <input type="hidden" th:field="*{id}">
+      <input type="hidden" th:field="*{id}">
 
-        <label for="yearValue">Year</label>
-        <input id="yearValue" type="number" th:field="*{yearValue}">
-        <div class="error" th:if="${#fields.hasErrors('yearValue')}" th:errors="*{yearValue}"></div>
+      <div class="mb-3">
+        <label for="yearValue" class="form-label">Viti</label>
+        <input id="yearValue" type="number" class="form-control" th:field="*{yearValue}"
+               th:classappend="${#fields.hasErrors('yearValue')} ? ' is-invalid'">
+        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('yearValue')}" th:errors="*{yearValue}"></div>
+      </div>
 
-        <button type="submit">Save</button>
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-lg me-1"></i> Ruaj
+      </button>
     </form>
+  </div>
 
-    <div class="back-link">
-        <a th:href="@{/years}">Back</a>
-    </div>
+  <div class="mt-3">
+    <a class="btn btn-dark" th:href="@{/years}">
+      <i class="bi bi-arrow-left me-1"></i> Kthehu
+    </a>
+  </div>
 
 </div>
+
 </body>
 </html>

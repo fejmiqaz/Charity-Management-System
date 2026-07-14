@@ -1,0 +1,55 @@
+<!--
+  Save as: src/main/resources/templates/fragments/footer.html
+  Include on any page with:
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<footer class="co-footer mt-5" th:fragment="footer">
+  <div class="container py-5">
+    <div class="row gy-4">
+
+      <div class="col-md-4">
+        <h5 class="footer-brand">
+          <i class="bi bi-heart-fill me-2"></i>Organizata Bamirëse
+        </h5>
+        <p class="footer-text">
+          Që nga themelimi, ndihmojmë komunitetin përmes projekteve, donacioneve
+          dhe eventeve vjetore, me transparencë të plotë ndaj anëtarëve dhe donatorëve.
+        </p>
+      </div>
+
+      <div class="col-md-4">
+        <h6 class="footer-heading">Lidhje të Shpejta</h6>
+        <ul class="list-unstyled footer-links">
+          <li><a th:href="@{/}"><i class="bi bi-chevron-right"></i> Ballina</a></li>
+          <li><a th:href="@{/years}"><i class="bi bi-chevron-right"></i> Vitet</a></li>
+          <li><a th:href="@{/members}"><i class="bi bi-chevron-right"></i> Anëtarët</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-4">
+        <h6 class="footer-heading">Kontakti</h6>
+        <ul class="list-unstyled footer-links">
+          <li><i class="bi bi-envelope me-2"></i>info@organizatabamirese.org</li>
+          <li><i class="bi bi-telephone me-2"></i>+389 71 111 111</li>
+          <li><i class="bi bi-geo-alt me-2"></i>Shkup, Maqedonia e Veriut</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-bottom py-3">
+    <div class="container d-flex flex-wrap justify-content-between gap-2">
+      <span>&copy; <span th:text="${#calendars.format(#calendars.createNow(), 'yyyy')}">2026</span> Organizata Bamirëse. Të gjitha të drejtat e rezervuara.</span>
+      <span>Sistemi i Menaxhimit Bamirës</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

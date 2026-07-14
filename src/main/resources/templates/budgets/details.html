@@ -1,25 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Budget Details</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <script th:src="@{/js/main.js}" defer></script>
-</head>
-<body>
-<div class="container">
-
-    <h1>Budget Details</h1>
-
-    <div class="details-card">
-        <p><strong>ID:</strong> <span th:text="${budget.id}"></span></p>
-        <p><strong>Amount:</strong> <span th:text="${budget.budgetAmount}"></span></p>
-        <p><strong>Description:</strong> <span th:text="${budget.description}"></span></p>
-    </div>
-
-    <div class="back-link">
-        <a th:href="@{/years/{yearId}/budget(yearId=${year.id})}">Back</a>
-    </div>
-
-</div>
-</body>
-</html>
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorate="~{base}">
+<head><title>Detajet e Buxhetit</title></head>
+<body><div layout:fragment="content" class="container py-4" style="max-width:800px;">
+<h1 class="mb-3">Detajet e Buxhetit</h1>
+<div class="mb-4"><a class="btn btn-dark" th:href="@{/years/{yearId}/budget(yearId=${year.id})}"><i class="bi bi-arrow-left me-1"></i>Kthehu</a></div>
+<div class="card p-4">
+<h2 class="section-title">Informacioni i Buxhetit</h2>
+<div class="kv-row"><span class="kv-label">ID</span><span class="kv-value" th:text="${budget.id}"></span></div>
+<div class="kv-row"><span class="kv-label">Shuma</span><span class="kv-value" th:text="${budget.budgetAmount}+' €'"></span></div>
+<div class="kv-row"><span class="kv-label">Përshkrimi</span><span class="kv-value" th:text="${budget.description}"></span></div>
+</div></div></body></html>

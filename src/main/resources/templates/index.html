@@ -1,163 +1,88 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org"-->
-<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>Charity Organization Management System</title>-->
-<!--    <link rel="stylesheet" th:href="@{/css/style.css}">-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<div class="container">-->
-
-<!--    <div class="header">-->
-<!--        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">-->
-<!--            <div>-->
-<!--                <h1>Charity Organization</h1>-->
-<!--                <h3>Management Dashboard</h3>-->
-<!--            </div>-->
-
-<!--            <form th:action="@{/logout}" method="post">-->
-<!--                <button type="submit" class="btn danger">Logout</button>-->
-<!--            </form>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <div class="actions">-->
-<!--        <a href="/years" class="action-btn primary">Manage Years</a>-->
-<!--        <a href="/members" class="action-btn primary">Manage Members</a>-->
-<!--        <a href="/years/add-form" class="btn success">Add New Year</a>-->
-<!--    </div>-->
-
-<!--    <h2>System Overview</h2>-->
-
-<!--    <div class="stats-grid">-->
-
-<!--        <div class="card">-->
-<!--            <h3>Total Years</h3>-->
-<!--            <p th:text="${totalYears}"></p>-->
-<!--        </div>-->
-
-<!--        <div class="card">-->
-<!--            <h3>Total Members</h3>-->
-<!--            <p th:text="${totalMembers}"></p>-->
-<!--        </div>-->
-
-<!--        <div class="card">-->
-<!--            <h3>Total Projects</h3>-->
-<!--            <p th:text="${totalProjects}"></p>-->
-<!--        </div>-->
-
-<!--        <div class="card">-->
-<!--            <h3>Total Donations</h3>-->
-<!--            <p th:text="${totalDonationsCount}"></p>-->
-<!--        </div>-->
-
-<!--    </div>-->
-
-<!--    <h2>Financial Overview</h2>-->
-
-<!--    <div class="stats-grid">-->
-
-<!--        <div class="card money">-->
-<!--            <h3>Donations Amount</h3>-->
-<!--            <p th:text="${totalDonationsAmount} + ' €'"></p>-->
-<!--        </div>-->
-
-<!--        <div class="card money">-->
-<!--            <h3>Total Project Cost</h3>-->
-<!--            <p th:text="${totalProjectCost} + ' €'"></p>-->
-<!--        </div>-->
-
-<!--        <div class="card budget">-->
-<!--            <h3>Remaining Budget</h3>-->
-<!--            <p th:text="${remainingBudget} + ' €'"></p>-->
-<!--        </div>-->
-
-<!--    </div>-->
-
-<!--</div>-->
-
-<!--</body>-->
-<!--</html>-->
-
+<!--
+  Save as: src/main/resources/templates/index.html
+-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
 <head>
-    <meta charset="UTF-8">
-    <title>Charity Organization Management System</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+  <title>Paneli i Menaxhimit</title>
 </head>
 <body>
 
-<div class="container">
+<div layout:fragment="content" class="container py-4">
 
-    <div class="header">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-            <div>
-                <h1>Charity Organization</h1>
-                <h3>Management Dashboard</h3>
-            </div>
-
-            <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn danger">Logout</button>
-            </form>
-        </div>
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+    <div>
+      <h1 class="mb-1">Organizata Bamirëse</h1>
+      <p class="text-secondary mb-0">Paneli i Menaxhimit</p>
     </div>
+  </div>
 
-    <div class="actions">
-        <a href="/years" class="action-btn primary">Manage Years</a>
-        <a href="/members" class="action-btn primary">Manage Members</a>
-        <a href="/years/add-form" class="btn success">Add New Year</a>
+  <div class="d-flex flex-wrap gap-2 my-4">
+    <a class="btn btn-primary" th:href="@{/years}">
+      <i class="bi bi-calendar3 me-1"></i> Menaxho Vitet
+    </a>
+    <a class="btn btn-primary" th:href="@{/members}">
+      <i class="bi bi-people me-1"></i> Menaxho Anëtarët
+    </a>
+    <a class="btn btn-success" th:href="@{/years/add-form}">
+      <i class="bi bi-plus-lg me-1"></i> Shto Vit të Ri
+    </a>
+  </div>
+
+  <h2 class="section-title">Përmbledhje e Sistemit</h2>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Vite Gjithsej</span>
+        <div class="stat-value" th:text="${totalYears}">0</div>
+      </div>
     </div>
-
-    <h2>System Overview</h2>
-
-    <div class="stats-grid">
-
-        <div class="card">
-            <h3>Total Years</h3>
-            <p th:text="${totalYears}"></p>
-        </div>
-
-        <div class="card">
-            <h3>Total Members</h3>
-            <p th:text="${totalMembers}"></p>
-        </div>
-
-        <div class="card">
-            <h3>Total Projects</h3>
-            <p th:text="${totalProjects}"></p>
-        </div>
-
-        <div class="card">
-            <h3>Total Donations</h3>
-            <p th:text="${totalDonationsCount}"></p>
-        </div>
-
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Anëtarë Gjithsej</span>
+        <div class="stat-value" th:text="${totalMembers}">0</div>
+      </div>
     </div>
-
-    <h2>Financial Overview</h2>
-
-    <div class="stats-grid">
-
-        <div class="card money">
-            <h3>Donations Amount</h3>
-            <p th:text="${totalDonationsAmount} + ' €'"></p>
-        </div>
-
-        <div class="card money">
-            <h3>Total Project Cost</h3>
-            <p th:text="${totalProjectCost} + ' €'"></p>
-        </div>
-
-        <div class="card budget">
-            <h3>Remaining Budget</h3>
-            <p th:text="${remainingBudget} + ' €'"></p>
-        </div>
-
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Projekte Gjithsej</span>
+        <div class="stat-value" th:text="${totalProjects}">0</div>
+      </div>
     </div>
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Donacione Gjithsej</span>
+        <div class="stat-value" th:text="${totalDonationsCount}">0</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Përmbledhje Financiare</h2>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card card-accent-top emerald p-4 h-100">
+        <span class="stat-label">Shuma e Donacioneve</span>
+        <div class="stat-value" th:text="${totalDonationsAmount} + ' €'">0 €</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-accent-top emerald p-4 h-100">
+        <span class="stat-label">Kostoja Totale e Projekteve</span>
+        <div class="stat-value" th:text="${totalProjectCost} + ' €'">0 €</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-accent-top budget p-4 h-100">
+        <span class="stat-label">Buxheti i Mbetur</span>
+        <div class="stat-value" th:text="${remainingBudget} + ' €'">0 €</div>
+      </div>
+    </div>
+  </div>
 
 </div>
 

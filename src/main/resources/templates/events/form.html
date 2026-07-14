@@ -1,63 +1,96 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
-    <title>Add / Edit Event</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title th:text="${event.id != null} ? 'Ndrysho Eventin' : 'Shto Event'">Event</title>
 </head>
 <body>
-<div class="container">
 
-    <h1 th:text="${event.id != null ? 'Edit Event' : 'Add Event'}"></h1>
+<div layout:fragment="content" class="container py-4">
 
+  <h1 class="mb-4"
+      th:text="${event.id != null} ? 'Ndrysho Eventin' : 'Shto Event'"></h1>
+
+  <div class="card p-4" style="max-width: 720px;">
     <form th:action="@{/years/{yearId}/events/add(yearId=${year.id})}"
           th:object="${event}"
-          method="post">
+          method="post"
+          novalidate>
 
-        <input type="hidden" th:field="*{id}">
-        <input type="hidden" th:field="*{yearId}">
+      <input type="hidden" th:field="*{id}">
+      <input type="hidden" th:field="*{yearId}">
 
-        <label for="purpose">Purpose</label>
-        <input type="text" id="purpose" th:field="*{purpose}">
-        <div class="error"
+      <div class="mb-3">
+        <label for="purpose" class="form-label">Qëllimi</label>
+        <input type="text"
+               id="purpose"
+               class="form-control"
+               th:field="*{purpose}"
+               th:classappend="${#fields.hasErrors('purpose')} ? ' is-invalid'">
+
+        <div class="invalid-feedback d-block"
              th:if="${#fields.hasErrors('purpose')}"
              th:errors="*{purpose}">
         </div>
+      </div>
 
-        <br><br>
+      <div class="mb-3">
+        <label for="date" class="form-label">Data dhe Ora</label>
+        <input type="datetime-local"
+               id="date"
+               class="form-control"
+               th:field="*{date}"
+               th:classappend="${#fields.hasErrors('date')} ? ' is-invalid'">
 
-        <label for="date">Date</label>
-        <input type="datetime-local" id="date" th:field="*{date}">
-        <div class="error"
+        <div class="invalid-feedback d-block"
              th:if="${#fields.hasErrors('date')}"
              th:errors="*{date}">
         </div>
+      </div>
 
-        <br><br>
-
-        <label for="memberIds">Members</label>
-        <select id="memberIds" th:field="*{memberIds}" multiple size="6">
-            <option th:each="member : ${members}"
-                    th:value="${member.id}"
-                    th:text="${member.name + ' ' + member.surname}">
-            </option>
+      <div class="mb-3">
+        <label for="memberIds" class="form-label">Anëtarët</label>
+        <select id="memberIds"
+                class="form-select"
+                th:field="*{memberIds}"
+                multiple
+                size="6"
+                th:classappend="${#fields.hasErrors('memberIds')} ? ' is-invalid'">
+          <option th:each="member : ${members}"
+                  th:value="${member.id}"
+                  th:text="${member.name + ' ' + member.surname}">
+          </option>
         </select>
-        <div class="error"
+
+        <div class="form-text">Mbaj shtypur Ctrl për të zgjedhur më shumë se një anëtar.</div>
+
+        <div class="invalid-feedback d-block"
              th:if="${#fields.hasErrors('memberIds')}"
              th:errors="*{memberIds}">
         </div>
+      </div>
 
-        <div class="error"
-             th:if="${#fields.hasErrors('yearId')}"
-             th:errors="*{yearId}">
-        </div>
+      <div class="invalid-feedback d-block mb-3"
+           th:if="${#fields.hasErrors('yearId')}"
+           th:errors="*{yearId}">
+      </div>
 
-        <br><br>
-
-        <button type="submit">Save</button>
-        <a th:href="@{/years/{yearId}/events(yearId=${year.id})}">Back</a>
-
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-lg me-1"></i> Ruaj
+      </button>
     </form>
+  </div>
+
+  <div class="mt-3">
+    <a class="btn btn-dark"
+       th:href="@{/years/{yearId}/events(yearId=${year.id})}">
+      <i class="bi bi-arrow-left me-1"></i> Kthehu
+    </a>
+  </div>
 
 </div>
+
 </body>
 </html>

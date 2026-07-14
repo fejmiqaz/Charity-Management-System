@@ -1,0 +1,75 @@
+<!--
+  Save as: src/main/resources/templates/base.html
+
+  Every other page "extends" this by adding:
+    layout:decorate="~{base}"
+  on its <html> tag, and wrapping its page content in:
+    <div layout:fragment="content"> ... </div>
+
+  Requires the thymeleaf-layout-dialect dependency — see SETUP-layout-dialect.txt
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Child pages override just the <title> text; this pattern wraps it -->
+  <title layout:title-pattern="$CONTENT_TITLE - Organizata Bamirëse">Organizata Bamirëse</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- App theme (imports Fraunces / Inter / IBM Plex Mono itself) -->
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <!-- Optional: child pages can add page-specific <head> content here -->
+  <th:block layout:fragment="head"></th:block>
+</head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main>
+  <!-- Every page's own markup is injected here -->
+  <div layout:fragment="content">
+    <p>Nuk ka përmbajtje.</p>
+  </div>
+</main>
+
+<!-- Shared delete-confirmation modal, available on every page.
+     A list page just needs a button with class "co-delete-trigger"
+     (see main.js) inside its delete <form> — no need to repeat this markup. -->
+<div class="modal fade" id="coConfirmDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Konfirmo Fshirjen</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Mbyll"></button>
+      </div>
+      <div class="modal-body">
+        <p id="coConfirmDeleteText" class="mb-0">A jeni i sigurt që doni ta fshini këtë element?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulo</button>
+        <button type="button" class="btn btn-danger" id="coConfirmDeleteBtn">
+          <i class="bi bi-trash me-1"></i> Fshij
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}" defer></script>
+
+<!-- Optional: child pages can add page-specific scripts here -->
+<th:block layout:fragment="scripts"></th:block>
+
+</body>
+</html>
