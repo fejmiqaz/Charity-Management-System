@@ -30,13 +30,15 @@
     </a>
 
     <a class="btn btn-danger"
-       th:href="@{/pdf/years/{yearId}/donations(yearId=${year.id})}">
+       th:href="@{/pdf/years/{yearId}/donations(yearId=${year.id})}"
+       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
       <i class="bi bi-file-earmark-pdf me-1"></i>
       Export All Donations PDF
     </a>
 
     <a class="btn btn-success"
-       th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}">
+       th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}"
+       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')" >
       <i class="bi bi-plus-lg me-1"></i> Shto Donacion
     </a>
   </div>
@@ -87,12 +89,13 @@
               </a>
 
               <a class="btn btn-sm btn-warning"
-                 th:href="@{/years/{yearId}/donations/{donationId}/edit(yearId=${year.id}, donationId=${donation.id})}">
+                 th:href="@{/years/{yearId}/donations/{donationId}/edit(yearId=${year.id}, donationId=${donation.id})}"
+                 sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
                 <i class="bi bi-pencil me-1"></i> Ndrysho
               </a>
 
               <form th:action="@{/years/{yearId}/donations/{donationId}/delete(yearId=${year.id}, donationId=${donation.id})}"
-                    method="post">
+                    sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')" method="post">
                 <button type="button"
                         class="btn btn-sm btn-danger co-delete-trigger"
                         th:attr="data-item-label=${'Donacioni #' + donation.id}">

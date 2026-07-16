@@ -38,7 +38,7 @@ public class BudgetController {
         return "budgets/list";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'TREASURER')")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD', 'TREASURER')")
     @GetMapping("/add-form")
     public String getAddForm(@PathVariable Long yearId, Model model) {
         Years year = yearsService.findEntityById(yearId);
@@ -70,7 +70,7 @@ public class BudgetController {
         return "redirect:/years/" + yearId + "/budget";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/details/{budgetId}")
     public String getDetailsPage(@PathVariable Long yearId,
                                  @PathVariable Long budgetId,
@@ -83,7 +83,7 @@ public class BudgetController {
         return "budgets/details";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'TREASURER')")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD', 'TREASURER')")
     @GetMapping("/edit-form/{budgetId}")
     public String getEditForm(@PathVariable Long yearId,
                               @PathVariable Long budgetId,

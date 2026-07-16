@@ -13,9 +13,10 @@
 
     <div class="d-flex flex-wrap gap-2 mb-4">
         <a class="btn btn-dark" th:href="@{/years}"><i class="bi bi-arrow-left me-1"></i>Kthehu te Vitet</a>
-        <a class="btn btn-primary" th:href="@{/years/{yearId}(yearId=${year.id})}"><i
+        <a class="btn btn-outline-dark" th:href="@{/years/{yearId}(yearId=${year.id})}"><i
                 class="bi bi-info-circle me-1"></i>Detajet e Vitit</a>
         <a class="btn btn-success" th:if="${#lists.isEmpty(budgets)}"
+           sec:authorize="hasAnyRole('HEAD', 'TREASURER')"
            th:href="@{/years/{yearId}/budget/add-form(yearId=${year.id})}">
             <i class="bi bi-plus-lg me-1"></i>Shto Buxhet</a>
     </div>
@@ -49,10 +50,11 @@
                                th:href="@{/years/{yearId}/budget/details/{budgetId}(yearId=${year.id},budgetId=${budget.id})}"><i
                                     class="bi bi-info-circle me-1"></i>Detajet</a>
                             <a class="btn btn-sm btn-warning"
+                               sec:authorize="hasAnyRole('HEAD', 'TREASURER')"
                                th:href="@{/years/{yearId}/budget/edit-form/{budgetId}(yearId=${year.id},budgetId=${budget.id})}"><i
                                     class="bi bi-pencil me-1"></i>Ndrysho</a>
                             <form th:action="@{/years/{yearId}/budget/delete/{budgetId}(yearId=${year.id},budgetId=${budget.id})}"
-                                  method="post">
+                                  sec:authorize="hasAnyRole('HEAD', 'TREASURER')" method="post">
                                 <button type="button" class="btn btn-sm btn-danger co-delete-trigger"
                                         th:attr="data-item-label=${budget.description}">
                                     <i class="bi bi-trash me-1"></i>Fshij

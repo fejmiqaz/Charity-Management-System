@@ -30,7 +30,8 @@
     </a>
 
     <a class="btn btn-danger"
-       th:href="@{/pdf/years/{yearId}/events(yearId=${year.id})}">
+       th:href="@{/pdf/years/{yearId}/events(yearId=${year.id})}"
+       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER')">
       <i class="bi bi-file-earmark-pdf me-1"></i>
       Export All Events PDF
     </a>

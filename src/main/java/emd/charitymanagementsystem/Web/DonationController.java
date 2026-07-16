@@ -32,7 +32,7 @@ public class DonationController {
         return "donations/list";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER','MEMBER')")
     @GetMapping("/add")
     public String showAddForm(@PathVariable Long yearId, Model model) {
         Years year = yearsService.findEntityById(yearId);

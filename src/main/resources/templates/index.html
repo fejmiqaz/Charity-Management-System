@@ -27,7 +27,8 @@
     <a class="btn btn-primary" th:href="@{/members}">
       <i class="bi bi-people me-1"></i> Menaxho Anëtarët
     </a>
-    <a class="btn btn-success" th:href="@{/years/add-form}">
+    <a class="btn btn-success" th:href="@{/years/add-form}"
+    sec:authorize="hasAnyRole('HEAD')">
       <i class="bi bi-plus-lg me-1"></i> Shto Vit të Ri
     </a>
   </div>

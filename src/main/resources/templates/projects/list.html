@@ -30,12 +30,14 @@
     </a>
 
     <a class="btn btn-danger"
-       th:href="@{/pdf/years/{yearId}/projects(yearId=${year.id})}">
+       th:href="@{/pdf/years/{yearId}/projects(yearId=${year.id})}"
+       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'PROJECT_MANAGER')">
       <i class="bi bi-file-earmark-pdf me-1"></i>
       Export All Projects PDF
     </a>
 
     <a class="btn btn-success"
+       sec:authorize="hasAnyRole('HEAD','SUBHEAD','PROJECT_MANAGER')"
        th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
       <i class="bi bi-plus-lg me-1"></i> Shto Projekt
     </a>
@@ -88,12 +90,13 @@
               </a>
 
               <a class="btn btn-sm btn-warning"
+                 sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')"
                  th:href="@{/years/{yearId}/projects/{id}/edit(yearId=${year.id}, id=${project.id})}">
                 <i class="bi bi-pencil me-1"></i> Ndrysho
               </a>
 
               <form th:action="@{/years/{yearId}/projects/{id}/delete(yearId=${year.id}, id=${project.id})}"
-                    method="post">
+                    sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')" method="post">
                 <button type="button"
                         class="btn btn-sm btn-danger co-delete-trigger"
                         th:attr="data-item-label=${project.name}">
