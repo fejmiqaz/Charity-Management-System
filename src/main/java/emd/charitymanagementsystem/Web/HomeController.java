@@ -36,6 +36,6 @@ public class HomeController {
         model.addAttribute("totalProjectCost", totalProjectCost);
         model.addAttribute("remainingBudget", remainingBudget);
 
-        return "index";
+        return "dashboard";
     }
 }

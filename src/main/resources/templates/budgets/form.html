@@ -1,26 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-layout:decorate="~{base}">
-<head><title th:text="${budget.id==null}?'Shto Buxhet':'Ndrysho Buxhetin'">Buxhet</title></head>
-<body><div layout:fragment="content" class="container py-4">
-<h1 class="mb-4" th:text="${budget.id==null}?'Shto Buxhet':'Ndrysho Buxhetin'"></h1>
-<div class="card p-4" style="max-width:700px;">
-<form th:action="@{${budget.id == null ? '/years/' + year.id + '/budget/add' : '/years/' + year.id + '/budget/edit/' + budget.id}}" th:object="${budget}" method="post">
-<input type="hidden" th:field="*{id}"><input type="hidden" th:field="*{yearId}">
-<div class="mb-3">
-<label class="form-label" for="amount">Shuma</label>
-<input id="amount" type="number" step="0.01" class="form-control" th:field="*{budgetAmount}" th:classappend="${#fields.hasErrors('budgetAmount')}?' is-invalid'">
-<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('budgetAmount')}" th:errors="*{budgetAmount}"></div>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+    <title th:text="${budget.id == null} ? 'Add Budget' : 'Edit Budget'">Budget</title>
+</head>
+<body>
+
+<div layout:fragment="content" class="container py-4">
+
+    <h1 class="mb-4"
+        th:text="${budget.id == null} ? 'Add Budget' : 'Edit Budget'">
+    </h1>
+
+    <div class="card p-4" style="max-width:700px;">
+
+        <form th:action="@{${budget.id == null ? '/years/' + year.id + '/budget/add' : '/years/' + year.id + '/budget/edit/' + budget.id}}"
+              th:object="${budget}"
+              method="post">
+
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{yearId}">
+
+            <div class="mb-3">
+                <label class="form-label" for="amount">Amount</label>
+
+                <input id="amount"
+                       type="number"
+                       step="0.01"
+                       class="form-control"
+                       th:field="*{budgetAmount}"
+                       th:classappend="${#fields.hasErrors('budgetAmount')} ? ' is-invalid'">
+
+                <div class="invalid-feedback d-block"
+                     th:if="${#fields.hasErrors('budgetAmount')}"
+                     th:errors="*{budgetAmount}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="description">Description</label>
+
+                <input id="description"
+                       type="text"
+                       class="form-control"
+                       th:field="*{description}"
+                       th:classappend="${#fields.hasErrors('description')} ? ' is-invalid'">
+
+                <div class="invalid-feedback d-block"
+                     th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}">
+                </div>
+            </div>
+
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('yearId')}"
+                 th:errors="*{yearId}">
+            </div>
+
+            <button class="btn btn-success" type="submit">
+                <i class="bi bi-check-lg me-1"></i>Save
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="mt-3">
+        <a class="btn btn-dark"
+           th:href="@{/years/{yearId}/budget(yearId=${year.id})}">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
 </div>
-<div class="mb-3">
-<label class="form-label" for="description">Përshkrimi</label>
-<input id="description" type="text" class="form-control" th:field="*{description}" th:classappend="${#fields.hasErrors('description')}?' is-invalid'">
-<div class="invalid-feedback d-block" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-</div>
-<div class="invalid-feedback d-block" th:errors="*{yearId}" th:if="${#fields.hasErrors('yearId')}"></div>
-<button class="btn btn-success" type="submit"><i class="bi bi-check-lg me-1"></i>Ruaj</button>
-</form></div>
-<div class="mt-3"><a class="btn btn-dark" th:href="@{/years/{yearId}/budget(yearId=${year.id})}"><i class="bi bi-arrow-left me-1"></i>Kthehu</a></div>
-</div></body></html>
+
+</body>
+</html>

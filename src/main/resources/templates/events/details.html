@@ -4,18 +4,18 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-    <title>Detajet e Eventit</title>
+    <title>Event Details</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4" style="max-width: 900px;">
 
-    <h1 class="mb-3">Detajet e Eventit</h1>
+    <h1 class="mb-3">Event Details</h1>
 
     <div class="mb-4">
         <a class="btn btn-dark"
            th:href="@{/years/{yearId}/events(yearId=${year.id})}">
-            <i class="bi bi-arrow-left me-1"></i> Kthehu te Eventet
+            <i class="bi bi-arrow-left me-1"></i> Back to Events
         </a>
         <a class="btn btn-sm btn-danger"
            th:href="@{/pdf/years/{yearId}/events/{eventId}(
@@ -32,12 +32,12 @@
         <span class="display-serif"
               style="font-size: 36px;"
               th:text="${event.purpose}">
-      Qëllimi i Eventit
+      Event Purpose
     </span>
     </div>
 
     <div class="card p-4 mb-4">
-        <h2 class="section-title">Të Dhënat e Eventit</h2>
+        <h2 class="section-title">Event Information</h2>
 
         <div class="kv-row">
             <span class="kv-label">ID</span>
@@ -45,30 +45,30 @@
         </div>
 
         <div class="kv-row">
-            <span class="kv-label">Qëllimi</span>
+            <span class="kv-label">Purpose</span>
             <span class="kv-value text-end" th:text="${event.purpose}"></span>
         </div>
 
         <div class="kv-row">
-            <span class="kv-label">Data dhe Ora</span>
+            <span class="kv-label">Date and Time</span>
             <span class="kv-value"
                   th:text="${#temporals.format(event.date, 'yyyy-MM-dd HH:mm')}"></span>
         </div>
 
         <div class="kv-row">
-            <span class="kv-label">Viti</span>
+            <span class="kv-label">Year</span>
             <span class="kv-value"
-                  th:text="${event.yearValue != null ? event.yearValue : 'Pa vit'}"></span>
+                  th:text="${event.yearValue != null ? event.yearValue : 'No Year'}"></span>
         </div>
     </div>
 
     <div class="card p-4">
-        <h2 class="section-title">Anëtarët Pjesëmarrës</h2>
+        <h2 class="section-title">Participating Members</h2>
 
         <div class="empty-state"
              th:if="${event.memberNames == null or #lists.isEmpty(event.memberNames)}">
             <i class="bi bi-people display-6"></i>
-            <p class="mb-0 mt-2">Nuk ka anëtarë të caktuar në këtë event.</p>
+            <p class="mb-0 mt-2">No members have been assigned to this event.</p>
         </div>
 
         <div class="d-flex flex-wrap gap-2"

@@ -4,8 +4,8 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title th:text="${editMode} ? 'Ndrysho Anëtarin' : 'Shto Anëtar'">
-    Anëtar
+  <title th:text="${editMode} ? 'Edit Member' : 'Add Member'">
+    Member
   </title>
 </head>
 
@@ -14,7 +14,7 @@
 <div layout:fragment="content" class="container py-4">
 
   <h1 class="mb-4"
-      th:text="${editMode} ? 'Ndrysho Anëtarin' : 'Shto Anëtar'">
+      th:text="${editMode} ? 'Edit Member' : 'Add Member'">
   </h1>
 
   <div class="card p-4" style="max-width: 760px;">
@@ -37,7 +37,7 @@
       <div class="row g-3">
 
         <div class="col-md-6">
-          <label for="name" class="form-label">Emri</label>
+          <label for="name" class="form-label">First Name</label>
 
           <input id="name"
                  type="text"
@@ -52,7 +52,7 @@
         </div>
 
         <div class="col-md-6">
-          <label for="surname" class="form-label">Mbiemri</label>
+          <label for="surname" class="form-label">Last Name</label>
 
           <input id="surname"
                  type="text"
@@ -67,7 +67,7 @@
         </div>
 
         <div class="col-md-6">
-          <label for="country" class="form-label">Shteti</label>
+          <label for="country" class="form-label">Country</label>
 
           <input id="country"
                  type="text"
@@ -82,7 +82,7 @@
         </div>
 
         <div class="col-md-6">
-          <label for="city" class="form-label">Qyteti</label>
+          <label for="city" class="form-label">City</label>
 
           <input id="city"
                  type="text"
@@ -112,7 +112,7 @@
         </div>
 
         <div class="col-md-6">
-          <label for="phone" class="form-label">Numri i Telefonit</label>
+          <label for="phone" class="form-label">Phone Number</label>
 
           <input id="phone"
                  type="text"
@@ -130,8 +130,8 @@
           <label for="password"
                  class="form-label"
                  th:text="${editMode}
-                    ? 'Fjalëkalimi i ri'
-                    : 'Fjalëkalimi'">
+                    ? 'New Password'
+                    : 'Password'">
           </label>
 
           <input id="password"
@@ -140,14 +140,14 @@
                  th:field="*{password}"
                  autocomplete="new-password"
                  th:placeholder="${editMode}
-                    ? 'Lëreni bosh për ta mbajtur fjalëkalimin aktual'
-                    : 'Shkruani fjalëkalimin'"
+                    ? 'Leave blank to keep the current password'
+                    : 'Enter password'"
                  th:classappend="${#fields.hasErrors('password')} ? ' is-invalid'">
 
           <small class="text-muted"
                  th:if="${editMode}">
-            Lëreni këtë fushë bosh nëse nuk dëshironi ta ndryshoni
-            fjalëkalimin.
+            Leave this field blank if you do not want to change the
+            password.
           </small>
 
           <div class="invalid-feedback d-block"
@@ -159,14 +159,14 @@
         <!-- Role can only be selected while adding a member -->
         <div class="col-md-6"
              th:unless="${editMode}">
-          <label for="role" class="form-label">Roli</label>
+          <label for="role" class="form-label">Role</label>
 
           <select id="role"
                   class="form-select"
                   th:field="*{role}"
                   th:classappend="${#fields.hasErrors('role')} ? ' is-invalid'">
 
-            <option value="" disabled>Zgjidh rolin</option>
+            <option value="" disabled>Select a role</option>
 
             <option th:each="r : ${roles}"
                     th:value="${r}"
@@ -198,8 +198,8 @@
         <i class="bi bi-check-lg me-1"></i>
 
         <span th:text="${editMode}
-                ? 'Ruaj ndryshimet'
-                : 'Shto anëtarin'">
+                ? 'Save Changes'
+                : 'Add Member'">
         </span>
       </button>
 
@@ -210,7 +210,7 @@
     <a class="btn btn-dark"
        th:href="@{/members}">
       <i class="bi bi-arrow-left me-1"></i>
-      Kthehu
+      Back
     </a>
   </div>
 

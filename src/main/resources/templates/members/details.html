@@ -4,17 +4,17 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Detajet e Anëtarit</title>
+  <title>Member Details</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4" style="max-width: 800px;">
 
-  <h1 class="mb-3">Detajet e Anëtarit</h1>
+  <h1 class="mb-3">Member Details</h1>
 
   <div class="mb-4">
     <a class="btn btn-dark" th:href="@{/members}">
-      <i class="bi bi-arrow-left me-1"></i> Kthehu te Anëtarët
+      <i class="bi bi-arrow-left me-1"></i> Back to Members
     </a>
   </div>
 
@@ -23,12 +23,12 @@
     <span class="display-serif"
           style="font-size: 36px;"
           th:text="${member.name + ' ' + member.surname}">
-      Emri Mbiemri
+      First Name Last Name
     </span>
   </div>
 
   <div class="card p-4 mb-4">
-    <h2 class="section-title">Të Dhënat Personale</h2>
+    <h2 class="section-title">Personal Information</h2>
 
     <div class="kv-row">
       <span class="kv-label">ID</span>
@@ -36,28 +36,28 @@
     </div>
 
     <div class="kv-row">
-      <span class="kv-label">Emri</span>
+      <span class="kv-label">First Name</span>
       <span class="kv-value" th:text="${member.name}"></span>
     </div>
 
     <div class="kv-row">
-      <span class="kv-label">Mbiemri</span>
+      <span class="kv-label">Last Name</span>
       <span class="kv-value" th:text="${member.surname}"></span>
     </div>
 
     <div class="kv-row">
-      <span class="kv-label">Shteti</span>
+      <span class="kv-label">Country</span>
       <span class="kv-value" th:text="${member.country}"></span>
     </div>
 
     <div class="kv-row">
-      <span class="kv-label">Qyteti</span>
+      <span class="kv-label">City</span>
       <span class="kv-value" th:text="${member.city}"></span>
     </div>
   </div>
 
   <div class="card p-4">
-    <h2 class="section-title">Kontakti</h2>
+    <h2 class="section-title">Contact Information</h2>
 
     <div class="kv-row">
       <span class="kv-label">Email</span>
@@ -68,7 +68,7 @@
     </div>
 
     <div class="kv-row">
-      <span class="kv-label">Numri i Telefonit</span>
+      <span class="kv-label">Phone Number</span>
       <a class="kv-value text-decoration-none"
          th:href="'tel:' + ${member.phone}"
          th:text="${member.phone}">

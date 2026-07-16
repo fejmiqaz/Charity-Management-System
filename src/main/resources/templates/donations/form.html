@@ -4,14 +4,17 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title th:text="${donation.id == null} ? 'Shto Donacion' : 'Ndrysho Donacionin'">Donacion</title>
+  <title th:text="${donation.id == null} ? 'Add Donation' : 'Edit Donation'">
+    Donation
+  </title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4">
 
   <h1 class="mb-4"
-      th:text="${donation.id == null} ? 'Shto Donacion' : 'Ndrysho Donacionin'"></h1>
+      th:text="${donation.id == null} ? 'Add Donation' : 'Edit Donation'">
+  </h1>
 
   <div class="card p-4" style="max-width: 720px;">
     <form th:action="@{${donation.id == null ? '/years/' + year.id + '/donations/add' : '/years/' + year.id + '/donations/' + donation.id + '/edit'}}"
@@ -23,7 +26,10 @@
       <input type="hidden" th:field="*{yearId}">
 
       <div class="mb-3">
-        <label for="donationAmount" class="form-label">Shuma e Donacionit</label>
+        <label for="donationAmount" class="form-label">
+          Donation Amount
+        </label>
+
         <div class="input-group">
           <input id="donationAmount"
                  type="number"
@@ -31,46 +37,60 @@
                  class="form-control"
                  th:field="*{donationAmount}"
                  th:classappend="${#fields.hasErrors('donationAmount')} ? ' is-invalid'">
+
           <span class="input-group-text">€</span>
         </div>
+
         <div class="invalid-feedback d-block"
              th:if="${#fields.hasErrors('donationAmount')}"
-             th:errors="*{donationAmount}"></div>
+             th:errors="*{donationAmount}">
+        </div>
       </div>
 
       <div class="mb-3">
-        <label for="members" class="form-label">Zgjidh Anëtarët</label>
+        <label for="members" class="form-label">
+          Select Members
+        </label>
+
         <select id="members"
                 class="form-select"
                 th:field="*{memberIds}"
                 multiple
                 size="6"
                 th:classappend="${#fields.hasErrors('memberIds')} ? ' is-invalid'">
+
           <option th:each="member : ${members}"
                   th:value="${member.id}"
                   th:text="${member.name + ' ' + member.surname}">
           </option>
         </select>
-        <div class="form-text">Mbaj shtypur Ctrl për të zgjedhur më shumë se një anëtar.</div>
+
+        <div class="form-text">
+          Hold Ctrl to select more than one member.
+        </div>
+
         <div class="invalid-feedback d-block"
              th:if="${#fields.hasErrors('memberIds')}"
-             th:errors="*{memberIds}"></div>
+             th:errors="*{memberIds}">
+        </div>
       </div>
 
       <div class="invalid-feedback d-block mb-3"
            th:if="${#fields.hasErrors('yearId')}"
-           th:errors="*{yearId}"></div>
+           th:errors="*{yearId}">
+      </div>
 
       <button type="submit" class="btn btn-success">
-        <i class="bi bi-check-lg me-1"></i> Ruaj
+        <i class="bi bi-check-lg me-1"></i> Save
       </button>
+
     </form>
   </div>
 
   <div class="mt-3">
     <a class="btn btn-dark"
        th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
-      <i class="bi bi-arrow-left me-1"></i> Kthehu
+      <i class="bi bi-arrow-left me-1"></i> Back
     </a>
   </div>
 

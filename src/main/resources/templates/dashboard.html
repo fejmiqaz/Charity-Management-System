@@ -1,0 +1,97 @@
+<!--
+  Save as: src/main/resources/templates/dashboard.html
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{base}">
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+
+<div layout:fragment="content" class="container py-4">
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+    <div>
+      <h1 class="mb-1">Charity Organization</h1>
+      <p class="text-secondary mb-0">Management Dashboard</p>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 my-4">
+    <a class="btn btn-primary" th:href="@{/years}">
+      <i class="bi bi-calendar3 me-1"></i> Manage Years
+    </a>
+    <a class="btn btn-primary" th:href="@{/members}">
+      <i class="bi bi-people me-1"></i> Manage Members
+    </a>
+    <a class="btn btn-success"
+       th:href="@{/years/add-form}"
+       sec:authorize="hasAnyRole('HEAD')">
+      <i class="bi bi-plus-lg me-1"></i> Add New Year
+    </a>
+  </div>
+
+  <h2 class="section-title">System Overview</h2>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Total Years</span>
+        <div class="stat-value" th:text="${totalYears}">0</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Total Members</span>
+        <div class="stat-value" th:text="${totalMembers}">0</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Total Projects</span>
+        <div class="stat-value" th:text="${totalProjects}">0</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="card card-accent-top p-4 h-100">
+        <span class="stat-label">Total Donations</span>
+        <div class="stat-value" th:text="${totalDonationsCount}">0</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Financial Overview</h2>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card card-accent-top emerald p-4 h-100">
+        <span class="stat-label">Total Donation Amount</span>
+        <div class="stat-value" th:text="${totalDonationsAmount} + ' €'">0 €</div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card card-accent-top emerald p-4 h-100">
+        <span class="stat-label">Total Project Cost</span>
+        <div class="stat-value" th:text="${totalProjectCost} + ' €'">0 €</div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card card-accent-top budget p-4 h-100">
+        <span class="stat-label">Remaining Budget</span>
+        <div class="stat-value" th:text="${remainingBudget} + ' €'">0 €</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

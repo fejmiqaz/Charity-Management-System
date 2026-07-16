@@ -108,29 +108,65 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberResponseDto create(MemberFormDto memberFormDto) {
         validateMemberFormDto(memberFormDto);
 
-        Years year = null;
-        if (memberFormDto.getYearId() != null) {
-            year = yearsRepository.findById(memberFormDto.getYearId()).orElseThrow();
+        if (userAccountRepository.existsByEmailIgnoreCase(
+                memberFormDto.getEmail()
+        )) {
+            throw new IllegalArgumentException(
+                    "An account with this email already exists."
+            );
         }
+
+        Years year = null;
+
+        if (memberFormDto.getYearId() != null) {
+            year = yearsRepository.findById(memberFormDto.getYearId())
+                    .orElseThrow(() ->
+                            new IllegalArgumentException(
+                                    "Year not found with ID: "
+                                            + memberFormDto.getYearId()
+                            )
+                    );
+        }
+
+        String encodedPassword =
+                passwordEncoder.encode(memberFormDto.getPassword());
+
+        String fullName = memberFormDto.getName();
+
+        if (memberFormDto.getSurname() != null &&
+                !memberFormDto.getSurname().isBlank()) {
+            fullName += " " + memberFormDto.getSurname();
+        }
+
+        UserAccount userAccount = new UserAccount();
+        userAccount.setName(fullName);
+        userAccount.setEmail(memberFormDto.getEmail());
+        userAccount.setPassword(encodedPassword);
+        userAccount.setRole(memberFormDto.getRole());
+
+        UserAccount savedUserAccount =
+                userAccountRepository.save(userAccount);
 
         Member member = new Member();
         member.setName(memberFormDto.getName());
         member.setSurname(memberFormDto.getSurname());
         member.setEmail(memberFormDto.getEmail());
-        member.setPassword(passwordEncoder.encode(memberFormDto.getPassword()));
+        member.setPassword(encodedPassword);
         member.setPhone(memberFormDto.getPhone());
         member.setCountry(memberFormDto.getCountry());
         member.setCity(memberFormDto.getCity());
         member.setRole(memberFormDto.getRole());
         member.setYear(year);
+        member.setUserAccount(savedUserAccount);
 
-        Member saved = memberRepository.save(member);
-        return MemberMapper.toDto(saved);
+        Member savedMember = memberRepository.save(member);
+
+        return MemberMapper.toDto(savedMember);
     }
-
     @Override
     @Transactional
     public MemberResponseDto update(
@@ -138,6 +174,7 @@ public class MemberServiceImpl implements MemberService {
             MemberFormDto memberFormDto,
             String authenticatedEmail
     ) throws AccessDeniedException {
+
         log.info("Updating member with ID: {}", id);
 
         Member memberToUpdate = memberRepository.findById(id)
@@ -147,11 +184,28 @@ public class MemberServiceImpl implements MemberService {
                         )
                 );
 
-        UserAccount userAccount = memberToUpdate.getUserAccount();
+        UserAccount userAccountToUpdate = memberToUpdate.getUserAccount();
 
-        if (userAccount == null ||
-                !userAccount.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+        if (userAccountToUpdate == null) {
+            throw new IllegalArgumentException(
+                    "This member does not have a linked user account."
+            );
+        }
 
+        UserAccount authenticatedUser = userAccountRepository
+                .findByEmailIgnoreCase(authenticatedEmail)
+                .orElseThrow(() ->
+                        new AccessDeniedException(
+                                "Authenticated user account was not found."
+                        )
+                );
+
+        boolean isHead = authenticatedUser.getRole() == Role.HEAD;
+
+        boolean isOwner = userAccountToUpdate.getEmail()
+                .equalsIgnoreCase(authenticatedEmail);
+
+        if (!isHead && !isOwner) {
             throw new AccessDeniedException(
                     "You cannot edit another member's account."
             );
@@ -184,15 +238,16 @@ public class MemberServiceImpl implements MemberService {
 
         if (memberFormDto.getSurname() != null &&
                 !memberFormDto.getSurname().isBlank()) {
+
             fullName += " " + memberFormDto.getSurname();
         }
 
-        userAccount.setName(fullName);
-        userAccount.setEmail(memberFormDto.getEmail());
+        userAccountToUpdate.setName(fullName);
+        userAccountToUpdate.setEmail(memberFormDto.getEmail());
 
         /*
-         * Do not update the role here.
-         * Otherwise, users could change themselves to HEAD.
+         * Do not update the role from the submitted form.
+         * The existing database role stays unchanged.
          */
 
         if (memberFormDto.getPassword() != null &&
@@ -208,15 +263,19 @@ public class MemberServiceImpl implements MemberService {
                     passwordEncoder.encode(memberFormDto.getPassword());
 
             memberToUpdate.setPassword(encodedPassword);
-            userAccount.setPassword(encodedPassword);
+            userAccountToUpdate.setPassword(encodedPassword);
         }
 
-        Member updated = memberRepository.save(memberToUpdate);
-        userAccountRepository.save(userAccount);
+        Member updatedMember = memberRepository.save(memberToUpdate);
+        userAccountRepository.save(userAccountToUpdate);
 
-        log.info("Updated member with ID: {}", id);
+        log.info(
+                "Member with ID {} updated by {}",
+                id,
+                authenticatedEmail
+        );
 
-        return MemberMapper.toDto(updated);
+        return MemberMapper.toDto(updatedMember);
     }
 
     @Transactional
