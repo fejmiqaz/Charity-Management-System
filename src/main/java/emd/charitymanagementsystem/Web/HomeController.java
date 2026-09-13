@@ -15,6 +15,8 @@ public class HomeController {
     private final ProjectService projectService;
     private final DonationService donationService;
     private final BudgetService budgetService;
+    private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
+    private final emd.charitymanagementsystem.Service.Implementation.BudgetWarningService budgetWarnings;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -26,7 +28,9 @@ public class HomeController {
         double totalDonationsAmount = donationService.getTotalDonations();
         double totalProjectCost = projectService.getTotalProjectCost();
         double totalBudgetAmount = budgetService.getTotalBudgetAmouunt();
-        double remainingBudget = (totalDonationsAmount + totalBudgetAmount) - totalProjectCost;
+        double membershipIncome = memberships.total().doubleValue();
+        double remainingBudget = (totalDonationsAmount + totalBudgetAmount + membershipIncome) - totalProjectCost;
+        model.addAttribute("membershipIncome", membershipIncome);
 
         model.addAttribute("totalYears", totalYears);
         model.addAttribute("totalMembers", totalMembers);
@@ -35,6 +39,7 @@ public class HomeController {
         model.addAttribute("totalDonationsAmount", totalDonationsAmount);
         model.addAttribute("totalProjectCost", totalProjectCost);
         model.addAttribute("remainingBudget", remainingBudget);
+        model.addAttribute("budgetWarnings", budgetWarnings.warnings());
 
         return "dashboard";
     }

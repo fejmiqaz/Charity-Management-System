@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+<head><title>Memberships</title></head>
+<body>
+<div layout:fragment="content" class="container py-4">
+    <p class="eyebrow">ANNUAL MEMBERSHIP</p>
+    <h1>Support that keeps us going.</h1>
+    <p class="text-secondary">Record dues received from members. Membership covers the selected calendar year.</p>
+    <div class="alert alert-success" th:if="${membershipSuccess}" th:text="${membershipSuccess}" role="status"></div>
+    <div class="alert alert-danger" th:if="${membershipError}" th:text="${membershipError}" role="alert"></div>
+    <form method="get" th:action="@{/memberships}" class="d-flex gap-2 align-items-end mb-4">
+        <div><label for="year" class="form-label">Membership year</label><input class="form-control" id="year"
+                                                                                name="year" type="number" min="1900"
+                                                                                max="2200" th:value="${membershipYear}"
+                                                                                required list="membershipYears">
+            <datalist id="membershipYears">
+                <option th:each="item : ${membershipYears}" th:value="${item}"></option>
+            </datalist>
+        </div>
+        <button class="btn btn-primary">View year</button>
+        <a class="btn btn-outline-secondary" th:href="@{/members(membershipYear=${membershipYear})}">Member statuses</a>
+    </form>
+    <div class="membership-summary mb-4">
+        <div class="card p-4"><span class="stat-label">Annual fee</span><strong class="stat-value"
+                                                                                th:text="'€' + ${membershipFee}"></strong><small>Default
+            for new receipts this year</small></div>
+        <div class="card p-4"><span class="stat-label"
+                                    th:text="'Membership income · ' + ${membershipYear}"></span><strong
+                class="stat-value" th:text="'€' + ${membershipTotal}"></strong><small>Voided receipts excluded</small>
+        </div>
+    </div>
+    <div class="row g-4 mb-4">
+        <section class="col-lg-8">
+            <div class="card p-4 h-100"><h2 class="section-title">Record a received payment</h2>
+                <p class="small text-secondary">This records an offline payment already received; it does not charge the
+                    member. Do not record it again as a donation.</p>
+                <form th:action="@{/memberships/record}" method="post" class="row g-3"><input type="hidden" name="year"
+                                                                                              th:value="${membershipYear}">
+                    <div class="col-md-7"><label class="form-label" for="memberId">Member</label><select
+                            class="form-select" id="memberId" name="memberId" required>
+                        <option value="">Select a member</option>
+                        <option th:each="member : ${members}" th:value="${member.id}"
+                                th:selected="${member.id == selectedMember}"
+                                th:text="${member.name + ' ' + member.surname + ' · ' + member.email}"></option>
+                    </select></div>
+                    <div class="col-md-5"><label class="form-label" for="paidOn">Payment received on</label><input
+                            class="form-control" id="paidOn" name="paidOn" type="date" th:value="${today}"
+                            th:max="${today}" required></div>
+                    <div>
+                        <button class="btn btn-primary"
+                                th:text="'Record €' + ${membershipFee} + ' for ' + ${membershipYear}"></button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="col-lg-4">
+            <div class="card p-4 h-100"><h2 class="section-title">Set this year's fee</h2>
+                <form th:action="@{/memberships/fee}" method="post"><input type="hidden" name="year"
+                                                                           th:value="${membershipYear}"><label
+                        for="amount" class="form-label">Fee (EUR)</label><input class="form-control mb-3" id="amount"
+                                                                                name="amount" type="number" min="0.01"
+                                                                                max="9999999999.99" step="0.01"
+                                                                                th:value="${membershipFee}" required>
+                    <p class="small text-secondary">Existing payments stay paid at their recorded amount. Other years
+                        keep their own fee.</p>
+                    <button class="btn btn-outline-primary">Save fee</button>
+                </form>
+            </div>
+        </section>
+    </div>
+    <div class="section-heading"><h2
+            th:text="${selectedMember != null} ? 'Member payment history · all years' : 'Payment ledger'"></h2><a
+            th:if="${selectedMember != null}" th:href="@{/memberships(year=${membershipYear})}">View everyone</a></div>
+    <div class="empty-state" th:if="${#lists.isEmpty(payments)}">No payments recorded. Previous years are not
+        automatically treated as debts.
+    </div>
+    <div class="card table-responsive" th:if="${!#lists.isEmpty(payments)}">
+        <table class="table table-branded mb-0">
+            <thead>
+            <tr>
+                <th>Member</th>
+                <th>Year</th>
+                <th>Amount</th>
+                <th>Received</th>
+                <th>Status</th>
+                <th>Recorded by</th>
+                <th>Correction</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="payment : ${payments}">
+                <td th:text="${payment.memberName}"></td>
+                <td th:text="${payment.membershipYear}"></td>
+                <td th:text="'€' + ${payment.amount}"></td>
+                <td th:text="${payment.paidOn}"></td>
+                <td><span class="badge" th:classappend="${payment.paid} ? 'badge-finished' : 'badge-cancelled'"
+                          th:text="${payment.paid} ? 'Paid' : 'Voided'"></span></td>
+                <td th:text="${payment.recordedBy}"></td>
+                <td>
+                    <details th:if="${payment.paid}">
+                        <summary>Correct receipt</summary>
+                        <form class="mt-2" method="post" th:action="@{/memberships/{id}/void(id=${payment.id})}"><input
+                                type="hidden" name="year" th:value="${membershipYear}"><label class="form-label"
+                                                                                              th:for="'reason-' + ${payment.id}">Reason
+                            for voiding</label><input class="form-control mb-2" th:id="'reason-' + ${payment.id}"
+                                                      name="reason" maxlength="500" required>
+                            <button class="btn btn-sm btn-danger">Void receipt</button>
+                        </form>
+                    </details>
+                    <span th:unless="${payment.paid}" th:text="${payment.voidReason}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -21,6 +21,8 @@ public class Project {
 
     private String name;
     private String description;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean publicImpact = false;
     private LocalDate dateCreated;
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;

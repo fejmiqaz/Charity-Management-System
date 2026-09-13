@@ -230,6 +230,17 @@ public class PdfExportService {
             List<EventResponseDto> events,
             List<ProjectResponseDto> projects
     ) {
+        return exportCompleteYearPdf(year, budgets, donations, events, projects, java.math.BigDecimal.ZERO);
+    }
+
+    public ByteArrayInputStream exportCompleteYearPdf(
+            Years year,
+            List<BudgetResponseDto> budgets,
+            List<DonationResponseDto> donations,
+            List<EventResponseDto> events,
+            List<ProjectResponseDto> projects,
+            java.math.BigDecimal membershipIncome
+    ) {
         Document document =
                 new Document(PageSize.A4);
 
@@ -252,7 +263,8 @@ public class PdfExportService {
         addDetailRow(summary, "Allocated budget", formatMoney(allocated));
         addDetailRow(summary, "Donations", formatMoney(contributed));
         addDetailRow(summary, "Project costs", formatMoney(spent));
-        addDetailRow(summary, "Remaining budget", formatMoney(allocated + contributed - spent));
+        addDetailRow(summary, "Membership income", formatMoney(membershipIncome.doubleValue()));
+        addDetailRow(summary, "Remaining budget", formatMoney(allocated + contributed + membershipIncome.doubleValue() - spent));
         document.add(summary);
 
         addBudgetSection(

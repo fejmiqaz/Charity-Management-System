@@ -68,6 +68,14 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponseDto update(Long id, ProjectFormDto projectFormDto) {
         Project project = projectRepository.findById(id).orElseThrow();
 
+        // Public-facing changes require a fresh HEAD publication decision.
+        if (!Objects.equals(project.getName(), projectFormDto.getName())
+                || project.getStatus() != projectFormDto.getStatus()
+                || project.getYear() == null
+                || !Objects.equals(project.getYear().getId(), projectFormDto.getYearId())) {
+            project.setPublicImpact(false);
+        }
+
         Years year = yearsRepository.findById(projectFormDto.getYearId()).orElseThrow();
 
         Set<Member> members = new HashSet<>();

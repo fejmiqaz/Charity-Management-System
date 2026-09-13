@@ -4,314 +4,334 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>All Members</title>
+    <title>All Members</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4">
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="mb-1">All Members</h1>
-      <p class="text-secondary mb-0">
-        Manage members and their personal information
-      </p>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">All Members</h1>
+            <p class="text-secondary mb-0">
+                Manage members and their personal information
+            </p>
+        </div>
+
+        <div class="text-secondary mt-2 mt-md-0">
+            Total:
+            <strong th:text="${totalItems}">0</strong>
+        </div>
     </div>
 
-    <div class="text-secondary mt-2 mt-md-0">
-      Total:
-      <strong th:text="${totalItems}">0</strong>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a class="btn btn-outline-primary" th:href="@{/members/export.xlsx(search=${search},country=${country},city=${city},role=${selectedRole},membershipYear=${membershipYear})}"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
+        <a class="btn btn-dark" th:href="@{/}">
+            <i class="bi bi-house-door me-1"></i>
+            Home
+        </a>
+
+        <a class="btn btn-success"
+           th:href="@{/members/add}"
+           sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
+            <i class="bi bi-person-plus me-1"></i>
+            Add Member
+        </a>
     </div>
-  </div>
 
-  <div class="d-flex flex-wrap gap-2 mb-4">
-    <a class="btn btn-dark" th:href="@{/}">
-      <i class="bi bi-house-door me-1"></i>
-      Home
-    </a>
+    <div class="membership-notice mb-4"><strong th:text="'Membership · ' + ${membershipYear}"></strong><span
+            th:text="'Annual fee: €' + ${membershipFee}"></span><a
+            sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')" th:href="@{/memberships(year=${membershipYear})}">Manage
+        membership payments →</a></div>
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
 
-    <a class="btn btn-success"
-       th:href="@{/members/add}"
-       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
-      <i class="bi bi-person-plus me-1"></i>
-      Add Member
-    </a>
-  </div>
+            <form method="get"
+                  th:action="@{/members}"
+                  class="row g-3 align-items-end">
 
-  <!-- Filters -->
-  <div class="card mb-4">
-    <div class="card-body">
+                <div class="col-12 col-md-2"><label for="membershipYear" class="form-label">Membership
+                    year</label><input id="membershipYear" name="membershipYear" type="number" class="form-control"
+                                       min="1900" max="2200" th:value="${membershipYear}" required></div>
+                <div class="col-12 col-md-4">
+                    <label for="search" class="form-label">
+                        Search Member
+                    </label>
 
-      <form method="get"
-            th:action="@{/members}"
-            class="row g-3 align-items-end">
+                    <input type="text"
+                           id="search"
+                           name="search"
+                           class="form-control"
+                           placeholder="Name, surname or email..."
+                           th:value="${search}">
+                </div>
 
-        <div class="col-12 col-md-4">
-          <label for="search" class="form-label">
-            Search Member
-          </label>
+                <div class="col-12 col-md-2">
+                    <label for="country" class="form-label">
+                        Country
+                    </label>
 
-          <input type="text"
-                 id="search"
-                 name="search"
-                 class="form-control"
-                 placeholder="Name, surname or email..."
-                 th:value="${search}">
+                    <input type="text"
+                           id="country"
+                           name="country"
+                           class="form-control"
+                           placeholder="Country"
+                           th:value="${country}">
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="city" class="form-label">
+                        City
+                    </label>
+
+                    <input type="text"
+                           id="city"
+                           name="city"
+                           class="form-control"
+                           placeholder="City"
+                           th:value="${city}">
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="role" class="form-label">
+                        Role
+                    </label>
+
+                    <select id="role"
+                            name="role"
+                            class="form-select">
+
+                        <option value="">All Roles</option>
+
+                        <option th:each="roleOption : ${roles}"
+                                th:value="${roleOption}"
+                                th:text="${roleOption}"
+                                th:selected="${selectedRole == roleOption}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <label for="pageSize" class="form-label">
+                        Per Page
+                    </label>
+
+                    <select id="pageSize"
+                            name="pageSize"
+                            class="form-select">
+
+                        <option value="5"
+                                th:selected="${pageSize == 5}">
+                            5
+                        </option>
+
+                        <option value="10"
+                                th:selected="${pageSize == 10}">
+                            10
+                        </option>
+
+                        <option value="20"
+                                th:selected="${pageSize == 20}">
+                            20
+                        </option>
+
+                        <option value="50"
+                                th:selected="${pageSize == 50}">
+                            50
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>
+                        Search
+                    </button>
+
+                    <a class="btn btn-outline-secondary"
+                       th:href="@{/members(membershipYear=${membershipYear})}">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Clear Filters
+                    </a>
+                </div>
+
+            </form>
         </div>
+    </div>
 
-        <div class="col-12 col-md-2">
-          <label for="country" class="form-label">
-            Country
-          </label>
+    <!-- Empty state -->
+    <div class="empty-state"
+         th:if="${#lists.isEmpty(members)}">
 
-          <input type="text"
-                 id="country"
-                 name="country"
-                 class="form-control"
-                 placeholder="Country"
-                 th:value="${country}">
-        </div>
+        <i class="bi bi-people display-6"></i>
 
-        <div class="col-12 col-md-2">
-          <label for="city" class="form-label">
-            City
-          </label>
+        <p class="mt-3 mb-2">
+            No members found matching the selected filters.
+        </p>
 
-          <input type="text"
-                 id="city"
-                 name="city"
-                 class="form-control"
-                 placeholder="City"
-                 th:value="${city}">
-        </div>
-
-        <div class="col-12 col-md-2">
-          <label for="role" class="form-label">
-            Role
-          </label>
-
-          <select id="role"
-                  name="role"
-                  class="form-select">
-
-            <option value="">All Roles</option>
-
-            <option th:each="roleOption : ${roles}"
-                    th:value="${roleOption}"
-                    th:text="${roleOption}"
-                    th:selected="${selectedRole == roleOption}">
-            </option>
-          </select>
-        </div>
-
-        <div class="col-12 col-md-2">
-          <label for="pageSize" class="form-label">
-            Per Page
-          </label>
-
-          <select id="pageSize"
-                  name="pageSize"
-                  class="form-select">
-
-            <option value="5"
-                    th:selected="${pageSize == 5}">
-              5
-            </option>
-
-            <option value="10"
-                    th:selected="${pageSize == 10}">
-              10
-            </option>
-
-            <option value="20"
-                    th:selected="${pageSize == 20}">
-              20
-            </option>
-
-            <option value="50"
-                    th:selected="${pageSize == 50}">
-              50
-            </option>
-          </select>
-        </div>
-
-        <div class="col-12 d-flex flex-wrap gap-2">
-          <button type="submit" class="btn btn-primary">
-            <i class="bi bi-search me-1"></i>
-            Search
-          </button>
-
-          <a class="btn btn-outline-secondary"
-             th:href="@{/members}">
-            <i class="bi bi-arrow-counterclockwise me-1"></i>
+        <a class="btn btn-outline-dark btn-sm"
+           th:href="@{/members(membershipYear=${membershipYear})}">
             Clear Filters
-          </a>
-        </div>
-
-      </form>
+        </a>
     </div>
-  </div>
 
-  <!-- Empty state -->
-  <div class="empty-state"
-       th:if="${#lists.isEmpty(members)}">
+    <!-- Members table -->
+    <div class="card p-0"
+         th:if="${!#lists.isEmpty(members)}">
 
-    <i class="bi bi-people display-6"></i>
+        <div class="table-responsive">
+            <table class="table table-branded table-hover align-middle mb-0">
 
-    <p class="mt-3 mb-2">
-      No members found matching the selected filters.
-    </p>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Country</th>
+                    <th>City</th>
+                    <th>Role</th>
+                    <th th:text="'Membership · ' + ${membershipYear}">Membership</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
 
-    <a class="btn btn-outline-dark btn-sm"
-       th:href="@{/members}">
-      Clear Filters
-    </a>
-  </div>
+                <tbody>
+                <tr th:each="member : ${members}">
 
-  <!-- Members table -->
-  <div class="card p-0"
-       th:if="${!#lists.isEmpty(members)}">
+                    <td th:text="${member.id}"></td>
 
-    <div class="table-responsive">
-      <table class="table table-branded table-hover align-middle mb-0">
+                    <td class="fw-bold"
+                        th:text="${member.name}">
+                    </td>
 
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Email</th>
-          <th>Country</th>
-          <th>City</th>
-          <th>Role</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
+                    <td th:text="${member.surname}"></td>
 
-        <tbody>
-        <tr th:each="member : ${members}">
+                    <td th:text="${member.email}"></td>
 
-          <td th:text="${member.id}"></td>
+                    <td th:text="${member.country}"></td>
 
-          <td class="fw-bold"
-              th:text="${member.name}">
-          </td>
+                    <td th:text="${member.city}"></td>
 
-          <td th:text="${member.surname}"></td>
-
-          <td th:text="${member.email}"></td>
-
-          <td th:text="${member.country}"></td>
-
-          <td th:text="${member.city}"></td>
-
-          <td>
+                    <td>
             <span class="badge text-bg-dark"
                   th:text="${member.role}">
             </span>
-          </td>
+                    </td>
 
-          <td>
-            <div class="d-flex flex-wrap gap-2">
+                    <td><span class="badge"
+                              th:classappend="${paidMemberships.containsKey(member.id)} ? 'badge-finished' : 'badge-pending'"
+                              th:text="${paidMemberships.containsKey(member.id)} ? 'Paid membership' : 'Regular · unpaid'"></span><small
+                            class="d-block text-secondary mt-1" th:if="${paidMemberships.containsKey(member.id)}"
+                            th:text="'€' + ${paidMemberships.get(member.id).amount}"></small><a
+                            class="d-block small mt-1" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')"
+                            th:href="@{/memberships(year=${membershipYear},memberId=${member.id})}">Payment history</a>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2">
 
-              <a class="btn btn-sm btn-outline-dark"
-                 th:href="@{/members/{memberId}(memberId=${member.id})}">
-                <i class="bi bi-info-circle me-1"></i>
-                Details
-              </a>
+                            <a class="btn btn-sm btn-outline-dark"
+                               th:href="@{/members/{memberId}(memberId=${member.id})}">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Details
+                            </a>
 
-              <a class="btn btn-sm btn-warning"
-                 sec:authorize="hasRole('HEAD')"
-                 th:href="@{/members/{memberId}/edit(memberId=${member.id})}">
-                <i class="bi bi-pencil me-1"></i>
-                Edit
-              </a>
+                            <a class="btn btn-sm btn-warning"
+                               sec:authorize="hasRole('HEAD')"
+                               th:href="@{/members/{memberId}/edit(memberId=${member.id})}">
+                                <i class="bi bi-pencil me-1"></i>
+                                Edit
+                            </a>
 
-              <form sec:authorize="hasRole('HEAD')"
-                    th:action="@{/members/{memberId}/delete(memberId=${member.id})}"
-                    method="post">
+                            <form sec:authorize="hasRole('HEAD')"
+                                  th:action="@{/members/{memberId}/delete(memberId=${member.id})}"
+                                  method="post">
 
-                <button type="button"
-                        class="btn btn-sm btn-danger co-delete-trigger"
-                        th:attr="data-item-label=${member.name + ' ' + member.surname}">
+                                <button type="button"
+                                        class="btn btn-sm btn-danger co-delete-trigger"
+                                        th:attr="data-item-label=${member.name + ' ' + member.surname}">
 
-                  <i class="bi bi-trash me-1"></i>
-                  Delete
-                </button>
-              </form>
+                                    <i class="bi bi-trash me-1"></i>
+                                    Delete
+                                </button>
+                            </form>
 
-            </div>
-          </td>
-        </tr>
-        </tbody>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
 
-      </table>
+            </table>
+        </div>
     </div>
-  </div>
 
-  <!-- Pagination -->
-  <nav class="mt-4"
-       th:if="${totalPages > 1}"
-       aria-label="Member pagination">
+    <!-- Pagination -->
+    <nav class="mt-4"
+         th:if="${totalPages > 1}"
+         aria-label="Member pagination">
 
-    <ul class="pagination justify-content-center flex-wrap">
+        <ul class="pagination justify-content-center flex-wrap">
 
-      <!-- Previous -->
-      <li class="page-item"
-          th:classappend="${currentPage == 1} ? 'disabled'">
+            <!-- Previous -->
+            <li class="page-item"
+                th:classappend="${currentPage == 1} ? 'disabled'">
 
-        <a class="page-link"
-           th:href="@{/members(
+                <a class="page-link"
+                   th:href="@{/members(
                        pageNum=${currentPage - 1},
                        pageSize=${pageSize},
                        search=${search},
                        country=${country},
                        city=${city},
-                       role=${selectedRole}
+                       role=${selectedRole},
+                       membershipYear=${membershipYear}
                    )}">
-          <i class="bi bi-chevron-left"></i>
-          Previous
-        </a>
-      </li>
+                    <i class="bi bi-chevron-left"></i>
+                    Previous
+                </a>
+            </li>
 
-      <!-- Page numbers -->
-      <li class="page-item"
-          th:each="page : ${#numbers.sequence(1, totalPages)}"
-          th:classappend="${page == currentPage} ? 'active'">
+            <!-- Page numbers -->
+            <li class="page-item"
+                th:each="page : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${page == currentPage} ? 'active'">
 
-        <a class="page-link"
-           th:text="${page}"
-           th:href="@{/members(
+                <a class="page-link"
+                   th:text="${page}"
+                   th:href="@{/members(
                        pageNum=${page},
                        pageSize=${pageSize},
                        search=${search},
                        country=${country},
                        city=${city},
-                       role=${selectedRole}
+                       role=${selectedRole},
+                       membershipYear=${membershipYear}
                    )}">
-        </a>
-      </li>
+                </a>
+            </li>
 
-      <!-- Next -->
-      <li class="page-item"
-          th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <!-- Next -->
+            <li class="page-item"
+                th:classappend="${currentPage == totalPages} ? 'disabled'">
 
-        <a class="page-link"
-           th:href="@{/members(
+                <a class="page-link"
+                   th:href="@{/members(
                        pageNum=${currentPage + 1},
                        pageSize=${pageSize},
                        search=${search},
                        country=${country},
                        city=${city},
-                       role=${selectedRole}
+                       role=${selectedRole},
+                       membershipYear=${membershipYear}
                    )}">
-          Next
-          <i class="bi bi-chevron-right"></i>
-        </a>
-      </li>
+                    Next
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
 
-    </ul>
-  </nav>
+        </ul>
+    </nav>
 
 </div>
 

@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/impact").permitAll()
                         .requestMatchers(
                                 "/login",
                                 "/register",
@@ -51,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home").authenticated()
 
                         .requestMatchers("/members/**")
-                        .hasAnyRole("HEAD", "SUBHEAD", "MEMBER")
+                        .hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")
 
                         .requestMatchers("/years/*/budget/**")
                         .hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")

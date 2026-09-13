@@ -18,10 +18,17 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProfileController {
     private final ProfileService profiles;
+    private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
 
     @GetMapping
     public String view(Authentication authentication, Model model) {
-        model.addAttribute("account", profiles.account(authentication.getName()));
+        var account = profiles.account(authentication.getName());
+        model.addAttribute("account", account);
+        model.addAttribute("membershipYear", memberships.currentYear());
+        model.addAttribute("membershipFee", memberships.fee(memberships.currentYear()));
+        var member = account.getMember();
+        model.addAttribute("membershipHistory", member == null ? java.util.List.of() : memberships.history(member.getId()));
+        model.addAttribute("membershipPaid", member != null && memberships.paidMembers(memberships.currentYear()).containsKey(member.getId()));
         return "profile/details";
     }
 

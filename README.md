@@ -278,3 +278,13 @@ src/main/resources/application.properties
 # Author
 
 Developed as a full-stack Spring Boot application showcasing enterprise Java development with secure authentication, role-based authorization, layered architecture, cloud deployment, Docker, PostgreSQL, PDF reporting, logging, validation, pagination, filtering, and responsive web design.
+
+## Annual membership dues
+
+- Membership is a calendar-year payment status, separate from permission roles such as HEAD or MEMBER.
+- The Memberships page lets HEAD, SUBHEAD, and TREASURER record received payments, choose a past/current/future coverage year, and set that year's fee. The default is EUR 10.00 (`MEMBERSHIP_DEFAULT_FEE`). This records offline payments; it does not process card charges.
+- The members list shows paid membership or regular/unpaid for the selected membership year. Profiles show the member's own payment history. Missing historical payments mean no payment is recorded, not an automatically calculated debt.
+- Fee changes affect new receipts only. Existing receipts retain the amount originally recorded. To correct a mistake, void the receipt with a reason and record a replacement. The original receipt is retained.
+- Receipt name snapshots and payment history survive member deletion. Membership receipts use a separate ledger, not donation records; do not record the same income twice.
+- Membership income is included in the dashboard, yearly financial summary, and complete-year PDF. A database uniqueness constraint prevents two active receipts for the same member and year.
+- The existing `spring.jpa.hibernate.ddl-auto=update` setting creates the new membership tables at startup. Existing members begin with no membership payments recorded; enter historical receipts as needed.

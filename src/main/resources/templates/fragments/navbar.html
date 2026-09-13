@@ -2,31 +2,48 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <aside class="app-sidebar" th:fragment="navbar" id="appSidebar" aria-label="Main navigation">
-  <a class="app-brand" th:href="@{/}"><span class="brand-symbol"><i class="bi bi-heart-fill"></i></span><span>Charity<span class="brand-subtitle">PEOPLE. PURPOSE. IMPACT.</span></span></a>
-  <div class="sidebar-label">WORKSPACE</div>
-  <nav class="sidebar-links">
-    <a th:href="@{/}" data-nav="dashboard"><i class="bi bi-grid-1x2"></i> Overview</a>
-    <a th:href="@{/members}" data-nav="members" sec:authorize="hasAnyRole('HEAD','SUBHEAD','MEMBER')"><i class="bi bi-people"></i> Members</a>
-    <a th:href="@{/years}" data-nav="years" sec:authorize="hasAnyRole('HEAD','SUBHEAD','MEMBER')"><i class="bi bi-calendar3"></i> Yearly records</a>
-  </nav>
-  <div class="sidebar-year" th:if="${navigationYear != null}">
-    <label for="workspaceYear" class="sidebar-label">WORKING YEAR</label>
-    <select id="workspaceYear" class="form-select" aria-label="Switch working year">
-      <option th:each="item : ${navigationYears}" th:value="@{/years/{id}(id=${item.id})}" th:attr="data-year-id=${item.id}" th:selected="${item.id == navigationYear.id}" th:text="${item.yearValue}"></option>
-    </select>
-  </div>
-  <nav class="sidebar-links" th:if="${navigationYear != null}" aria-label="Year sections">
-    <a th:href="@{/years/{id}/projects(id=${navigationYear.id})}" data-nav="projects" sec:authorize="hasAnyRole('HEAD','SUBHEAD','PROJECT_MANAGER','VOLUNTEER','MEMBER')"><i class="bi bi-kanban"></i> Projects</a>
-    <a th:href="@{/years/{id}/donations(id=${navigationYear.id})}" data-nav="donations" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><i class="bi bi-heart"></i> Donations</a>
-    <a th:href="@{/years/{id}/events(id=${navigationYear.id})}" data-nav="events" sec:authorize="hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER','VOLUNTEER','MEMBER')"><i class="bi bi-calendar-event"></i> Events</a>
-    <a th:href="@{/years/{id}/budget(id=${navigationYear.id})}" data-nav="budget" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><i class="bi bi-wallet2"></i> Budget</a>
-  </nav>
-  <p class="sidebar-hint" th:if="${navigationYear == null}">Create a yearly record to start organizing projects, donations, and events.</p>
-  <nav class="sidebar-links profile-nav"><a th:href="@{/profile}" data-nav="profile"><i class="bi bi-person-circle"></i> My profile</a></nav><div class="sidebar-bottom">
-    <div class="purpose-note"><i class="bi bi-flower2"></i><strong>Small actions.<br>Lasting change.</strong><p>Your community starts here.</p></div>
-    <div class="account-label"><i class="bi bi-person-circle"></i><span sec:authentication="name">Account</span></div>
-    <form th:action="@{/logout}" method="post"><button class="signout" type="submit"><i class="bi bi-box-arrow-right"></i> Sign out</button></form>
-  </div>
+    <a class="app-brand" th:href="@{/}"><span class="brand-symbol"><i
+            class="bi bi-heart-fill"></i></span><span>Charity<span
+            class="brand-subtitle">PEOPLE. PURPOSE. IMPACT.</span></span></a>
+    <div class="sidebar-label">WORKSPACE</div>
+    <nav class="sidebar-links">
+        <a th:href="@{/}" data-nav="dashboard"><i class="bi bi-grid-1x2"></i> Overview</a>
+        <a th:href="@{/members}" data-nav="members" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><i
+                class="bi bi-people"></i> Members</a>
+        <a th:href="@{/years}" data-nav="years" sec:authorize="hasAnyRole('HEAD','SUBHEAD','MEMBER')"><i
+                class="bi bi-calendar3"></i> Yearly records</a>
+    </nav>
+    <nav class="sidebar-links"><a th:href="@{/memberships}" data-nav="memberships"
+                                  sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')"><i
+            class="bi bi-person-check"></i> Memberships</a></nav>
+    <div class="sidebar-year" th:if="${navigationYear != null}">
+        <label for="workspaceYear" class="sidebar-label">WORKING YEAR</label>
+        <select id="workspaceYear" class="form-select" aria-label="Switch working year">
+            <option th:each="item : ${navigationYears}" th:value="@{/years/{id}(id=${item.id})}"
+                    th:attr="data-year-id=${item.id}" th:selected="${item.id == navigationYear.id}"
+                    th:text="${item.yearValue}"></option>
+        </select>
+    </div>
+    <nav class="sidebar-links" th:if="${navigationYear != null}" aria-label="Year sections">
+        <a th:href="@{/years/{id}/projects(id=${navigationYear.id})}" data-nav="projects"
+           sec:authorize="hasAnyRole('HEAD','SUBHEAD','PROJECT_MANAGER','VOLUNTEER','MEMBER')"><i
+                class="bi bi-kanban"></i> Projects</a>
+        <a th:href="@{/years/{id}/donations(id=${navigationYear.id})}" data-nav="donations"
+           sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><i class="bi bi-heart"></i> Donations</a>
+        <a th:href="@{/years/{id}/events(id=${navigationYear.id})}" data-nav="events"
+           sec:authorize="hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER','VOLUNTEER','MEMBER')"><i
+                class="bi bi-calendar-event"></i> Events</a>
+        <a th:href="@{/years/{id}/budget(id=${navigationYear.id})}" data-nav="budget"
+           sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><i class="bi bi-wallet2"></i> Budget</a>
+    </nav>
+    <p class="sidebar-hint" th:if="${navigationYear == null}">Create a yearly record to start organizing projects,
+        donations, and events.</p>
+    <nav class="sidebar-links profile-nav"><a th:href="@{/profile}" data-nav="profile"><i
+            class="bi bi-person-circle"></i> My profile</a></nav>
+    <div class="sidebar-bottom">
+        <div class="purpose-note"><i class="bi bi-flower2"></i><strong>Small actions.<br>Lasting change.</strong>
+            <p>Your community starts here.</p></div>
+    </div>
 </aside>
 </body>
 </html>

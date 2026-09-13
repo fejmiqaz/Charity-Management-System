@@ -23,6 +23,7 @@ public class YearsController {
     private final YearsService yearsService;
     private final DonationService donationService;
     private final ProjectService projectService;
+    private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
 
     @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
@@ -74,8 +75,10 @@ public class YearsController {
         double totalProjectCosts = projectService.totalProjectCostsByYear(id);
 
         double budgetAmount = year.getBudgetAmount() != null ? year.getBudgetAmount() : 0.0;
-        double remainingBudget = budgetAmount - totalProjectCosts;
-        boolean exceedsBudget = totalProjectCosts > budgetAmount;
+        double membershipIncome = memberships.total(year.getYearValue()).doubleValue();
+        model.addAttribute("membershipIncome", membershipIncome);
+        double remainingBudget = budgetAmount + totalDonations + membershipIncome - totalProjectCosts;
+        boolean exceedsBudget = remainingBudget < 0;
 
         model.addAttribute("year", year);
         model.addAttribute("totalDonations", totalDonations);

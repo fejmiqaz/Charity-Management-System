@@ -10,10 +10,17 @@
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
-<link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 
-<body class="auth-page"><aside class="auth-story"><a class="auth-brand" th:href="@{/login}">♥ &nbsp; Charity</a><div><p class="auth-eyebrow">PEOPLE. PURPOSE. IMPACT.</p><h2>Make room<br>for good.</h2><p>One place to bring your people together,<br>organize your work, and make a difference.</p><div class="auth-flower" aria-hidden="true">✳</div></div><small>A little organization. A lot of possibility.</small></aside>
+<body class="auth-page">
+<aside class="auth-story"><a class="auth-brand" th:href="@{/login}">♥ &nbsp; Charity</a>
+    <div><p class="auth-eyebrow">PEOPLE. PURPOSE. IMPACT.</p>
+        <h2>Make room<br>for good.</h2>
+        <p>One place to bring your people together,<br>organize your work, and make a difference.</p>
+        <div class="auth-flower" aria-hidden="true">✳</div>
+    </div>
+    <small>A little organization. A lot of possibility.</small></aside>
 
 <div class="login-container">
 
@@ -36,7 +43,13 @@
             You have been logged out successfully.
         </div>
 
-        <div th:if="${param.registered}" class="message success-message" role="status">Your account is ready. Sign in to get started.</div><div th:if="${param.profileUpdated}" class="message success-message" role="status">Profile updated. Please sign in with your new email address.</div><form th:action="@{/login}" method="post">
+        <div th:if="${param.registered}" class="message success-message" role="status">Your account is ready. Sign in to
+            get started.
+        </div>
+        <div th:if="${param.profileUpdated}" class="message success-message" role="status">Profile updated. Please sign
+            in with your new email address.
+        </div>
+        <form th:action="@{/login}" method="post">
 
             <div class="form-group">
                 <label for="username">Email</label>
@@ -72,6 +85,7 @@
             <a th:href="@{/register}">Create an account</a>
         </p>
 
+        <p class="register-text"><a th:href="@{/impact}">Explore our public impact</a></p>
     </main>
 
 </div>

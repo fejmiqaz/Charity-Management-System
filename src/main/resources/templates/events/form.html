@@ -4,91 +4,91 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title th:text="${event.id != null} ? 'Edit Event' : 'Add Event'">Event</title>
+    <title th:text="${event.id != null} ? 'Edit Event' : 'Add Event'">Event</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4">
 
-  <h1 class="mb-4"
-      th:text="${event.id != null} ? 'Edit Event' : 'Add Event'"></h1>
+    <h1 class="mb-4"
+        th:text="${event.id != null} ? 'Edit Event' : 'Add Event'"></h1>
 
-  <div class="card p-4" style="max-width: 720px;">
-    <form th:action="@{/years/{yearId}/events/add(yearId=${year.id})}"
-          th:object="${event}"
-          method="post"
-          novalidate>
+    <div class="card p-4" style="max-width: 720px;">
+        <form th:action="@{/years/{yearId}/events/add(yearId=${year.id})}"
+              th:object="${event}"
+              method="post"
+              novalidate>
 
-      <input type="hidden" th:field="*{id}">
-      <input type="hidden" th:field="*{yearId}">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{yearId}">
 
-      <div class="mb-3">
-        <label for="purpose" class="form-label">Purpose</label>
-        <input type="text"
-               id="purpose"
-               class="form-control"
-               th:field="*{purpose}"
-               th:classappend="${#fields.hasErrors('purpose')} ? ' is-invalid'">
+            <div class="mb-3">
+                <label for="purpose" class="form-label">Purpose</label>
+                <input type="text"
+                       id="purpose"
+                       class="form-control"
+                       th:field="*{purpose}"
+                       th:classappend="${#fields.hasErrors('purpose')} ? ' is-invalid'">
 
-        <div class="invalid-feedback d-block"
-             th:if="${#fields.hasErrors('purpose')}"
-             th:errors="*{purpose}">
-        </div>
-      </div>
+                <div class="invalid-feedback d-block"
+                     th:if="${#fields.hasErrors('purpose')}"
+                     th:errors="*{purpose}">
+                </div>
+            </div>
 
-      <div class="mb-3">
-        <label for="date" class="form-label">Date and Time</label>
-        <input type="datetime-local"
-               id="date"
-               class="form-control"
-               th:field="*{date}"
-               th:classappend="${#fields.hasErrors('date')} ? ' is-invalid'">
+            <div class="mb-3">
+                <label for="date" class="form-label">Date and Time</label>
+                <input type="datetime-local"
+                       id="date"
+                       class="form-control"
+                       th:field="*{date}"
+                       th:classappend="${#fields.hasErrors('date')} ? ' is-invalid'">
 
-        <div class="invalid-feedback d-block"
-             th:if="${#fields.hasErrors('date')}"
-             th:errors="*{date}">
-        </div>
-      </div>
+                <div class="invalid-feedback d-block"
+                     th:if="${#fields.hasErrors('date')}"
+                     th:errors="*{date}">
+                </div>
+            </div>
 
-      <div class="mb-3">
-        <label for="memberIds" class="form-label">Members</label>
-        <select id="memberIds"
-                class="form-select"
-                th:field="*{memberIds}"
-                multiple
-                size="6"
-                th:classappend="${#fields.hasErrors('memberIds')} ? ' is-invalid'">
-          <option th:each="member : ${members}"
-                  th:value="${member.id}"
-                  th:text="${member.name + ' ' + member.surname}">
-          </option>
-        </select>
+            <div class="mb-3">
+                <label for="memberIds" class="form-label">Members</label>
+                <select id="memberIds"
+                        class="form-select"
+                        th:field="*{memberIds}"
+                        multiple
+                        size="6"
+                        th:classappend="${#fields.hasErrors('memberIds')} ? ' is-invalid'">
+                    <option th:each="member : ${members}"
+                            th:value="${member.id}"
+                            th:text="${member.name + ' ' + member.surname}">
+                    </option>
+                </select>
 
-        <div class="form-text">Hold Ctrl to select more than one member.</div>
+                <div class="form-text">Hold Ctrl to select more than one member.</div>
 
-        <div class="invalid-feedback d-block"
-             th:if="${#fields.hasErrors('memberIds')}"
-             th:errors="*{memberIds}">
-        </div>
-      </div>
+                <div class="invalid-feedback d-block"
+                     th:if="${#fields.hasErrors('memberIds')}"
+                     th:errors="*{memberIds}">
+                </div>
+            </div>
 
-      <div class="invalid-feedback d-block mb-3"
-           th:if="${#fields.hasErrors('yearId')}"
-           th:errors="*{yearId}">
-      </div>
+            <div class="invalid-feedback d-block mb-3"
+                 th:if="${#fields.hasErrors('yearId')}"
+                 th:errors="*{yearId}">
+            </div>
 
-      <button type="submit" class="btn btn-success">
-        <i class="bi bi-check-lg me-1"></i> Save
-      </button>
-    </form>
-  </div>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-lg me-1"></i> Save
+            </button>
+        </form>
+    </div>
 
-  <div class="mt-3">
-    <a class="btn btn-dark"
-       th:href="@{/years/{yearId}/events(yearId=${year.id})}">
-      <i class="bi bi-arrow-left me-1"></i> Back
-    </a>
-  </div>
+    <div class="mt-3">
+        <a class="btn btn-dark"
+           th:href="@{/years/{yearId}/events(yearId=${year.id})}">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+    </div>
 
 </div>
 

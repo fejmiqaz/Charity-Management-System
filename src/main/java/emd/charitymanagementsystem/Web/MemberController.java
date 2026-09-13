@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
 
     @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
@@ -28,6 +29,7 @@ public class MemberController {
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) Role role,
+            @RequestParam(required = false) Integer membershipYear,
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             Model model
@@ -49,6 +51,11 @@ public class MemberController {
                 pageSize
         );
 
+        int selectedYear = memberships.checkedYear(membershipYear);
+        model.addAttribute("membershipYear", selectedYear);
+        model.addAttribute("membershipYears", memberships.years());
+        model.addAttribute("membershipFee", memberships.fee(selectedYear));
+        model.addAttribute("paidMemberships", memberships.paidMembers(selectedYear));
         model.addAttribute("members", memberPage.getContent());
         model.addAttribute("roles", Role.values());
         model.addAttribute("currentPage", pageNum);

@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!sidebar) return;
   const path = window.location.pathname;
   const section = ['projects','donations','events','budget'].find(name => path.includes('/' + name));
-  const active = section || (path.includes('/profile') ? 'profile' : path.includes('/members') ? 'members' : path.includes('/years') ? 'years' : 'dashboard');
+  const active = section || (path.includes('/profile') ? 'profile' : path.includes('/memberships') ? 'memberships' : path.includes('/members') ? 'members' : path.includes('/years') ? 'years' : 'dashboard');
   sidebar.querySelectorAll('[data-nav]').forEach(link => {
     if (link.dataset.nav === active) { link.classList.add('active'); link.setAttribute('aria-current','page'); }
   });

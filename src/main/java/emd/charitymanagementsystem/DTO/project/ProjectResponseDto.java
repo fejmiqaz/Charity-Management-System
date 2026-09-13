@@ -22,4 +22,5 @@ public class ProjectResponseDto {
     private Double projectPrice;
     private List<Long> memberIds;
     private List<String> memberNames;
+    private boolean publicImpact;
 }

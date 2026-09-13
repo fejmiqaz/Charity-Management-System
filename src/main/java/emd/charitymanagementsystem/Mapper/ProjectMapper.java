@@ -17,7 +17,8 @@ public class ProjectMapper {
                 project.getYear() != null ? project.getYear().getYearValue() : null,
                 project.getProjectPrice(),
                 project.getMembers().isEmpty() ? null : project.getMembers().stream().map(Member::getId).toList() ,
-                project.getMembers().isEmpty() ? null : project.getMembers().stream().map(Member::getName).toList()
+                project.getMembers().isEmpty() ? null : project.getMembers().stream().map(Member::getName).toList(),
+                project.isPublicImpact()
         );
     }
 

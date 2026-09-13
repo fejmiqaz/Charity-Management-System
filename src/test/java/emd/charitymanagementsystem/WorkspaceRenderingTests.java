@@ -17,25 +17,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(properties = {
-    "spring.datasource.url=jdbc:h2:mem:workspace-tests", "spring.datasource.username=sa",
-    "spring.datasource.password=", "spring.datasource.driver-class-name=org.h2.Driver",
-    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-    "app.admin.email=test@example.com", "app.admin.password=TestOnly123!",
-    "logging.file.name=target/workspace-tests.log"
+        "spring.datasource.url=jdbc:h2:mem:workspace-tests", "spring.datasource.username=sa",
+        "spring.datasource.password=", "spring.datasource.driver-class-name=org.h2.Driver",
+        "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
+        "app.admin.email=test@example.com", "app.admin.password=TestOnly123!",
+        "logging.file.name=target/workspace-tests.log"
 })
 class WorkspaceRenderingTests {
-    @Autowired WebApplicationContext context;
-    @Autowired YearsRepository yearsRepository;
+    @Autowired
+    WebApplicationContext context;
+    @Autowired
+    YearsRepository yearsRepository;
     MockMvc mvc;
     Long yearId;
 
-    @BeforeEach void setup() {
+    @BeforeEach
+    void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        Years year = new Years(); year.setYearValue(2026);
+        Years year = new Years();
+        year.setYearValue(2026);
         yearId = yearsRepository.save(year).getId();
     }
 
-    @Test void rendersDashboardAndEverySectionAndForm() throws Exception {
+    @Test
+    void rendersDashboardAndEverySectionAndForm() throws Exception {
         String base = "/years/" + yearId;
         String[] paths = {"/", "/members", "/members/add", "/years", "/years/add-form",
                 base, base + "/projects", base + "/projects/add", base + "/donations",
@@ -48,16 +53,18 @@ class WorkspaceRenderingTests {
         }
     }
 
-    @Test void keepsRequestedYearAndHidesInaccessibleSections() throws Exception {
+    @Test
+    void keepsRequestedYearAndHidesInaccessibleSections() throws Exception {
         mvc.perform(get("/years/" + yearId + "/donations")
                         .with(user("treasurer@example.com").roles("TREASURER")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("/years/" + yearId + "/budget")))
                 .andExpect(content().string(not(containsString("data-nav=\"projects\""))))
-                .andExpect(content().string(not(containsString("data-nav=\"members\""))));
+                .andExpect(content().string(containsString("data-nav=\"members\"")));
     }
 
-    @Test void rendersPublicAuthenticationPages() throws Exception {
+    @Test
+    void rendersPublicAuthenticationPages() throws Exception {
         for (String path : new String[]{"/login", "/register"}) {
             mvc.perform(get(path)).andExpect(status().isOk())
                     .andExpect(content().string(containsString("auth-story")));

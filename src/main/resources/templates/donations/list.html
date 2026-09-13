@@ -4,136 +4,137 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title>Donations</title>
+    <title>Donations</title>
 </head>
 <body>
 
 <div layout:fragment="content" class="container py-4">
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="mb-1">
-        Donations for Year <span th:text="${year.yearValue}"></span>
-      </h1>
-      <p class="text-secondary mb-0">
-        Manage this year's donations and donating members
-      </p>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">
+                Donations for Year <span th:text="${year.yearValue}"></span>
+            </h1>
+            <p class="text-secondary mb-0">
+                Manage this year's donations and donating members
+            </p>
+        </div>
     </div>
-  </div>
 
-  <div class="d-flex flex-wrap gap-2 mb-4">
-    <a class="btn btn-dark" th:href="@{/years}">
-      <i class="bi bi-arrow-left me-1"></i> Back to Years
-    </a>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a class="btn btn-outline-primary" th:href="@{/years/{yearId}/donations/export.xlsx(yearId=${year.id})}"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
+        <a class="btn btn-dark" th:href="@{/years}">
+            <i class="bi bi-arrow-left me-1"></i> Back to Years
+        </a>
 
-    <a class="btn btn-outline-dark"
-       th:href="@{/years/{yearId}(yearId=${year.id})}">
-      <i class="bi bi-info-circle me-1"></i> Year Details
-    </a>
+        <a class="btn btn-outline-dark"
+           th:href="@{/years/{yearId}(yearId=${year.id})}">
+            <i class="bi bi-info-circle me-1"></i> Year Details
+        </a>
 
-    <a class="btn btn-danger"
-       th:href="@{/pdf/years/{yearId}/donations(yearId=${year.id})}"
-       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
-      <i class="bi bi-file-earmark-pdf me-1"></i>
-      Export All Donations PDF
-    </a>
+        <a class="btn btn-danger"
+           th:href="@{/pdf/years/{yearId}/donations(yearId=${year.id})}"
+           sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            Export All Donations PDF
+        </a>
 
-    <a class="btn btn-success"
-       th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}"
-       sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
-      <i class="bi bi-plus-lg me-1"></i> Add Donation
-    </a>
-  </div>
+        <a class="btn btn-success"
+           th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}"
+           sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
+            <i class="bi bi-plus-lg me-1"></i> Add Donation
+        </a>
+    </div>
 
-  <div class="empty-state" th:if="${#lists.isEmpty(donations)}">
-    <i class="bi bi-heart display-6"></i>
-    <p class="mt-3 mb-2">No donations were found for this year.</p>
+    <div class="empty-state" th:if="${#lists.isEmpty(donations)}">
+        <i class="bi bi-heart display-6"></i>
+        <p class="mt-3 mb-2">No donations were found for this year.</p>
 
-    <a class="btn btn-success btn-sm"
-       th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}">
-      Create the First Donation
-    </a>
-  </div>
+        <a class="btn btn-success btn-sm"
+           th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}">
+            Create the First Donation
+        </a>
+    </div>
 
-  <div class="card p-0 mb-4" th:if="${!#lists.isEmpty(donations)}">
-    <div class="table-responsive">
-      <table class="table table-branded table-hover align-middle mb-0">
-        <thead>
-        <tr>
-          <th>ID</th>
-          <th>Amount</th>
-          <th>Members</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
+    <div class="card p-0 mb-4" th:if="${!#lists.isEmpty(donations)}">
+        <div class="table-responsive">
+            <table class="table table-branded table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Amount</th>
+                    <th>Members</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
 
-        <tbody>
-        <tr th:each="donation : ${donations}">
-          <td th:text="${donation.id}"></td>
+                <tbody>
+                <tr th:each="donation : ${donations}">
+                    <td th:text="${donation.id}"></td>
 
-          <td class="fw-bold"
-              th:text="${donation.donationAmount} + ' €'"></td>
+                    <td class="fw-bold"
+                        th:text="${donation.donationAmount} + ' €'"></td>
 
-          <td>
+                    <td>
             <span class="text-secondary"
                   th:if="${donation.memberNames == null or #lists.isEmpty(donation.memberNames)}">
               No Members
             </span>
 
-            <div class="d-flex flex-wrap gap-2"
-                 th:if="${donation.memberNames != null and !#lists.isEmpty(donation.memberNames)}">
+                        <div class="d-flex flex-wrap gap-2"
+                             th:if="${donation.memberNames != null and !#lists.isEmpty(donation.memberNames)}">
               <span class="badge text-bg-light border p-2"
                     th:each="memberName : ${donation.memberNames}"
                     th:text="${memberName}">
               </span>
-            </div>
-          </td>
+                        </div>
+                    </td>
 
-          <td>
-            <div class="d-flex flex-wrap gap-2">
+                    <td>
+                        <div class="d-flex flex-wrap gap-2">
 
-              <a class="btn btn-sm btn-outline-dark"
-                 th:href="@{/years/{yearId}/donations/{donationId}(yearId=${year.id}, donationId=${donation.id})}">
-                <i class="bi bi-info-circle me-1"></i> Details
-              </a>
+                            <a class="btn btn-sm btn-outline-dark"
+                               th:href="@{/years/{yearId}/donations/{donationId}(yearId=${year.id}, donationId=${donation.id})}">
+                                <i class="bi bi-info-circle me-1"></i> Details
+                            </a>
 
-              <a class="btn btn-sm btn-warning"
-                 th:href="@{/years/{yearId}/donations/{donationId}/edit(yearId=${year.id}, donationId=${donation.id})}"
-                 sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
-                <i class="bi bi-pencil me-1"></i> Edit
-              </a>
+                            <a class="btn btn-sm btn-warning"
+                               th:href="@{/years/{yearId}/donations/{donationId}/edit(yearId=${year.id}, donationId=${donation.id})}"
+                               sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
+                                <i class="bi bi-pencil me-1"></i> Edit
+                            </a>
 
-              <form th:action="@{/years/{yearId}/donations/{donationId}/delete(yearId=${year.id}, donationId=${donation.id})}"
-                    sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')"
-                    method="post">
+                            <form th:action="@{/years/{yearId}/donations/{donationId}/delete(yearId=${year.id}, donationId=${donation.id})}"
+                                  sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')"
+                                  method="post">
 
-                <button type="button"
-                        class="btn btn-sm btn-danger co-delete-trigger"
-                        th:attr="data-item-label=${'Donation #' + donation.id}">
-                  <i class="bi bi-trash me-1"></i> Delete
-                </button>
+                                <button type="button"
+                                        class="btn btn-sm btn-danger co-delete-trigger"
+                                        th:attr="data-item-label=${'Donation #' + donation.id}">
+                                    <i class="bi bi-trash me-1"></i> Delete
+                                </button>
 
-              </form>
+                            </form>
 
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="card card-accent-top emerald p-4"
-       style="max-width: 520px; margin: 30px auto 0 auto;">
-
-    <h2 class="section-title">Donation Summary</h2>
-
-    <div class="summary-row total">
-      <span>Total Donation Amount</span>
-      <strong th:text="${totalDonationsAmount} + ' €'"></strong>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-  </div>
+    <div class="card card-accent-top emerald p-4"
+         style="max-width: 520px; margin: 30px auto 0 auto;">
+
+        <h2 class="section-title">Donation Summary</h2>
+
+        <div class="summary-row total">
+            <span>Total Donation Amount</span>
+            <strong th:text="${totalDonationsAmount} + ' €'"></strong>
+        </div>
+
+    </div>
 
 </div>
 

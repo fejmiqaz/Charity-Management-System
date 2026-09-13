@@ -55,6 +55,18 @@ public class MemberServiceImpl implements MemberService {
         log.debug("Filtering members. Search: {}, country: {}, city: {}, role: {}, page: {}, size: {}",
                 search, country, city, role, pageNum, pageSize);
 
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("id").descending());
+        return memberRepository.findAll(memberFilters(search, country, city, role), pageable)
+                .map(MemberMapper::toDto);
+    }
+
+    @Override
+    public List<MemberResponseDto> findAllMatching(String search, String country, String city, Role role) {
+        return memberRepository.findAll(memberFilters(search, country, city, role), Sort.by("id").descending())
+                .stream().map(MemberMapper::toDto).toList();
+    }
+
+    private Specification<Member> memberFilters(String search, String country, String city, Role role) {
         Specification<Member> specification = Specification.allOf();
 
         if (search != null && !search.isBlank()) {
@@ -84,12 +96,7 @@ public class MemberServiceImpl implements MemberService {
                     cb.equal(root.get("role"), role));
         }
 
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by("id").descending());
-        Page<Member> members = memberRepository.findAll(specification, pageable);
-
-        log.debug("Member filtering completed. Found {} total members", members.getTotalElements());
-
-        return members.map(MemberMapper::toDto);
+        return specification;
     }
 
     @Override

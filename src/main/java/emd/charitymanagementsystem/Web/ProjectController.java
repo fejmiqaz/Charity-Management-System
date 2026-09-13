@@ -26,6 +26,15 @@ public class ProjectController {
     private final ProjectService projectService;
     private final YearsService yearService;
     private final MemberService memberService;
+    private final emd.charitymanagementsystem.Service.Implementation.ImpactService impact;
+
+    @PreAuthorize("hasRole('HEAD')")
+    @PostMapping("/{projectId}/publication")
+    public String publication(@PathVariable Long yearId, @PathVariable Long projectId,
+                              @RequestParam(defaultValue = "false") boolean published) {
+        impact.setPublished(yearId, projectId, published);
+        return "redirect:/years/" + yearId + "/projects/" + projectId;
+    }
 
     @PreAuthorize("hasAnyRole('HEAD', 'TREASURER', 'SUBHEAD', 'PROJECT_MANAGER', 'VOLUNTEER', 'MEMBER')")
     @GetMapping

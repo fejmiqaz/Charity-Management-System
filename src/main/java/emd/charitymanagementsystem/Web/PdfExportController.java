@@ -37,6 +37,7 @@ public class PdfExportController {
     private final DonationService donationService;
     private final EventService eventService;
     private final ProjectService projectService;
+    private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
 
     /*
      * =========================================================
@@ -82,7 +83,8 @@ public class PdfExportController {
                         budgets,
                         donations,
                         events,
-                        projects
+                        projects,
+                        memberships.total(year.getYearValue())
                 );
 
         return createPdfResponse(
@@ -297,7 +299,7 @@ public class PdfExportController {
 
         return createPdfResponse(
                 pdf,
-                "project-" + projectId
+                "project-" + project.getName()
                         + "-" + year.getYearValue()
                         + ".pdf"
         );
