@@ -2,6 +2,7 @@ package emd.charitymanagementsystem.DTO.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -22,7 +23,14 @@ public class RegistrationDto {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Enter a valid email address")
+    @Size(max = 254, message = "Email must contain at most 254 characters")
+    @Pattern(regexp = "^[^\\s@]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$",
+            message = "Enter a valid email address, such as name@example.com")
     private String email;
+
+    public void setEmail(String email) {
+        this.email = email == null ? null : email.trim();
+    }
 
     @NotBlank
     private String phone;

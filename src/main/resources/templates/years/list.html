@@ -102,87 +102,19 @@
         </a>
     </div>
 
-    <div class="card p-0" th:if="${yearsPage.totalElements > 0}">
-        <div class="table-responsive">
-            <table class="table table-branded table-hover align-middle mb-0">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Year</th>
-                    <th>Budget</th>
-                    <th>Projects</th>
-                    <th>Donations</th>
-                    <th>Events</th>
-                    <th>Year Details</th>
-                    <th sec:authorize="hasRole('HEAD')">Actions</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr th:each="year : ${years}">
-                    <td th:text="${year.id}"></td>
-                    <td class="fw-bold" th:text="${year.yearValue}"></td>
-
-                    <td>
-                        <a class="btn btn-sm btn-primary"
-                           th:href="@{/years/{yearId}/budget(yearId=${year.id})}">
-                            <i class="bi bi-cash-coin me-1"></i> View Budget
-                        </a>
-                    </td>
-
-                    <td>
-                        <a class="btn btn-sm btn-primary"
-                           th:href="@{/years/{yearId}/projects(yearId=${year.id})}">
-                            <i class="bi bi-kanban me-1"></i> View Projects
-                        </a>
-                    </td>
-
-                    <td>
-                        <a class="btn btn-sm btn-primary"
-                           th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
-                            <i class="bi bi-heart me-1"></i> View Donations
-                        </a>
-                    </td>
-
-                    <td>
-                        <a class="btn btn-sm btn-primary"
-                           th:href="@{/years/{yearId}/events(yearId=${year.id})}">
-                            <i class="bi bi-calendar-event me-1"></i> View Events
-                        </a>
-                    </td>
-
-                    <td>
-                        <a class="btn btn-sm btn-outline-dark"
-                           th:href="@{/years/{id}(id=${year.id})}">
-                            <i class="bi bi-info-circle me-1"></i> View Details
-                        </a>
-                    </td>
-
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-sm btn-warning"
-                               sec:authorize="hasRole('HEAD')"
-                               th:href="@{/years/edit-form/{id}(id=${year.id})}">
-                                <i class="bi bi-pencil me-1"></i> Edit
-                            </a>
-
-                            <form th:action="@{/years/delete/{id}(id=${year.id})}"
-                                  sec:authorize="hasRole('HEAD')"
-                                  method="post">
-                                <button type="button"
-                                        class="btn btn-sm btn-danger co-delete-trigger"
-                                        th:attr="data-item-label=${year.yearValue}">
-                                    <i class="bi bi-trash me-1"></i> Delete
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="year-grid" th:if="${yearsPage.totalElements > 0}">
+      <article class="year-card" th:each="year : ${years}">
+        <div class="year-card-heading"><div><p class="eyebrow">YEARLY WORKSPACE</p><h2 th:text="${year.yearValue}"></h2></div><span class="metric-icon mint"><i class="bi bi-calendar3"></i></span></div>
+        <p class="text-secondary">Everything your organization is working on this year.</p>
+        <nav class="year-shortcuts" aria-label="Year sections">
+          <a th:href="@{/years/{id}/projects(id=${year.id})}"><i class="bi bi-kanban"></i> Projects <i class="bi bi-arrow-up-right"></i></a>
+          <a th:href="@{/years/{id}/donations(id=${year.id})}"><i class="bi bi-heart"></i> Donations <i class="bi bi-arrow-up-right"></i></a>
+          <a th:href="@{/years/{id}/events(id=${year.id})}"><i class="bi bi-calendar-event"></i> Events <i class="bi bi-arrow-up-right"></i></a>
+          <a th:href="@{/years/{id}/budget(id=${year.id})}"><i class="bi bi-wallet2"></i> Budget <i class="bi bi-arrow-up-right"></i></a>
+        </nav>
+        <div class="year-card-footer"><a class="btn btn-sm btn-outline-dark" th:href="@{/years/{id}(id=${year.id})}">Year summary</a><div class="d-flex gap-2" sec:authorize="hasRole('HEAD')"><a class="btn btn-sm btn-warning" th:href="@{/years/edit-form/{id}(id=${year.id})}">Edit</a><form th:action="@{/years/delete/{id}(id=${year.id})}" method="post"><button type="button" class="btn btn-sm btn-danger co-delete-trigger" th:attr="data-item-label=${year.yearValue}">Delete</button></form></div></div>
+      </article>
     </div>
-
     <!-- Pagination -->
     <nav class="mt-4"
          aria-label="Years pagination"

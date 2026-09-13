@@ -1,97 +1,86 @@
-<!--
-  Save as: src/main/resources/templates/dashboard.html
--->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{base}">
-<head>
-  <title>Dashboard</title>
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{base}">
+<head><title>Overview</title></head>
 <body>
-
-<div layout:fragment="content" class="container py-4">
-
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
-    <div>
-      <h1 class="mb-1">Charity Organization</h1>
-      <p class="text-secondary mb-0">Management Dashboard</p>
+<div layout:fragment="content" class="container py-4 dashboard-page">
+    <div class="dashboard-heading">
+        <div><p class="eyebrow">THE BIG PICTURE</p>
+            <h1>Good work starts here.</h1>
+            <p class="text-secondary">Your people, projects, and purpose. All in one place.</p></div>
     </div>
-  </div>
-
-  <div class="d-flex flex-wrap gap-2 my-4">
-    <a class="btn btn-primary" th:href="@{/years}">
-      <i class="bi bi-calendar3 me-1"></i> Manage Years
-    </a>
-    <a class="btn btn-primary" th:href="@{/members}">
-      <i class="bi bi-people me-1"></i> Manage Members
-    </a>
-    <a class="btn btn-success"
-       th:href="@{/years/add-form}"
-       sec:authorize="hasAnyRole('HEAD')">
-      <i class="bi bi-plus-lg me-1"></i> Add New Year
-    </a>
-  </div>
-
-  <h2 class="section-title">System Overview</h2>
-
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
-      <div class="card card-accent-top p-4 h-100">
-        <span class="stat-label">Total Years</span>
-        <div class="stat-value" th:text="${totalYears}">0</div>
-      </div>
+    <section class="impact-banner" aria-labelledby="impactTitle">
+        <div><span class="eyebrow">EVERY CONTRIBUTION COUNTS</span>
+            <h2 id="impactTitle">A clearer view.<br>A greater impact.</h2>
+            <p>Keep your community moving forward.<br>Explore your records and make the next thing happen.</p><a
+                    th:href="@{/years}" class="banner-link" sec:authorize="hasAnyRole('HEAD','SUBHEAD','MEMBER')">Explore
+                yearly records <i class="bi bi-arrow-up-right"></i></a></div>
+        <div class="impact-art" aria-hidden="true">
+            <div class="art-orbit orbit-one"></div>
+            <div class="art-orbit orbit-two"></div>
+            <div class="art-center"><i class="bi bi-flower2"></i></div>
+            <span class="art-tag">Growing together</span></div>
+    </section>
+    <div class="section-heading"><h2>Organization at a glance</h2><span>Across all years</span></div>
+    <section class="metric-grid" aria-label="Organization totals">
+        <div class="metric-card"><span class="metric-icon mint"><i class="bi bi-people"></i></span><span
+                class="stat-label">Members</span><strong class="stat-value" th:text="${totalMembers}">0</strong><span
+                class="metric-caption">People in your community</span></div>
+        <div class="metric-card"><span class="metric-icon lavender"><i class="bi bi-kanban"></i></span><span
+                class="stat-label">Projects</span><strong class="stat-value" th:text="${totalProjects}">0</strong><span
+                class="metric-caption">Ideas put into action</span></div>
+        <div class="metric-card"><span class="metric-icon peach"><i class="bi bi-heart"></i></span><span
+                class="stat-label">Donations</span><strong class="stat-value"
+                                                           th:text="${totalDonationsCount}">0</strong><span
+                class="metric-caption">Contributions recorded</span></div>
+        <div class="metric-card"><span class="metric-icon sand"><i class="bi bi-calendar3"></i></span><span
+                class="stat-label">Yearly records</span><strong class="stat-value"
+                                                                th:text="${totalYears}">0</strong><span
+                class="metric-caption">Your impact over time</span></div>
+    </section>
+    <div class="dashboard-lower">
+        <section class="finance-panel">
+            <div class="section-heading"><h2>Financial overview</h2><span>All years · EUR</span></div>
+            <div class="balance-block"><span>Remaining budget</span><strong
+                    th:text="${#numbers.formatDecimal(remainingBudget, 1, 'COMMA', 2, 'POINT')} + ' €'">0.00 €</strong>
+                <p>Allocated budgets + donations − project costs</p></div>
+            <div class="finance-line"><span><i class="bi bi-arrow-down-left"></i> Total donations</span><strong
+                    th:text="${#numbers.formatDecimal(totalDonationsAmount, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong>
+            </div>
+            <div class="finance-line"><span><i class="bi bi-arrow-up-right"></i> Project costs</span><strong
+                    th:text="${#numbers.formatDecimal(totalProjectCost, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong></div>
+        </section>
+        <section class="quick-panel">
+            <div class="section-heading"><h2>Pick up from here</h2><span th:if="${navigationYear != null}"
+                                                                         th:text="${navigationYear.yearValue}"></span>
+            </div>
+            <div th:if="${navigationYear != null}">
+                <a class="quick-link" th:href="@{/years/{id}/projects(id=${navigationYear.id})}"
+                   sec:authorize="hasAnyRole('HEAD','SUBHEAD','PROJECT_MANAGER','VOLUNTEER','MEMBER')"><span
+                        class="metric-icon lavender"><i
+                        class="bi bi-kanban"></i></span><span><strong>Manage projects</strong><small>Follow progress and coordinate people</small></span><i
+                        class="bi bi-arrow-up-right"></i></a>
+                <a class="quick-link" th:href="@{/years/{id}/donations(id=${navigationYear.id})}"
+                   sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><span class="metric-icon peach"><i
+                        class="bi bi-heart"></i></span><span><strong>View donations</strong><small>Keep every contribution organized</small></span><i
+                        class="bi bi-arrow-up-right"></i></a>
+                <a class="quick-link" th:href="@{/years/{id}/events(id=${navigationYear.id})}"
+                   sec:authorize="hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER','VOLUNTEER','MEMBER')"><span
+                        class="metric-icon mint"><i
+                        class="bi bi-calendar-event"></i></span><span><strong>Explore events</strong><small>Bring your community together</small></span><i
+                        class="bi bi-arrow-up-right"></i></a>
+            </div>
+            <div th:if="${navigationYear == null}" class="empty-state"><p>Your workspace is ready for its first
+                year.</p><a class="btn btn-primary" th:href="@{/years/add-form}" sec:authorize="hasRole('HEAD')">Create
+                first year</a>
+                <p sec:authorize="!hasRole('HEAD')" class="mb-0">Ask your organization head to add a yearly record.</p>
+            </div>
+            <a class="quick-link" th:href="@{/members}" sec:authorize="hasAnyRole('HEAD','SUBHEAD','MEMBER')"><span
+                    class="metric-icon sand"><i
+                    class="bi bi-people"></i></span><span><strong>Find a member</strong><small>Search your community directory</small></span><i
+                    class="bi bi-arrow-up-right"></i></a>
+        </section>
     </div>
-
-    <div class="col-6 col-lg-3">
-      <div class="card card-accent-top p-4 h-100">
-        <span class="stat-label">Total Members</span>
-        <div class="stat-value" th:text="${totalMembers}">0</div>
-      </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-      <div class="card card-accent-top p-4 h-100">
-        <span class="stat-label">Total Projects</span>
-        <div class="stat-value" th:text="${totalProjects}">0</div>
-      </div>
-    </div>
-
-    <div class="col-6 col-lg-3">
-      <div class="card card-accent-top p-4 h-100">
-        <span class="stat-label">Total Donations</span>
-        <div class="stat-value" th:text="${totalDonationsCount}">0</div>
-      </div>
-    </div>
-  </div>
-
-  <h2 class="section-title">Financial Overview</h2>
-
-  <div class="row g-3">
-    <div class="col-md-4">
-      <div class="card card-accent-top emerald p-4 h-100">
-        <span class="stat-label">Total Donation Amount</span>
-        <div class="stat-value" th:text="${totalDonationsAmount} + ' €'">0 €</div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card card-accent-top emerald p-4 h-100">
-        <span class="stat-label">Total Project Cost</span>
-        <div class="stat-value" th:text="${totalProjectCost} + ' €'">0 €</div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card card-accent-top budget p-4 h-100">
-        <span class="stat-label">Remaining Budget</span>
-        <div class="stat-value" th:text="${remainingBudget} + ' €'">0 €</div>
-      </div>
-    </div>
-  </div>
-
 </div>
-
 </body>
 </html>

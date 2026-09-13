@@ -67,10 +67,10 @@ public class PdfExportService {
             );
 
     private static final Color HEADER_COLOR =
-            new Color(33, 37, 41);
+            new Color(23, 47, 80);
 
     private static final Color ALTERNATIVE_ROW_COLOR =
-            new Color(242, 242, 242);
+            new Color(243, 246, 251);
 
     private static final DateTimeFormatter EVENT_DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -90,8 +90,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -138,6 +137,8 @@ public class PdfExportService {
             );
         }
 
+        if (members.isEmpty()) addEmptyRow(table, 4, "No members available.");
+
         document.add(table);
 
         addTotal(
@@ -145,7 +146,7 @@ public class PdfExportService {
                 "Total members: " + members.size()
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -167,8 +168,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -201,6 +201,8 @@ public class PdfExportService {
             );
         }
 
+        if (years.isEmpty()) addEmptyRow(table, 2, "No yearly records available.");
+
         document.add(table);
 
         addTotal(
@@ -208,7 +210,7 @@ public class PdfExportService {
                 "Total years: " + years.size()
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -229,13 +231,12 @@ public class PdfExportService {
             List<ProjectResponseDto> projects
     ) {
         Document document =
-                new Document(PageSize.A4.rotate());
+                new Document(PageSize.A4);
 
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -243,10 +244,16 @@ public class PdfExportService {
                 "Year: " + year.getYearValue()
         );
 
-        addYearInformationSection(
-                document,
-                year
-        );
+        addSectionTitle(document, "Financial summary");
+        double allocated = budgets.stream().mapToDouble(b -> b.getBudgetAmount() == null ? 0 : b.getBudgetAmount()).sum();
+        double contributed = donations.stream().mapToDouble(d -> d.getDonationAmount() == null ? 0 : d.getDonationAmount()).sum();
+        double spent = projects.stream().mapToDouble(p -> p.getProjectPrice() == null ? 0 : p.getProjectPrice()).sum();
+        PdfPTable summary = createDetailsTable();
+        addDetailRow(summary, "Allocated budget", formatMoney(allocated));
+        addDetailRow(summary, "Donations", formatMoney(contributed));
+        addDetailRow(summary, "Project costs", formatMoney(spent));
+        addDetailRow(summary, "Remaining budget", formatMoney(allocated + contributed - spent));
+        document.add(summary);
 
         addBudgetSection(
                 document,
@@ -268,7 +275,7 @@ public class PdfExportService {
                 projects
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -291,8 +298,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -307,7 +313,7 @@ public class PdfExportService {
                 budgets
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -330,8 +336,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -346,7 +351,7 @@ public class PdfExportService {
                 donations
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -369,8 +374,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -405,7 +409,7 @@ public class PdfExportService {
         );
 
         document.add(table);
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -428,8 +432,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -444,7 +447,7 @@ public class PdfExportService {
                 events
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -467,8 +470,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -505,7 +507,7 @@ public class PdfExportService {
         );
 
         document.add(table);
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -528,8 +530,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -544,7 +545,7 @@ public class PdfExportService {
                 projects
         );
 
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -567,8 +568,7 @@ public class PdfExportService {
         ByteArrayOutputStream output =
                 new ByteArrayOutputStream();
 
-        PdfWriter.getInstance(document, output);
-        document.open();
+        PdfReportLayout.open(document, output);
 
         addTitle(
                 document,
@@ -598,8 +598,13 @@ public class PdfExportService {
                 )
         );
 
+        addDetailRow(table, "Status", value(project.getStatus()).replace('_', ' '));
+        addDetailRow(table, "Created", value(project.getDateCreated()));
+        addDetailRow(table, "Cost", formatMoney(project.getProjectPrice() == null ? 0 : project.getProjectPrice()));
+        addDetailRow(table, "Description", value(project.getDescription()));
+
         document.add(table);
-        document.close();
+        PdfReportLayout.finish(document);
 
         return new ByteArrayInputStream(
                 output.toByteArray()
@@ -847,17 +852,9 @@ public class PdfExportService {
                 "Projects"
         );
 
-        /*
-         * Your current ProjectResponseDto usage shows:
-         * getId(), getName() and getMemberNames().
-         *
-         * Therefore, this table has three columns.
-         */
         PdfPTable table = createTable(
-                new float[]{1f, 3f, 5f},
-                "ID",
-                "Name",
-                "Members"
+                new float[]{.7f, 2.5f, 1.4f, 1.5f, 3f},
+                "ID", "Project", "Status", "Cost (EUR)", "Members"
         );
 
         int rowIndex = 0;
@@ -878,6 +875,9 @@ public class PdfExportService {
                     alternativeRow
             );
 
+            addCell(table, value(project.getStatus()).replace('_', ' '), alternativeRow);
+            addCell(table, formatMoney(project.getProjectPrice() == null ? 0 : project.getProjectPrice()), alternativeRow);
+
             addCell(
                     table,
                     formatMembers(
@@ -890,7 +890,7 @@ public class PdfExportService {
         if (projects.isEmpty()) {
             addEmptyRow(
                     table,
-                    3,
+                    5,
                     "No projects available."
             );
         }
@@ -914,41 +914,7 @@ public class PdfExportService {
             String titleText,
             String subtitleText
     ) {
-        Paragraph title =
-                new Paragraph(
-                        titleText,
-                        TITLE_FONT
-                );
-
-        title.setAlignment(
-                Element.ALIGN_CENTER
-        );
-
-        title.setSpacingAfter(6f);
-
-        document.add(title);
-
-        if (subtitleText != null
-                && !subtitleText.isBlank()) {
-
-            Paragraph subtitle =
-                    new Paragraph(
-                            subtitleText,
-                            SUBTITLE_FONT
-                    );
-
-            subtitle.setAlignment(
-                    Element.ALIGN_CENTER
-            );
-
-            subtitle.setSpacingAfter(15f);
-
-            document.add(subtitle);
-        } else {
-            document.add(
-                    new Paragraph(" ")
-            );
-        }
+        PdfReportLayout.title(document, titleText, subtitleText);
     }
 
     private void addSectionTitle(
@@ -962,7 +928,8 @@ public class PdfExportService {
                 );
 
         sectionTitle.setSpacingBefore(15f);
-        sectionTitle.setSpacingAfter(5f);
+        sectionTitle.setSpacingAfter(9f);
+        sectionTitle.setKeepTogether(true);
 
         document.add(sectionTitle);
     }
@@ -1008,12 +975,14 @@ public class PdfExportService {
                     Element.ALIGN_MIDDLE
             );
 
-            cell.setPadding(8f);
+            cell.setPadding(10f);
+            cell.setBorderColor(PdfReportLayout.LINE);
 
             table.addCell(cell);
         }
 
         table.setHeaderRows(1);
+        table.setSplitLate(false);
 
         return table;
     }
@@ -1023,6 +992,7 @@ public class PdfExportService {
                 new PdfPTable(2);
 
         table.setWidthPercentage(100);
+        table.setKeepTogether(true);
         table.setSpacingBefore(10f);
         table.setSpacingAfter(10f);
 
@@ -1057,7 +1027,8 @@ public class PdfExportService {
                 HEADER_COLOR
         );
 
-        labelCell.setPadding(8f);
+        labelCell.setPadding(10f);
+        labelCell.setBorderColor(PdfReportLayout.LINE);
         labelCell.setVerticalAlignment(
                 Element.ALIGN_MIDDLE
         );
@@ -1070,7 +1041,8 @@ public class PdfExportService {
                         )
                 );
 
-        contentCell.setPadding(8f);
+        contentCell.setPadding(10f);
+        contentCell.setBorderColor(PdfReportLayout.LINE);
         contentCell.setVerticalAlignment(
                 Element.ALIGN_MIDDLE
         );
@@ -1092,7 +1064,10 @@ public class PdfExportService {
                         )
                 );
 
-        cell.setPadding(7f);
+        cell.setPadding(9f);
+        cell.setBorderColor(PdfReportLayout.LINE);
+        cell.setBorderWidth(.4f);
+        if (text.endsWith(" EUR")) cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
         cell.setVerticalAlignment(
                 Element.ALIGN_MIDDLE
@@ -1189,7 +1164,8 @@ public class PdfExportService {
             double amount
     ) {
         return String.format(
-                "%.2f EUR",
+                java.util.Locale.ENGLISH,
+                "%,.2f EUR",
                 amount
         );
     }

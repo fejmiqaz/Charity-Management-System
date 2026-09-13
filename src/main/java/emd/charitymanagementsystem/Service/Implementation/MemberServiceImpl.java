@@ -32,6 +32,7 @@ public class MemberServiceImpl implements MemberService {
     private final EventRepository eventRepository;
     private final ProjectRepository projectRepository;
     private final UserAccountRepository userAccountRepository;
+    private final BudgetRepository budgetRepository;
 
     @Override
     public List<MemberResponseDto> listAll() {
@@ -282,7 +283,22 @@ public class MemberServiceImpl implements MemberService {
     public void delete(Long id) {
         log.info("Deleting member with ID: {}", id);
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        // Break both sides before deletion: these parents cascade persistence
+        // and can otherwise make a removed member persistent again at flush.
+        if (member.getUserAccount() != null) {
+            member.getUserAccount().setMember(null);
+            member.setUserAccount(null);
+        }
+        if (member.getYear() != null) {
+            member.getYear().getMembers().removeIf(m -> m.getId().equals(id));
+            member.setYear(null);
+        }
+
+        for (Budget budget : budgetRepository.findByMembers_Id(id)) {
+            budget.getMembers().removeIf(m -> m.getId().equals(id));
+        }
 
         List<Donation> donations = donationRepository.findByMembers_Id(id);
 
@@ -306,6 +322,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         memberRepository.delete(member);
+        memberRepository.flush();
         log.info("Deleted member with ID: {}", id);
     }
 

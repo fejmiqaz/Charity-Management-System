@@ -4,215 +4,215 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{base}">
 <head>
-  <title th:text="${editMode} ? 'Edit Member' : 'Add Member'">
-    Member
-  </title>
+    <title th:text="${editMode} ? 'Edit Member' : 'Add Member'">
+        Member
+    </title>
 </head>
 
 <body>
 
 <div layout:fragment="content" class="container py-4">
 
-  <h1 class="mb-4"
-      th:text="${editMode} ? 'Edit Member' : 'Add Member'">
-  </h1>
+    <h1 class="mb-4"
+        th:text="${editMode} ? 'Edit Member' : 'Add Member'">
+    </h1>
 
-  <div class="card p-4" style="max-width: 760px;">
+    <div class="card p-4" style="max-width: 760px;">
 
-    <div class="alert alert-danger"
-         th:if="${updateError}"
-         th:text="${updateError}">
-    </div>
+        <div class="alert alert-danger"
+             th:if="${updateError}"
+             th:text="${updateError}">
+        </div>
 
-    <form th:action="${editMode}
+        <form th:action="${editMode}
             ? @{/members/{id}/edit(id=${memberId})}
             : @{/members/add}"
-          th:object="${member}"
-          method="post"
-          novalidate>
+              th:object="${member}"
+              method="post"
+              novalidate>
 
-      <input type="hidden" th:field="*{id}">
-      <input type="hidden" th:field="*{yearId}">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{yearId}">
 
-      <div class="row g-3">
+            <div class="row g-3">
 
-        <div class="col-md-6">
-          <label for="name" class="form-label">First Name</label>
+                <div class="col-md-6">
+                    <label for="name" class="form-label">First Name</label>
 
-          <input id="name"
-                 type="text"
-                 class="form-control"
-                 th:field="*{name}"
-                 th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'">
+                    <input id="name"
+                           type="text"
+                           class="form-control"
+                           th:field="*{name}"
+                           th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'">
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('name')}"
-               th:errors="*{name}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('name')}"
+                         th:errors="*{name}">
+                    </div>
+                </div>
 
-        <div class="col-md-6">
-          <label for="surname" class="form-label">Last Name</label>
+                <div class="col-md-6">
+                    <label for="surname" class="form-label">Last Name</label>
 
-          <input id="surname"
-                 type="text"
-                 class="form-control"
-                 th:field="*{surname}"
-                 th:classappend="${#fields.hasErrors('surname')} ? ' is-invalid'">
+                    <input id="surname"
+                           type="text"
+                           class="form-control"
+                           th:field="*{surname}"
+                           th:classappend="${#fields.hasErrors('surname')} ? ' is-invalid'">
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('surname')}"
-               th:errors="*{surname}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('surname')}"
+                         th:errors="*{surname}">
+                    </div>
+                </div>
 
-        <div class="col-md-6">
-          <label for="country" class="form-label">Country</label>
+                <div class="col-md-6">
+                    <label for="country" class="form-label">Country</label>
 
-          <input id="country"
-                 type="text"
-                 class="form-control"
-                 th:field="*{country}"
-                 th:classappend="${#fields.hasErrors('country')} ? ' is-invalid'">
+                    <input id="country"
+                           type="text"
+                           class="form-control"
+                           th:field="*{country}"
+                           th:classappend="${#fields.hasErrors('country')} ? ' is-invalid'">
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('country')}"
-               th:errors="*{country}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('country')}"
+                         th:errors="*{country}">
+                    </div>
+                </div>
 
-        <div class="col-md-6">
-          <label for="city" class="form-label">City</label>
+                <div class="col-md-6">
+                    <label for="city" class="form-label">City</label>
 
-          <input id="city"
-                 type="text"
-                 class="form-control"
-                 th:field="*{city}"
-                 th:classappend="${#fields.hasErrors('city')} ? ' is-invalid'">
+                    <input id="city"
+                           type="text"
+                           class="form-control"
+                           th:field="*{city}"
+                           th:classappend="${#fields.hasErrors('city')} ? ' is-invalid'">
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('city')}"
-               th:errors="*{city}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('city')}"
+                         th:errors="*{city}">
+                    </div>
+                </div>
 
-        <div class="col-md-6">
-          <label for="email" class="form-label">Email</label>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
 
-          <input id="email"
-                 type="email"
-                 class="form-control"
-                 th:field="*{email}"
-                 th:classappend="${#fields.hasErrors('email')} ? ' is-invalid'">
+                    <input id="email"
+                           type="email"
+                           class="form-control"
+                           th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? ' is-invalid'">
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('email')}"
-               th:errors="*{email}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('email')}"
+                         th:errors="*{email}">
+                    </div>
+                </div>
 
-        <div class="col-md-6">
-          <label for="phone" class="form-label">Phone Number</label>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone Number</label>
 
-          <input id="phone"
-                 type="text"
-                 class="form-control"
-                 th:field="*{phone}"
-                 th:classappend="${#fields.hasErrors('phone')} ? ' is-invalid'">
+                    <input id="phone"
+                           type="text"
+                           class="form-control"
+                           th:field="*{phone}"
+                           th:classappend="${#fields.hasErrors('phone')} ? ' is-invalid'">
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('phone')}"
-               th:errors="*{phone}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('phone')}"
+                         th:errors="*{phone}">
+                    </div>
+                </div>
 
-        <div class="col-md-6">
-          <label for="password"
-                 class="form-label"
-                 th:text="${editMode}
+                <div class="col-md-6">
+                    <label for="password"
+                           class="form-label"
+                           th:text="${editMode}
                     ? 'New Password'
                     : 'Password'">
-          </label>
+                    </label>
 
-          <input id="password"
-                 type="password"
-                 class="form-control"
-                 th:field="*{password}"
-                 autocomplete="new-password"
-                 th:placeholder="${editMode}
+                    <input id="password"
+                           type="password"
+                           class="form-control"
+                           th:field="*{password}"
+                           autocomplete="new-password"
+                           th:placeholder="${editMode}
                     ? 'Leave blank to keep the current password'
                     : 'Enter password'"
-                 th:classappend="${#fields.hasErrors('password')} ? ' is-invalid'">
+                           th:classappend="${#fields.hasErrors('password')} ? ' is-invalid'">
 
-          <small class="text-muted"
-                 th:if="${editMode}">
-            Leave this field blank if you do not want to change the
-            password.
-          </small>
+                    <small class="text-muted"
+                           th:if="${editMode}">
+                        Leave this field blank if you do not want to change the
+                        password.
+                    </small>
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('password')}"
-               th:errors="*{password}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('password')}"
+                         th:errors="*{password}">
+                    </div>
+                </div>
 
-        <!-- Role can only be selected while adding a member -->
-        <div class="col-md-6"
-             th:unless="${editMode}">
-          <label for="role" class="form-label">Role</label>
+                <!-- Role can only be selected while adding a member -->
+                <div class="col-md-6"
+                     th:unless="${editMode}">
+                    <label for="role" class="form-label">Role</label>
 
-          <select id="role"
-                  class="form-select"
-                  th:field="*{role}"
-                  th:classappend="${#fields.hasErrors('role')} ? ' is-invalid'">
+                    <select id="role"
+                            class="form-select"
+                            th:field="*{role}"
+                            th:classappend="${#fields.hasErrors('role')} ? ' is-invalid'">
 
-            <option value="" disabled>Select a role</option>
+                        <option value="" disabled>Select a role</option>
 
-            <option th:each="r : ${roles}"
-                    th:value="${r}"
-                    th:text="${r}">
-            </option>
-          </select>
+                        <option th:each="r : ${roles}"
+                                th:value="${r}"
+                                th:text="${r}">
+                        </option>
+                    </select>
 
-          <div class="invalid-feedback d-block"
-               th:if="${#fields.hasErrors('role')}"
-               th:errors="*{role}">
-          </div>
-        </div>
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('role')}"
+                         th:errors="*{role}">
+                    </div>
+                </div>
 
-        <!-- Preserve the current role during edit -->
-        <input th:if="${editMode}"
-               type="hidden"
-               th:field="*{role}">
+                <!-- Preserve the current role during edit -->
+                <input th:if="${editMode}"
+                       type="hidden"
+                       th:field="*{role}">
 
-      </div>
+            </div>
 
-      <div class="invalid-feedback d-block mt-3"
-           th:if="${#fields.hasErrors('yearId')}"
-           th:errors="*{yearId}">
-      </div>
+            <div class="invalid-feedback d-block mt-3"
+                 th:if="${#fields.hasErrors('yearId')}"
+                 th:errors="*{yearId}">
+            </div>
 
-      <button type="submit"
-              class="btn btn-success mt-4">
+            <button type="submit"
+                    class="btn btn-success mt-4">
 
-        <i class="bi bi-check-lg me-1"></i>
+                <i class="bi bi-check-lg me-1"></i>
 
-        <span th:text="${editMode}
+                <span th:text="${editMode}
                 ? 'Save Changes'
                 : 'Add Member'">
         </span>
-      </button>
+            </button>
 
-    </form>
-  </div>
+        </form>
+    </div>
 
-  <div class="mt-3">
-    <a class="btn btn-dark"
-       th:href="@{/members}">
-      <i class="bi bi-arrow-left me-1"></i>
-      Back
-    </a>
-  </div>
+    <div class="mt-3">
+        <a class="btn btn-dark"
+           th:href="@{/members}">
+            <i class="bi bi-arrow-left me-1"></i>
+            Back
+        </a>
+    </div>
 
 </div>
 

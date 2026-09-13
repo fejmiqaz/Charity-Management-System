@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Transactional
     public UserAccount register(RegistrationDto registrationDto) {
 
-        String email = registrationDto.getEmail().trim().toLowerCase();
+        String email = registrationDto.getEmail().trim().toLowerCase(Locale.ROOT);
 
         if (userAccountRepository.existsByEmailIgnoreCase(email)) {
             throw new IllegalArgumentException(

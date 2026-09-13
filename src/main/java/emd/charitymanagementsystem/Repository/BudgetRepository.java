@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long>, JpaSpecificationExecutor<Budget> {
     Budget findByYearId(Long id);
+    java.util.List<Budget> findByMembers_Id(Long memberId);
 }

@@ -4,7 +4,6 @@ import emd.charitymanagementsystem.DTO.auth.RegistrationDto;
 import emd.charitymanagementsystem.Service.UserAccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +17,6 @@ public class AuthController {
 
     private final UserAccountService userAccountService;
 
-    @Value("${app.registration.enabled:true}")
-    private boolean registrationEnabled;
 
     @GetMapping("/login")
     public String login() {
@@ -29,7 +26,6 @@ public class AuthController {
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("registrationDto", new RegistrationDto());
-        model.addAttribute("registrationEnabled", registrationEnabled);
 
         return "auth/register";
     }
@@ -42,16 +38,6 @@ public class AuthController {
             BindingResult bindingResult,
             Model model
     ) {
-        model.addAttribute("registrationEnabled", registrationEnabled);
-
-        if (!registrationEnabled) {
-            model.addAttribute(
-                    "registrationError",
-                    "Registration is disabled for this demo application."
-            );
-
-            return "auth/register";
-        }
 
         if (bindingResult.hasErrors()) {
             return "auth/register";
