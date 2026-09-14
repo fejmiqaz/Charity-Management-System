@@ -176,11 +176,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public double getTotalDonations() {
-        return donationRepository.findAll().stream()
-                .map(Donation::getDonationAmount)
-                .filter(java.util.Objects::nonNull)
-                .mapToDouble(Double::doubleValue)
-                .sum();
+        return donationRepository.totalAmount();
     }
 
     private Set<Member> getMembersFromIds(List<Long> memberIds) {

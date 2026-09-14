@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
+    @org.springframework.data.jpa.repository.Query("select coalesce(sum(p.projectPrice), 0.0) from Project p")
+    double totalCost();
     @org.springframework.data.jpa.repository.Query("""
             select new emd.charitymanagementsystem.DTO.project.PublicProjectDto(p.name, y.yearValue)
             from Project p left join p.year y

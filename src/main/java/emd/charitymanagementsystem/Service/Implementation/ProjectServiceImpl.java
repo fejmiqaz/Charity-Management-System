@@ -125,11 +125,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public double getTotalProjectCost() {
-        return projectRepository.findAll().stream()
-                .map(Project::getProjectPrice)
-                .filter(java.util.Objects::nonNull)
-                .mapToDouble(Double::doubleValue)
-                .sum();
+        return projectRepository.totalCost();
     }
 
     @Override

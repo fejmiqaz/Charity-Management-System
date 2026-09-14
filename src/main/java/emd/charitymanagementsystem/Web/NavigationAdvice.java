@@ -22,7 +22,10 @@ public class NavigationAdvice {
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) return;
         String path = request.getRequestURI().substring(request.getContextPath().length());
         if (path.equals("/")) return;
-        var years = yearsRepository.findAll(Sort.by(Sort.Direction.DESC, "yearValue"))
+        var years = path.equals("/dashboard") || path.equals("/home")
+                ? yearsRepository.dashboardYears().stream()
+                    .map(year -> new NavigationYear(year.getId(), year.getYearValue())).toList()
+                : yearsRepository.findAll(Sort.by(Sort.Direction.DESC, "yearValue"))
                 .stream().map(year -> new NavigationYear(year.getId(), year.getYearValue())).toList();
         var match = java.util.regex.Pattern.compile("^/years/(\\d+)(?:/|$)").matcher(path);
         Long requestedId = match.find() ? Long.valueOf(match.group(1)) : null;

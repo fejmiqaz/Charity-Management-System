@@ -109,10 +109,6 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Double getTotalBudgetAmouunt() {
-        return budgetRepository.findAll().stream()
-                .map(Budget::getBudgetAmount)
-                .filter(java.util.Objects::nonNull)
-                .mapToDouble(Double::doubleValue)
-                .sum();
+        return budgetRepository.totalAmount();
     }
 }

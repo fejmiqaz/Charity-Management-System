@@ -1,7 +1,6 @@
 package emd.charitymanagementsystem.Service.Implementation;
 
-import emd.charitymanagementsystem.Service.ProjectService;
-import emd.charitymanagementsystem.Service.YearsService;
+import emd.charitymanagementsystem.Repository.YearsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -11,12 +10,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BudgetWarningService {
-    private final YearsService years;
-    private final ProjectService projects;
+    private final YearsRepository years;
 
     public List<Warning> warnings() {
-        return years.listAll().stream().map(year -> usage(year.getYearValue(),
-                        years.findById(year.getId()).getBudgetAmount(), projects.totalProjectCostsByYear(year.getId())))
+        return years.dashboardBudgetUsage().stream().map(year -> usage(year.getYearValue(),
+                        year.getBudgetAmount(), year.getSpent()))
                 .filter(warning -> !warning.level().equals("normal")).toList();
     }
 

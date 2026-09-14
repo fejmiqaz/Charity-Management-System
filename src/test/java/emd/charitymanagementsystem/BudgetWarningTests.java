@@ -1,8 +1,7 @@
 package emd.charitymanagementsystem;
 
 import emd.charitymanagementsystem.Service.Implementation.BudgetWarningService;
-import emd.charitymanagementsystem.Service.*;
-import emd.charitymanagementsystem.DTO.years.*;
+import emd.charitymanagementsystem.Repository.YearsRepository;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,15 +30,17 @@ class BudgetWarningTests {
         }
     }
 
-    @Test void reusesExistingYearAndSpendingCalculations() {
-        YearsService years = mock(YearsService.class); ProjectService projects = mock(ProjectService.class);
-        when(years.listAll()).thenReturn(List.of(new YearsResponseDto(1L, 2025), new YearsResponseDto(2L, 2026)));
-        var details = new YearsDetailsDto(); details.setBudgetAmount(100.0);
-        when(years.findById(1L)).thenReturn(details); when(years.findById(2L)).thenReturn(details);
-        when(projects.totalProjectCostsByYear(1L)).thenReturn(80.0);
-        when(projects.totalProjectCostsByYear(2L)).thenReturn(20.0);
-        var warnings = new BudgetWarningService(years, projects).warnings();
+    @Test void filtersGroupedYearTotalsWithoutLoadingDetails() {
+        YearsRepository years = mock(YearsRepository.class);
+        var high = mock(YearsRepository.BudgetUsage.class);
+        when(high.getYearValue()).thenReturn(2025); when(high.getBudgetAmount()).thenReturn(100.0);
+        when(high.getSpent()).thenReturn(80.0);
+        var low = mock(YearsRepository.BudgetUsage.class);
+        when(low.getYearValue()).thenReturn(2026); when(low.getBudgetAmount()).thenReturn(100.0);
+        when(low.getSpent()).thenReturn(20.0);
+        when(years.dashboardBudgetUsage()).thenReturn(List.of(high, low));
+        var warnings = new BudgetWarningService(years).warnings();
         assertEquals(1, warnings.size()); assertEquals(2025, warnings.get(0).year());
-        verify(projects).totalProjectCostsByYear(1L); verify(projects).totalProjectCostsByYear(2L);
+        verify(years).dashboardBudgetUsage(); verifyNoMoreInteractions(years);
     }
 }

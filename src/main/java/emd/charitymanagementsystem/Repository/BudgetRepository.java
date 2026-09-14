@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long>, JpaSpecificationExecutor<Budget> {
+    @org.springframework.data.jpa.repository.Query("select coalesce(sum(b.budgetAmount), 0.0) from Budget b")
+    double totalAmount();
     Budget findByYearId(Long id);
     java.util.List<Budget> findByMembers_Id(Long memberId);
 }
