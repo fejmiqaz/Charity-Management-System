@@ -23,6 +23,9 @@ public class YearsController {
     private final YearsService yearsService;
     private final DonationService donationService;
     private final ProjectService projectService;
+    private final emd.charitymanagementsystem.Service.EventService eventService;
+    private final emd.charitymanagementsystem.Service.MemberService memberService;
+    private final emd.charitymanagementsystem.Service.BudgetService budgetService;
     private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
 
     @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
@@ -68,7 +71,8 @@ public class YearsController {
 
     @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping("/{id}")
-    public String getYearDetails(@PathVariable Long id, Model model) {
+    public String getYearDetails(@PathVariable Long id, Model model,
+                                org.springframework.security.core.Authentication authentication) {
         YearsDetailsDto year = yearsService.findById(id);
 
         double totalDonations = donationService.totalDonationsAmount(id);
@@ -86,6 +90,28 @@ public class YearsController {
         model.addAttribute("budgetAmount", budgetAmount);
         model.addAttribute("remainingBudget", remainingBudget);
         model.addAttribute("exceedsBudget", exceedsBudget);
+        var donations = donationService.findByYearId(id);
+        model.addAttribute("donations", donations);
+        model.addAttribute("donatingMembers", memberService.findAllByIds(donations.stream()
+                .filter(donation -> donation.getMemberIds() != null)
+                .flatMap(donation -> donation.getMemberIds().stream()).distinct().toList()));
+        model.addAttribute("yearMembers", memberService.findByYearId(id));
+        model.addAttribute("budget", year.getBudgetId() == null ? null : budgetService.findById(year.getBudgetId()));
+        model.addAttribute("paidMemberships", memberships.paidMembers(year.getYearValue()));
+        model.addAttribute("membershipFee", memberships.fee(year.getYearValue()));
+        boolean canViewProjectsAndEvents = authentication.getAuthorities().stream()
+                .anyMatch(authority -> java.util.Set.of("ROLE_HEAD", "ROLE_SUBHEAD", "ROLE_MEMBER")
+                        .contains(authority.getAuthority()));
+        if (canViewProjectsAndEvents) {
+            model.addAttribute("projects", projectService.findByYearId(id));
+            model.addAttribute("events", eventService.findAllByYearId(id));
+        }
+        boolean canManageMemberships = authentication.getAuthorities().stream()
+                .anyMatch(authority -> java.util.Set.of("ROLE_HEAD", "ROLE_SUBHEAD", "ROLE_TREASURER")
+                        .contains(authority.getAuthority()));
+        if (canManageMemberships) {
+            model.addAttribute("membershipPayments", memberships.payments(year.getYearValue()));
+        }
 
         return "years/details";
     }

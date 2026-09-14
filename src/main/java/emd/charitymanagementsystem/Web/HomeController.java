@@ -18,7 +18,7 @@ public class HomeController {
     private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
     private final emd.charitymanagementsystem.Service.Implementation.BudgetWarningService budgetWarnings;
 
-    @GetMapping("/")
+    @GetMapping({"/dashboard", "/home"})
     public String home(Model model) {
         long totalYears = yearsService.yearsCount();
         long totalMembers = memberService.membersCount();

@@ -10,7 +10,8 @@
    Hibernate `ddl-auto=update` can also add the column, but the explicit migration is preferred.
 3. Start the application normally. Excel buttons are on the members and yearly donations lists.
    Member exports retain search, country, city, role and membership year; pagination is ignored.
-4. Visit `/impact` without logging in. As HEAD, open a project's details and approve its
+4. Visit `/` without logging in. The previous `/impact` page has been replaced by the public front page;
+   the protected workspace is now `/dashboard`. As HEAD, open a project's details and approve its
    title for public display. Only FINISHED projects can be approved. Public totals count only
    approved finished projects and their distinct years. Title, year or status changes clear approval.
 
@@ -41,8 +42,8 @@ not a live PostgreSQL server. No Neon database was used for verification.
 - `Service/Implementation/BudgetWarningService.java`, `Web/HomeController.java`, `templates/dashboard.html`
 - `Models/Project.java`, `DTO/project/ProjectResponseDto.java`, `DTO/project/PublicProjectDto.java`
 - `Mapper/ProjectMapper.java`, `Repository/ProjectRepository.java`, `Service/Implementation/ProjectServiceImpl.java`
-- `Service/Implementation/ImpactService.java`, `Web/ImpactController.java`, `Web/ProjectController.java`
-- `Config/SecurityConfig.java`, `templates/impact.html`, `templates/projects/details.html`, `templates/auth/login.html`
+- `Service/Implementation/ImpactService.java`, `Web/FrontPageController.java`, `Web/ProjectController.java`
+- `Config/SecurityConfig.java`, `templates/index.html`, `templates/projects/details.html`, `templates/auth/login.html`
 - `db/manual/2026-09-14-public-impact.sql`
 - Tests: `ExcelExportTests`, `BudgetWarningTests`, `BudgetDashboardTests`, `ImpactPageTests`, `ImpactMigrationTests`
 - This setup document.

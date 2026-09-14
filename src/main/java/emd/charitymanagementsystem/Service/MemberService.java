@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface MemberService {
     List<MemberResponseDto> listAll();
+    List<MemberResponseDto> findByYearId(Long yearId);
     List<MemberResponseDto> findAllMatching(String search, String country, String city, Role role);
 
     Page<MemberResponseDto> findPage(

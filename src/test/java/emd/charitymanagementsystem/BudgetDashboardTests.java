@@ -38,7 +38,7 @@ class BudgetDashboardTests {
             projects.save(project);
         }
         MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build()
-                .perform(get("/").with(user("test@example.com").roles("HEAD")))
+                .perform(get("/dashboard").with(user("test@example.com").roles("HEAD")))
                 .andExpect(status().isOk()).andExpect(view().name("dashboard"))
                 .andExpect(content().string(containsString("80.00% used")))
                 .andExpect(content().string(containsString("120.00% used")))

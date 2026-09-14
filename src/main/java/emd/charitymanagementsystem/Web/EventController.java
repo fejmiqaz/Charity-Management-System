@@ -24,6 +24,15 @@ public class EventController {
     private final EventService eventService;
     private final YearsService yearsService;
     private final MemberService memberService;
+    private final emd.charitymanagementsystem.Service.Implementation.ImpactService impact;
+
+    @PreAuthorize("hasRole('HEAD')")
+    @PostMapping("/{id}/publication")
+    public String publication(@PathVariable Long yearId, @PathVariable Long id,
+                              @RequestParam(defaultValue = "false") boolean published) {
+        impact.setEventPublished(yearId, id, published);
+        return "redirect:/years/" + yearId + "/events/" + id;
+    }
 
     @GetMapping
     public String listEvents(@PathVariable Long yearId, Model model) {

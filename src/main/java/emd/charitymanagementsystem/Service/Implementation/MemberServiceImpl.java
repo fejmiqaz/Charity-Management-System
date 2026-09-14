@@ -42,6 +42,12 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
+    @Override
+    public List<MemberResponseDto> findByYearId(Long yearId) {
+        return memberRepository.findByYearIdOrderBySurnameAscNameAsc(yearId)
+                .stream().map(MemberMapper::toDto).toList();
+    }
+
 
     @Override
     public Page<MemberResponseDto> findPage(

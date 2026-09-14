@@ -7,6 +7,22 @@ import java.sql.DriverManager;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ImpactMigrationTests {
+    @Test void existingEventsStayPrivateAfterMigration() throws Exception {
+        try (var connection = DriverManager.getConnection("jdbc:h2:mem:event-migration;MODE=PostgreSQL", "sa", "");
+             var statement = connection.createStatement()) {
+            statement.execute("create table event (id bigint primary key)");
+            statement.execute("insert into event (id) values (1)");
+            var migration = new ClassPathResource("db/manual/2026-09-14-public-events.sql");
+            ScriptUtils.executeSqlScript(connection, migration);
+            ScriptUtils.executeSqlScript(connection, migration);
+            statement.execute("insert into event (id) values (2)");
+            try (var rows = statement.executeQuery("select public_visible from event")) {
+                for (int i = 0; i < 2; i++) {
+                    assertTrue(rows.next()); assertFalse(rows.getBoolean(1)); assertFalse(rows.wasNull());
+                }
+            }
+        }
+    }
     @Test void existingAndNewRowsDefaultToPrivateAndMigrationIsRepeatable() throws Exception {
         try (var connection = DriverManager.getConnection("jdbc:h2:mem:impact-migration;MODE=PostgreSQL", "sa", "");
              var statement = connection.createStatement()) {

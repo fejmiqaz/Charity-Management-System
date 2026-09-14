@@ -14,7 +14,6 @@ import emd.charitymanagementsystem.Service.EventService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -56,7 +55,7 @@ public class EventServiceImpl implements EventService {
         Event event = new Event();
         event.setPurpose(eventFormDto.getPurpose());
         event.setMembers(members);
-        event.setDate(LocalDateTime.now());
+        event.setDate(eventFormDto.getDate());
         event.setYear(year);
 
         Event saved = eventRepository.save(event);
@@ -68,6 +67,11 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
+        if (!java.util.Objects.equals(event.getPurpose(), eventFormDto.getPurpose())
+                || !java.util.Objects.equals(event.getDate(), eventFormDto.getDate())) {
+            event.setPublicVisible(false);
+        }
+
         Years year = yearsRepository.findById(eventFormDto.getYearId())
                 .orElseThrow(() -> new RuntimeException("Year not found"));
 
@@ -77,7 +81,7 @@ public class EventServiceImpl implements EventService {
 
         event.setPurpose(eventFormDto.getPurpose());
         event.setMembers(members);
-        event.setDate(LocalDateTime.now());
+        event.setDate(eventFormDto.getDate());
         event.setYear(year);
 
         Event updated = eventRepository.save(event);

@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/impact").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/").permitAll()
                         .requestMatchers(
                                 "/login",
                                 "/register",
@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 "/images/**"
                         ).permitAll()
 
-                        .requestMatchers("/", "/home").authenticated()
+                        .requestMatchers("/dashboard", "/home").authenticated()
 
                         .requestMatchers("/members/**")
                         .hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")
@@ -96,7 +96,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/dashboard", true)
                         .failureUrl("/login?error")
                         .permitAll()
                 )

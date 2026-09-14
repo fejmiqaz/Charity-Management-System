@@ -20,9 +20,10 @@ public class NavigationAdvice {
     @ModelAttribute
     public void navigation(Model model, HttpServletRequest request, Authentication authentication) {
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) return;
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        if (path.equals("/")) return;
         var years = yearsRepository.findAll(Sort.by(Sort.Direction.DESC, "yearValue"))
                 .stream().map(year -> new NavigationYear(year.getId(), year.getYearValue())).toList();
-        String path = request.getRequestURI().substring(request.getContextPath().length());
         var match = java.util.regex.Pattern.compile("^/years/(\\d+)(?:/|$)").matcher(path);
         Long requestedId = match.find() ? Long.valueOf(match.group(1)) : null;
         var selected = years.stream().filter(year -> year.id().equals(requestedId)).findFirst()

@@ -13,7 +13,7 @@
     <h1 class="mb-3">Project Details</h1>
 
     <section class="card p-4 mb-4" sec:authorize="hasRole('HEAD')" aria-labelledby="publicationTitle">
-        <h2 id="publicationTitle" class="section-title">Public impact page</h2>
+        <h2 id="publicationTitle" class="section-title">Public front page</h2>
         <p>Approve only a title suitable for everyone to read. Publication shares the project title and year;
             descriptions, costs, members and attachments stay private. Only finished projects appear.</p>
         <p class="text-secondary">Changing the title, year or status clears approval.</p>
@@ -23,7 +23,7 @@
                 <label class="form-check-label" for="published">Approved for public display</label>
             </div>
             <button class="btn btn-primary" type="submit">Save publication setting</button>
-            <a class="btn btn-outline-primary" th:href="@{/impact}">View impact page</a>
+            <a class="btn btn-outline-primary" th:href="@{/}">View front page</a>
         </form>
     </section>
 

@@ -22,6 +22,8 @@ public class Event {
     private Long id;
 
     private String purpose;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean publicVisible = false;
 
     private LocalDateTime date;
 

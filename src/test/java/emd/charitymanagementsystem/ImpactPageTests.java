@@ -66,7 +66,7 @@ class ImpactPageTests {
         for (ProjectStatus status : ProjectStatus.values()) {
             if (status != ProjectStatus.FINISHED) project("HIDDEN-" + status, status, true);
         }
-        var result = mvc.perform(get("/impact")).andExpect(status().isOk()).andExpect(view().name("impact"))
+        var result = mvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("index"))
                 .andExpect(model().attribute("completedProjects", 1))
                 .andExpect(model().attribute("impactYears", 1L))
                 .andExpect(content().string(containsString("Approved community garden")))
@@ -78,16 +78,16 @@ class ImpactPageTests {
                 .andReturn();
         assertEquals(2, impact.publicProjects().get(0).getClass().getRecordComponents().length);
         assertFalse(result.getResponse().getContentAsString().contains("/years/"));
-        mvc.perform(get("/impact").with(user("member@example.com").roles("MEMBER")))
+        mvc.perform(get("/").with(user("member@example.com").roles("MEMBER")))
                 .andExpect(status().isOk()).andExpect(content().string(not(containsString("PRIVATE-"))));
     }
 
     @Test void handlesEmptyDataAndEscapesApprovedTitles() throws Exception {
-        mvc.perform(get("/impact")).andExpect(status().isOk())
+        mvc.perform(get("/")).andExpect(status().isOk())
                 .andExpect(content().string(containsString("More to share soon")))
                 .andExpect(model().attribute("completedProjects", 0));
         project("<script>alert(1)</script>", ProjectStatus.FINISHED, true);
-        mvc.perform(get("/impact")).andExpect(content().string(not(containsString("<script>"))))
+        mvc.perform(get("/")).andExpect(content().string(not(containsString("<script>"))))
                 .andExpect(content().string(containsString("&lt;script&gt;")));
     }
 
@@ -148,7 +148,7 @@ class ImpactPageTests {
     }
 
     @Test void existingProtectedRoutesRemainPrivate() throws Exception {
-        for (String path : new String[]{"/", "/home", "/members", "/memberships", "/profile", "/years",
+        for (String path : new String[]{"/dashboard", "/home", "/members", "/memberships", "/profile", "/years",
                 "/years/1/projects", "/years/1/donations", "/years/1/budget", "/impact/private"}) {
             mvc.perform(get(path)).andExpect(status().is3xxRedirection());
         }

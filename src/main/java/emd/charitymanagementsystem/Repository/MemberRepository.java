@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecificationExecutor<Member> {
+    java.util.List<Member> findByYearIdOrderBySurnameAscNameAsc(Long yearId);
     Optional<Member> findByEmail(String email);
     boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
 }

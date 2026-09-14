@@ -59,10 +59,15 @@
         <div class="topbar-right">
 
 
-            <div class="account-label">
-                <i class="bi bi-person-circle"></i>
-                <span sec:authentication="name">Account</span>
-            </div>
+            <a class="account-label account-profile" th:href="@{/profile}" title="View and edit your profile"
+               sec:authorize="isAuthenticated()" th:attr="aria-current=${navigationPath == '/profile' or navigationPath == '/profile/edit' ? 'page' : null}">
+                <i class="bi bi-person-circle" aria-hidden="true"></i>
+                <span class="account-copy">
+                    <strong sec:authentication="name">Account</strong>
+                    <small>View profile</small>
+                </span>
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </a>
 
             <form th:action="@{/logout}" method="post">
                 <button class="signout" type="submit">

@@ -12,6 +12,19 @@
 
     <h1 class="mb-3">Event Details</h1>
 
+    <section class="card p-4 mb-4" sec:authorize="hasRole('HEAD')" aria-labelledby="eventPublicationTitle">
+        <h2 id="eventPublicationTitle" class="section-title">Public front page</h2>
+        <p>Approve this event's purpose and scheduled date for public display. Check that the purpose contains
+            no private details. Participant names stay private. Only upcoming approved events appear.</p>
+        <p class="text-secondary">Changing the purpose or date clears approval. Times use the front page's configured time zone.</p>
+        <form method="post" th:action="@{/years/{yearId}/events/{id}/publication(yearId=${year.id},id=${event.id})}">
+            <div class="form-check mb-3"><input class="form-check-input" id="published" name="published" type="checkbox"
+                value="true" th:checked="${event.publicVisible}"><label class="form-check-label" for="published">Approved for public display</label></div>
+            <button class="btn btn-primary" type="submit">Save publication setting</button>
+            <a class="btn btn-outline-primary" th:href="@{/}">View front page</a>
+        </form>
+    </section>
+
     <div class="mb-4">
         <a class="btn btn-dark"
            th:href="@{/years/{yearId}/events(yearId=${year.id})}">

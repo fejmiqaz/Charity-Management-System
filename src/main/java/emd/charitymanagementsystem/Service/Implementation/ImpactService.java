@@ -14,6 +14,25 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ImpactService {
     private final ProjectRepository projects;
+    private final emd.charitymanagementsystem.Repository.EventRepository events;
+
+    @Transactional(readOnly = true)
+    public List<emd.charitymanagementsystem.DTO.event.PublicEventDto> upcomingEvents(java.time.LocalDateTime now) {
+        return events.findPublicUpcoming(now);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('HEAD')")
+    public void setEventPublished(Long yearId, Long eventId, boolean published) {
+        var event = events.findById(eventId).orElseThrow();
+        if (event.getYear() == null || !Objects.equals(event.getYear().getId(), yearId)) {
+            throw new IllegalArgumentException("Event does not belong to this year.");
+        }
+        if (published && (event.getDate() == null || event.getPurpose() == null || event.getPurpose().isBlank())) {
+            throw new IllegalArgumentException("A public event needs a purpose and a scheduled date.");
+        }
+        event.setPublicVisible(published);
+    }
 
     @Transactional(readOnly = true)
     public List<PublicProjectDto> publicProjects() {

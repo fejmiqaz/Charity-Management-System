@@ -1,222 +1,126 @@
-<!--
-  Save as: src/main/resources/templates/years/details.html
--->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      layout:decorate="~{base}">
-<head>
-    <title>Year Details</title>
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{base}">
+<head><title>Year Details</title></head>
 <body>
-
-<div layout:fragment="content" class="container py-4" style="max-width: 800px;">
-
-    <h1 class="mb-3">Year Details</h1>
-
-    <div class="mb-4">
-        <a class="btn btn-dark" th:href="@{/years}">
-            <i class="bi bi-arrow-left me-1"></i> Back to Years
-        </a>
-
-        <a class="btn btn-danger"
-           th:href="@{/pdf/years/{yearId}(yearId=${year.id})}"
-           sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')">
-            <i class="bi bi-file-earmark-pdf me-1"></i>
-            Export as PDF
-        </a>
+<div layout:fragment="content" class="container py-4">
+    <div class="section-heading"><div><p class="eyebrow">YEAR AT A GLANCE</p>
+        <h1 th:text="${year.yearValue} + ' · Year details'">Year details</h1>
+        <p class="text-secondary">All records for this year, together in one place.</p></div>
+        <div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary" th:href="@{/years}">Back to years</a>
+            <a class="btn btn-primary" sec:authorize="hasAnyRole('HEAD','SUBHEAD')"
+               th:href="@{/pdf/years/{id}(id=${year.id})}">Export year PDF</a></div>
     </div>
+    <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Year sections">
+        <a class="btn btn-outline-primary btn-sm" href="#finances">Financial summary</a>
+        <a class="btn btn-outline-primary btn-sm" href="#budget">Budget</a>
+        <a class="btn btn-outline-primary btn-sm" href="#projects" th:if="${projects != null}">Projects</a>
+        <a class="btn btn-outline-primary btn-sm" href="#events" th:if="${events != null}">Events</a>
+        <a class="btn btn-outline-primary btn-sm" href="#donations">Donations</a>
+        <a class="btn btn-outline-primary btn-sm" href="#donors">Donating members</a>
+        <a class="btn btn-outline-primary btn-sm" href="#members">Members</a>
+        <a class="btn btn-outline-primary btn-sm" href="#memberships" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')">Membership payments</a>
+    </nav>
 
-    <!-- Year hero -->
-    <div class="card text-center p-4 mb-4">
-        <span class="display-serif"
-              style="font-size: 42px;"
-              th:text="${year.yearValue}"></span>
-    </div>
+    <section id="finances" class="card p-4 mb-4" aria-labelledby="financesTitle">
+        <h2 id="financesTitle" class="section-title">Financial summary</h2>
+        <div class="summary-row"><span>Allocated budget</span><strong th:text="${#numbers.formatDecimal(budgetAmount,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <div class="summary-row"><span>Total donations</span><strong th:text="${#numbers.formatDecimal(totalDonations,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <div class="summary-row"><span>Membership income</span><strong th:text="${#numbers.formatDecimal(membershipIncome,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <div class="summary-row"><span>Total project cost</span><strong th:text="${#numbers.formatDecimal(totalProjectCosts,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <div class="summary-row total"><span>Remaining budget</span><strong th:text="${#numbers.formatDecimal(remainingBudget,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <p class="mb-0 mt-3" th:text="${exceedsBudget ? 'Over budget' : 'Within budget'}" th:classappend="${exceedsBudget ? 'status-bad' : 'status-ok'}"></p>
+    </section>
 
-    <!-- Budget -->
-    <div class="card p-4 mb-4">
-        <h2 class="section-title">Budget</h2>
-
-        <div class="empty-state" th:if="${year.budgetAmount == null}">
-            <i class="bi bi-cash-coin display-6"></i>
-            <p class="mb-0 mt-2">No budget has been assigned for this year.</p>
+    <section id="budget" class="card p-4 mb-4" aria-labelledby="budgetTitle">
+        <div class="section-heading"><h2 id="budgetTitle">Budget</h2><a th:href="@{/years/{id}/budget(id=${year.id})}">Open budget</a></div>
+        <p class="empty-state" th:if="${budget == null}">No budget has been assigned for this year.</p>
+        <div th:if="${budget != null}">
+            <p><strong>Allocated amount: </strong><span th:text="${budget.budgetAmount != null ? #numbers.formatDecimal(budget.budgetAmount,1,'COMMA',2,'POINT') + ' EUR' : 'Not set'}"></span></p>
+            <p style="white-space: pre-wrap; overflow-wrap: anywhere" th:text="${#strings.isEmpty(budget.description) ? 'No budget description provided.' : budget.description}"></p>
+            <p><strong>Assigned members: </strong><span th:text="${#lists.isEmpty(budget.memberNames) ? 'None assigned' : #strings.listJoin(budget.memberNames, ', ')}"></span></p>
+            <p class="mb-0"><strong>Linked donations: </strong><span th:if="${#lists.isEmpty(budget.donationIds)}">None linked</span>
+                <a class="me-2" th:each="donationId : ${budget.donationIds}" th:href="@{/years/{id}/donations/{donationId}(id=${year.id},donationId=${donationId})}" th:text="'Donation #' + ${donationId}"></a></p>
         </div>
+    </section>
 
-        <div class="table-responsive" th:if="${year.budgetAmount != null}">
-            <table class="table table-branded align-middle mb-0">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Budget Amount</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td th:text="${year.budgetId}"></td>
-                    <td class="fw-bold"
-                        th:text="${year.budgetAmount} + ' €'"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <section id="projects" class="card p-4 mb-4" th:if="${projects != null}" aria-labelledby="projectsTitle">
+        <div class="section-heading"><h2 id="projectsTitle" th:text="'Projects (' + ${#lists.size(projects)} + ')'"></h2><a th:href="@{/years/{id}/projects(id=${year.id})}">Open projects</a></div>
+        <p class="empty-state" th:if="${#lists.isEmpty(projects)}">There are no projects for this year.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(projects)}"><table class="table table-branded align-middle">
+            <thead><tr><th scope="col">Project / description</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col">Cost</th><th scope="col">Members</th></tr></thead>
+            <tbody><tr th:each="project : ${projects}">
+                <td style="min-width: 240px; max-width: 460px; overflow-wrap: anywhere"><a class="fw-bold" th:href="@{/years/{id}/projects/{pid}(id=${year.id},pid=${project.id})}" th:text="${project.name}"></a>
+                    <p class="text-secondary mb-0 mt-1" style="white-space: pre-wrap" th:text="${project.description}"></p></td>
+                <td th:text="${project.status != null ? project.status : 'Not set'}"></td>
+                <td th:text="${project.dateCreated != null ? #temporals.format(project.dateCreated,'dd MMM yyyy') : 'Not set'}"></td>
+                <td class="text-nowrap" th:text="${project.projectPrice != null ? #numbers.formatDecimal(project.projectPrice,1,'COMMA',2,'POINT') + ' EUR' : 'Not set'}"></td>
+                <td th:text="${#lists.isEmpty(project.memberNames) ? 'None assigned' : #strings.listJoin(project.memberNames, ', ')}"></td>
+            </tr></tbody></table></div>
+    </section>
 
-    <!-- Projects -->
-    <div class="card p-4 mb-4">
-        <h2 class="section-title">Projects</h2>
+    <section id="events" class="card p-4 mb-4" th:if="${events != null}" aria-labelledby="eventsTitle">
+        <div class="section-heading"><h2 id="eventsTitle" th:text="'Events (' + ${#lists.size(events)} + ')'"></h2><a th:href="@{/years/{id}/events(id=${year.id})}">Open events</a></div>
+        <p class="empty-state" th:if="${#lists.isEmpty(events)}">There are no events for this year.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(events)}"><table class="table table-branded align-middle">
+            <thead><tr><th scope="col">Purpose</th><th scope="col">Date and time</th><th scope="col">Members</th></tr></thead>
+            <tbody><tr th:each="event : ${events}">
+                <td style="white-space: pre-wrap; overflow-wrap: anywhere"><a th:href="@{/years/{id}/events/{eid}(id=${year.id},eid=${event.id})}" th:text="${event.purpose}"></a></td>
+                <td th:text="${event.date != null ? #temporals.format(event.date,'dd MMM yyyy, HH:mm') : 'Not scheduled'}"></td>
+                <td th:text="${#lists.isEmpty(event.memberNames) ? 'None assigned' : #strings.listJoin(event.memberNames, ', ')}"></td>
+            </tr></tbody></table></div>
+    </section>
 
-        <div class="empty-state" th:if="${year.totalProjects == 0}">
-            <i class="bi bi-kanban display-6"></i>
-            <p class="mb-0 mt-2">There are no projects for this year.</p>
-        </div>
+    <section id="donations" class="card p-4 mb-4" aria-labelledby="donationsTitle">
+        <div class="section-heading"><h2 id="donationsTitle" th:text="'Donations (' + ${#lists.size(donations)} + ')'"></h2><a th:href="@{/years/{id}/donations(id=${year.id})}">Open donations</a></div>
+        <p class="empty-state" th:if="${#lists.isEmpty(donations)}">There are no donations for this year.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(donations)}"><table class="table table-branded align-middle">
+            <thead><tr><th scope="col">Donation</th><th scope="col">Amount</th><th scope="col">Donating members</th></tr></thead>
+            <tbody><tr th:each="donation : ${donations}">
+                <td><a th:href="@{/years/{id}/donations/{did}(id=${year.id},did=${donation.id})}" th:text="'Donation #' + ${donation.id}"></a></td>
+                <td th:text="${donation.donationAmount != null ? #numbers.formatDecimal(donation.donationAmount,1,'COMMA',2,'POINT') + ' EUR' : 'Not set'}"></td>
+                <td th:text="${#lists.isEmpty(donation.memberNames) ? 'No member linked' : #strings.listJoin(donation.memberNames, ', ')}"></td>
+            </tr></tbody></table></div>
+    </section>
 
-        <div class="table-responsive" th:if="${year.totalProjects > 0}">
-            <table class="table table-branded mb-0">
-                <thead>
-                <tr>
-                    <th>Project Summary</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="text-center fw-bold">
-                        This year has
-                        <span th:text="${year.totalProjects}"></span>
-                        project(s).
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <section id="donors" class="card p-4 mb-4" aria-labelledby="donorsTitle">
+        <h2 id="donorsTitle" class="section-title">Donating members</h2>
+        <p class="empty-state" th:if="${#lists.isEmpty(donatingMembers)}">No members are linked to this year's donations.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(donatingMembers)}"><table class="table table-branded align-middle">
+            <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Phone</th><th scope="col">Country / city</th></tr></thead>
+            <tbody><tr th:each="member : ${donatingMembers}">
+                <td><a th:href="@{/members/{id}(id=${member.id})}" th:text="${member.name} + ' ' + ${member.surname}"></a></td>
+                <td th:text="${member.email}"></td><td th:text="${member.phone}"></td><td><span th:text="${member.country}"></span> / <span th:text="${member.city}"></span></td>
+            </tr></tbody></table></div>
+    </section>
 
-    <!-- Events -->
-    <div class="card p-4 mb-4">
-        <h2 class="section-title">Events</h2>
+    <section id="members" class="card p-4 mb-4" aria-labelledby="membersTitle">
+        <h2 id="membersTitle" class="section-title" th:text="'Members assigned to this year (' + ${#lists.size(yearMembers)} + ')'"></h2>
+        <p class="text-secondary" th:text="'Membership status for ' + ${year.yearValue} + ' · Annual fee: ' + ${membershipFee} + ' EUR'"></p>
+        <p class="empty-state" th:if="${#lists.isEmpty(yearMembers)}">No members are assigned to this year.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(yearMembers)}"><table class="table table-branded align-middle">
+            <thead><tr><th scope="col">Name</th><th scope="col">Contact</th><th scope="col">Country / city</th><th scope="col">Role</th><th scope="col">Membership</th></tr></thead>
+            <tbody><tr th:each="member : ${yearMembers}" th:with="payment=${paidMemberships[member.id]}">
+                <td><a th:href="@{/members/{id}(id=${member.id})}" th:text="${member.name} + ' ' + ${member.surname}"></a></td>
+                <td><span th:text="${member.email}"></span><br><span th:text="${member.phone}"></span></td>
+                <td><span th:text="${member.country}"></span> / <span th:text="${member.city}"></span></td><td th:text="${member.role}"></td>
+                <td><span class="badge" th:classappend="${payment != null ? 'text-bg-success' : 'text-bg-secondary'}" th:text="${payment != null ? 'Paid' : 'Unpaid'}"></span>
+                    <small class="d-block mt-1" th:if="${payment != null}" th:text="${payment.amount} + ' EUR · ' + ${#temporals.format(payment.paidOn,'dd MMM yyyy')}"></small></td>
+            </tr></tbody></table></div>
+    </section>
 
-        <div class="empty-state" th:if="${year.totalEvents == 0}">
-            <i class="bi bi-calendar-event display-6"></i>
-            <p class="mb-0 mt-2">There are no events for this year.</p>
-        </div>
-
-        <div class="table-responsive" th:if="${year.totalEvents > 0}">
-            <table class="table table-branded mb-0">
-                <thead>
-                <tr>
-                    <th>Event Summary</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="text-center fw-bold">
-                        This year has
-                        <span th:text="${year.totalEvents}"></span>
-                        event(s).
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Donations -->
-    <div class="card p-4 mb-4">
-        <h2 class="section-title">Donations</h2>
-
-        <div class="empty-state" th:if="${year.totalDonations == 0}">
-            <i class="bi bi-heart display-6"></i>
-            <p class="mb-0 mt-2">There are no donations for this year.</p>
-        </div>
-
-        <div class="table-responsive" th:if="${year.totalDonations > 0}">
-            <table class="table table-branded mb-0">
-                <thead>
-                <tr>
-                    <th>Donation Summary</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="text-center fw-bold">
-                        This year has
-                        <span th:text="${year.totalDonations}"></span>
-                        donation(s).
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Members who donated -->
-    <div class="card p-4 mb-4">
-        <h2 class="section-title">Donating Members</h2>
-
-        <div class="empty-state" th:if="${year.totalDonations == 0}">
-            <i class="bi bi-people display-6"></i>
-            <p class="mb-0 mt-2">No members have donated this year.</p>
-        </div>
-
-        <div class="table-responsive" th:if="${year.totalDonations > 0}">
-            <table class="table table-branded mb-0">
-                <thead>
-                <tr>
-                    <th>Donor Summary</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="text-center fw-bold">
-                        Donation records exist for this year.
-                        Visit the Donations page for complete details.
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Financial summary -->
-    <div class="card card-accent-top budget p-4 mb-4"
-         style="max-width: 520px; margin: 30px auto 0 auto;">
-
-        <h2 class="section-title"
-            style="border-bottom-color: var(--ink-900);">
-            Financial Summary
-        </h2>
-
-        <div class="summary-row">
-            <span>Budget</span>
-            <strong th:text="${budgetAmount} + ' €'"></strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Total Donations</span>
-            <strong th:text="${totalDonations} + ' €'"></strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Total Project Cost</span>
-            <strong th:text="${totalProjectCosts} + ' €'"></strong>
-        </div>
-
-        <div class="summary-row"><span>Membership income</span><strong th:text="${membershipIncome} + ' €'"></strong></div>
-        <div class="summary-row total">
-            <span>Remaining Budget</span>
-            <strong th:text="${remainingBudget} + ' €'"></strong>
-        </div>
-
-        <p class="text-center mt-3 mb-0"
-           th:text="${exceedsBudget ? 'Over Budget' : 'Within Budget'}"
-           th:classappend="${exceedsBudget} ? ' status-bad' : ' status-ok'"
-           style="font-size: 22px;">
-        </p>
-
-    </div>
-
+    <section id="memberships" class="card p-4 mb-4" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')" aria-labelledby="membershipsTitle">
+        <div class="section-heading"><h2 id="membershipsTitle">Membership payments</h2><a th:href="@{/memberships(year=${year.yearValue})}">Manage payments</a></div>
+        <p class="text-secondary">All receipts for this calendar year, including members assigned to other years. Voided receipts are excluded from income.</p>
+        <p class="empty-state" th:if="${#lists.isEmpty(membershipPayments)}">No membership payments recorded for this year.</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(membershipPayments)}"><table class="table table-branded align-middle">
+            <thead><tr><th scope="col">Member</th><th scope="col">Amount</th><th scope="col">Paid on</th><th scope="col">Status</th><th scope="col">Void reason</th></tr></thead>
+            <tbody><tr th:each="payment : ${membershipPayments}">
+                <td th:text="${payment.memberName}"></td><td th:text="${payment.amount} + ' EUR'"></td>
+                <td th:text="${#temporals.format(payment.paidOn,'dd MMM yyyy')}"></td>
+                <td th:text="${payment.paid ? 'Paid' : 'Voided'}"></td><td th:text="${payment.voidReason}"></td>
+            </tr></tbody></table></div>
+    </section>
 </div>
-
 </body>
 </html>

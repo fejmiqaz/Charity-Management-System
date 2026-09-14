@@ -16,7 +16,8 @@ public class EventMapper {
                 event.getMembers().isEmpty() ? List.<Long>of() : event.getMembers().stream().map(Member::getId).toList(),
                 event.getMembers().isEmpty() ? List.<String>of() : event.getMembers().stream().map(Member::getName).toList(),
                 event.getYear() != null ? event.getYear().getId() : null,
-                event.getYear() != null ? event.getYear().getYearValue() : null
+                event.getYear() != null ? event.getYear().getYearValue() : null,
+                event.isPublicVisible()
         );
     }
 

@@ -1793,6 +1793,45 @@ h2 {
     white-space: nowrap;
 }
 
+.workspace-topbar .account-profile {
+    padding: 8px 10px;
+    border: 1px solid #d5dfed;
+    border-radius: 12px;
+    background: #f4f7fc;
+    text-decoration: none;
+    min-height: 44px;
+}
+
+.workspace-topbar .account-profile:hover,
+.workspace-topbar .account-profile[aria-current="page"] {
+    background: #e5edfa;
+    border-color: #839dc3;
+}
+
+.workspace-topbar .account-profile:focus-visible {
+    outline: 3px solid #3568ad;
+    outline-offset: 3px;
+}
+
+.workspace-topbar .account-copy {
+    display: grid;
+    min-width: 0;
+}
+
+.workspace-topbar .account-copy strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workspace-topbar .account-copy small {
+    color: #356099;
+    font-size: 11px;
+}
+
+.workspace-topbar .account-profile > i {
+    flex-shrink: 0;
+}
+
 .workspace-topbar .topbar-right form {
     margin: 0;
     flex-shrink: 0;

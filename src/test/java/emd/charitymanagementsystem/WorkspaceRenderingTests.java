@@ -42,7 +42,7 @@ class WorkspaceRenderingTests {
     @Test
     void rendersDashboardAndEverySectionAndForm() throws Exception {
         String base = "/years/" + yearId;
-        String[] paths = {"/", "/members", "/members/add", "/years", "/years/add-form",
+        String[] paths = {"/dashboard", "/members", "/members/add", "/years", "/years/add-form",
                 base, base + "/projects", base + "/projects/add", base + "/donations",
                 base + "/donations/add", base + "/events", base + "/events/add-form",
                 base + "/budget", base + "/budget/add-form"};

@@ -18,4 +18,5 @@ public class EventResponseDto {
     private List<String> memberNames;
     private Long yearId;
     private Integer yearValue;
+    private boolean publicVisible;
 }

@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <aside class="app-sidebar" th:fragment="navbar" id="appSidebar" aria-label="Main navigation">
-    <a class="app-brand" th:href="@{/}"><span class="brand-symbol"><i
+    <a class="app-brand" th:href="@{/dashboard}"><span class="brand-symbol"><i
             class="bi bi-heart-fill"></i></span><span>Charity<span
             class="brand-subtitle">PEOPLE. PURPOSE. IMPACT.</span></span></a>
     <div class="sidebar-label">WORKSPACE</div>
     <nav class="sidebar-links">
-        <a th:href="@{/}" data-nav="dashboard"><i class="bi bi-grid-1x2"></i> Overview</a>
+        <a th:href="@{/dashboard}" data-nav="dashboard"><i class="bi bi-grid-1x2"></i> Overview</a>
         <a th:href="@{/members}" data-nav="members" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','MEMBER')"><i
                 class="bi bi-people"></i> Members</a>
         <a th:href="@{/years}" data-nav="years" sec:authorize="hasAnyRole('HEAD','SUBHEAD','MEMBER')"><i
@@ -38,9 +38,8 @@
     </nav>
     <p class="sidebar-hint" th:if="${navigationYear == null}">Create a yearly record to start organizing projects,
         donations, and events.</p>
-    <nav class="sidebar-links profile-nav"><a th:href="@{/profile}" data-nav="profile"><i
-            class="bi bi-person-circle"></i> My profile</a></nav>
     <div class="sidebar-bottom">
+        <a class="btn btn-outline-light mb-3" th:href="@{/}">View public website ↗</a>
         <div class="purpose-note"><i class="bi bi-flower2"></i><strong>Small actions.<br>Lasting change.</strong>
             <p>Your community starts here.</p></div>
     </div>
