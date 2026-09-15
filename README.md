@@ -107,6 +107,7 @@ The dashboard provides an overview of the organization's data, including:
 - Dockerized application
 - Cloud deployment on Render
 - Neon PostgreSQL cloud database
+- Per-client request limits: 300 total requests, 10 login attempts, 5 registrations, and 60 data-changing requests per minute. Excess requests receive HTTP 429 with a `Retry-After` header.
 
 ---
 
@@ -288,3 +289,7 @@ Developed as a full-stack Spring Boot application showcasing enterprise Java dev
 - Receipt name snapshots and payment history survive member deletion. Membership receipts use a separate ledger, not donation records; do not record the same income twice.
 - Membership income is included in the dashboard, yearly financial summary, and complete-year PDF. A database uniqueness constraint prevents two active receipts for the same member and year.
 - The existing `spring.jpa.hibernate.ddl-auto=update` setting creates the new membership tables at startup. Existing members begin with no membership payments recorded; enter historical receipts as needed.
+
+## Request limiting
+
+The application limits requests in memory per client address. Set `RATE_LIMIT_TRUST_PROXY=true` only when the application is reachable exclusively through a trusted proxy, such as Render, which sets `X-Forwarded-For`; otherwise the application uses the direct connection address. The limits apply independently on each running instance and reset on restart. For multiple instances or large-scale traffic, use a shared rate-limit store or an edge rate limiter. Rate limits reduce automated login attempts and request floods; they do not replace role-based authorization, database credential protection, or backups.

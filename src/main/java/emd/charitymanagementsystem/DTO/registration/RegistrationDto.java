@@ -10,15 +10,19 @@ import lombok.Data;
 public class RegistrationDto {
 
     @NotBlank(message = "Name is required")
+    @Size(max = 100)
     private String name;
 
     @NotBlank(message = "Surname is required")
+    @Size(max = 100)
     private String surname;
 
     @NotBlank(message = "Country is required")
+    @Size(max = 100)
     private String country;
 
     @NotBlank(message = "City is required")
+    @Size(max = 100)
     private String city;
 
     @NotBlank(message = "Email is required")
@@ -33,12 +37,14 @@ public class RegistrationDto {
     }
 
     @NotBlank
+    @Size(max = 30)
     private String phone;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must contain at least 8 characters")
+    @Size(min = 8, max = 128, message = "Password must contain between 8 and 128 characters")
     private String password;
 
     @NotBlank(message = "Password confirmation is required")
+    @Size(max = 128)
     private String confirmPassword;
 }
