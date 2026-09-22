@@ -22,11 +22,11 @@ public class Event {
     private Long id;
 
     private String purpose;
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private boolean publicVisible = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(32) default 'NORMAL'")
+    @Column(nullable = false, length = 32)
     private EventType eventType = EventType.NORMAL;
 
     private LocalDateTime date;

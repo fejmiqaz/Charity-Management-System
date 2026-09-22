@@ -21,7 +21,7 @@ public class Donation {
 
     private Double donationAmount;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(3) default 'EUR'")
+    @Column(nullable = false, length = 3)
     private Currency currency = Currency.EUR;
 
     @ManyToOne

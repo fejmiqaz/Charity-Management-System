@@ -13,7 +13,7 @@ public class ProjectRevenue {
     @Column(nullable = false) private LocalDate revenueMonth;
     @Column(nullable = false, length = 160) private String customer;
     @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
-    @Enumerated(EnumType.STRING) @Column(nullable = false, columnDefinition = "varchar(3) default 'EUR'") private Currency currency = Currency.EUR;
+    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 3) private Currency currency = Currency.EUR;
     @Column(length = 400) private String note;
     @Column(nullable = false) private String recordedBy;
     @Column(nullable = false) private Instant recordedAt;

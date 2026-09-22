@@ -21,10 +21,10 @@ public class Project {
 
     private String name;
     private String description;
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private boolean publicImpact = false;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(32) default 'STANDARD'")
+    @Column(nullable = false, length = 32)
     private ProjectType projectType = ProjectType.STANDARD;
     private LocalDate dateCreated;
     @Enumerated(EnumType.STRING)

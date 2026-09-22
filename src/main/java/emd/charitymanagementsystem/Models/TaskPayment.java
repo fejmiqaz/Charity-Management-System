@@ -11,7 +11,7 @@ public class TaskPayment {
     @ManyToOne(optional = false) private EventTask task;
     @ManyToOne private Member member;
     @Column(nullable = false, precision = 12, scale = 2) private BigDecimal amount;
-    @Enumerated(EnumType.STRING) @Column(nullable = false, columnDefinition = "varchar(3) default 'EUR'") private Currency currency = Currency.EUR;
+    @Enumerated(EnumType.STRING) @Column(nullable = false, length = 3) private Currency currency = Currency.EUR;
     @Column(nullable = false) private LocalDate paidOn;
     @Column(length = 400) private String note;
     @Column(nullable = false) private String recordedBy;
