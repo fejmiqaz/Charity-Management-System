@@ -45,7 +45,9 @@ public class ProjectController {
 
     @PreAuthorize("hasAnyRole('HEAD', 'TREASURER', 'SUBHEAD', 'PROJECT_MANAGER', 'VOLUNTEER', 'MEMBER')")
     @GetMapping
-    public String listProjects(@PathVariable Long yearId, Model model) {
+    public String listProjects(@PathVariable Long yearId,
+                               @RequestParam(required = false) ProjectType type,
+                               @RequestParam(required = false) ProjectStatus status, Model model) {
         Years year = yearService.findEntityById(yearId);
 
         List<ProjectResponseDto> projects = projectService.findByYearId(yearId);
@@ -64,7 +66,15 @@ public class ProjectController {
         boolean withinBudget = totalProjectPrice <= yearBudget;
 
         model.addAttribute("year", year);
-        model.addAttribute("projects", projects);
+        model.addAttribute("projects", projects.stream()
+                .filter(project -> type == null || (project.getProjectType() == null ? ProjectType.STANDARD : project.getProjectType()) == type)
+                .filter(project -> status == null || project.getStatus() == status)
+                .toList());
+        model.addAttribute("types", ProjectType.values());
+        model.addAttribute("statuses", ProjectStatus.values());
+        model.addAttribute("selectedType", type);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("filtersActive", type != null || status != null);
         model.addAttribute("totalProjectPrice", totalProjectPrice);
         model.addAttribute("yearBudget", yearBudget);
         model.addAttribute("withinBudget", withinBudget);

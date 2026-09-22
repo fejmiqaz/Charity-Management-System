@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>(function(){document.documentElement.dataset.theme=localStorage.getItem('charity-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.lang=localStorage.getItem('charity-language')||'en'}());</script>
+    <script>(function () {
+        document.documentElement.dataset.theme = localStorage.getItem('charity-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.lang = localStorage.getItem('charity-language') || 'en'
+    }());</script>
     <title>Create Account</title>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -11,7 +14,14 @@
 </head>
 
 <body class="auth-page">
-<div class="auth-preferences"><select id="appLanguage" aria-label="Language"><option value="en">EN</option><option value="sq">SQ</option><option value="fr">FR</option><option value="de">DE</option></select><button type="button" id="themeToggle" aria-label="Switch color theme"><span aria-hidden="true">◐</span></button></div>
+<div class="auth-preferences"><select id="appLanguage" aria-label="Language">
+    <option value="en">EN</option>
+    <option value="sq">SQ</option>
+    <option value="fr">FR</option>
+    <option value="de">DE</option>
+</select>
+    <button type="button" id="themeToggle" aria-label="Switch color theme"><span aria-hidden="true">◐</span></button>
+</div>
 <aside class="auth-story"><a class="auth-brand" th:href="@{/login}">♥ &nbsp; Charity</a>
     <div><p class="auth-eyebrow">PEOPLE. PURPOSE. IMPACT.</p>
         <h2>Make room<br>for good.</h2>

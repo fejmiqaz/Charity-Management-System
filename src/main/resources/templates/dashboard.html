@@ -39,7 +39,8 @@
                 class="metric-caption">Your impact over time</span></div>
     </section>
     <section class="mb-4" th:if="${!#lists.isEmpty(budgetWarnings)}" aria-labelledby="budgetWarningTitle">
-        <div class="section-heading"><h2 id="budgetWarningTitle">Yearly budget alerts</h2><span>Project costs against allocated budget</span></div>
+        <div class="section-heading"><h2 id="budgetWarningTitle">Yearly budget alerts</h2><span>Project costs against allocated budget</span>
+        </div>
         <div th:each="warning : ${budgetWarnings}" class="alert" role="status"
              th:classappend="${warning.level == 'danger' ? 'alert-danger' : (warning.level == 'unset' ? 'alert-info' : 'alert-warning')}">
             <strong th:text="${warning.year} + ' · ' + ${warning.level == 'danger' ? 'Budget reached or exceeded' : (warning.level == 'unset' ? 'No positive budget set' : 'Approaching budget limit')}"></strong>
@@ -47,16 +48,20 @@
                 <span th:text="${#numbers.formatDecimal(warning.percentage, 1, 2)} + '% used'"></span> ·
                 <span th:text="${#numbers.formatDecimal(warning.amount(), 1, 'COMMA', 2, 'POINT')} + ' EUR ' + ${warning.exceeded() ? 'over budget' : 'remaining'}"></span>
             </p>
-            <p class="mb-0" th:if="${warning.percentage == null}" th:text="${#numbers.formatDecimal(warning.amount(), 1, 'COMMA', 2, 'POINT')} + ' EUR in project costs. Set a positive yearly budget to measure usage.'"></p>
+            <p class="mb-0" th:if="${warning.percentage == null}"
+               th:text="${#numbers.formatDecimal(warning.amount(), 1, 'COMMA', 2, 'POINT')} + ' EUR in project costs. Set a positive yearly budget to measure usage.'"></p>
         </div>
     </section>
     <div class="dashboard-lower">
         <section class="finance-panel">
-            <div class="section-heading"><h2>Financial overview</h2><span>All years · EUR budget; donations by currency</span></div>
+            <div class="section-heading"><h2>Financial overview</h2>
+                <span>All years · EUR budget; donations by currency</span></div>
             <div class="balance-block"><span>Remaining budget</span><strong
                     th:text="${#numbers.formatDecimal(remainingBudget, 1, 'COMMA', 2, 'POINT')} + ' €'">0.00 €</strong>
                 <p>Allocated budgets + donations + memberships − project costs</p></div>
-            <div class="finance-line"><span><i class="bi bi-arrow-down-left"></i> Total donations</span><strong><span class="d-block" th:each="entry : ${donationTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong>
+            <div class="finance-line"><span><i class="bi bi-arrow-down-left"></i> Total donations</span><strong><span
+                    class="d-block" th:each="entry : ${donationTotals}"
+                    th:text="${entry.value} + ' ' + ${entry.key}"></span></strong>
             </div>
             <div class="finance-line"><span><i class="bi bi-arrow-up-right"></i>Membership income</span><strong
                     th:text="${#numbers.formatDecimal(membershipIncome, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong></div>

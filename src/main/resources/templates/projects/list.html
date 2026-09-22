@@ -43,11 +43,36 @@
     </a>
   </div>
 
+  <form method="get" th:action="@{/years/{yearId}/projects(yearId=${year.id})}" class="card p-3 mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-sm-4">
+        <label for="filterType" class="form-label">Type</label>
+        <select id="filterType" name="type" class="form-select">
+          <option value="">All types</option>
+          <option th:each="type : ${types}" th:value="${type}" th:selected="${type == selectedType}"
+                  th:text="${type.name() == 'REVENUE' ? 'Revenue' : 'Standard'}"></option>
+        </select>
+      </div>
+      <div class="col-sm-4">
+        <label for="filterStatus" class="form-label">Status</label>
+        <select id="filterStatus" name="status" class="form-select">
+          <option value="">All statuses</option>
+          <option th:each="status : ${statuses}" th:value="${status}" th:selected="${status == selectedStatus}"
+                  th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(status.name(), '_', ' ')))}"></option>
+        </select>
+      </div>
+      <div class="col-sm-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Apply filters</button>
+        <a class="btn btn-outline-dark" th:href="@{/years/{yearId}/projects(yearId=${year.id})}">Clear filters</a>
+      </div>
+    </div>
+  </form>
+
   <div class="empty-state" th:if="${#lists.isEmpty(projects)}">
     <i class="bi bi-kanban display-6"></i>
-    <p class="mt-3 mb-2">No projects were found for this year.</p>
+    <p class="mt-3 mb-2" th:text="${filtersActive ? 'No projects match the selected filters.' : 'No projects were found for this year.'}"></p>
     <a class="btn btn-success btn-sm"
-       th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
+       th:if="${!filtersActive}" th:href="@{/years/{yearId}/projects/add(yearId=${year.id})}">
       Create the First Project
     </a>
   </div>
@@ -131,7 +156,7 @@
     </h2>
 
     <div class="summary-row">
-      <span>Total Project Cost</span>
+      <span>Total Project Cost (all projects this year)</span>
       <strong th:text="${totalProjectPrice} + ' €'"></strong>
     </div>
 

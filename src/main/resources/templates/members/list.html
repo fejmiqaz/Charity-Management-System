@@ -25,7 +25,9 @@
     </div>
 
     <div class="page-toolbar mb-4">
-        <a class="btn btn-outline-primary" th:href="@{/members/export.xlsx(search=${search},country=${country},city=${city},role=${selectedRole},membershipYear=${membershipYear})}"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
+        <a class="btn btn-outline-primary"
+           th:href="@{/members/export.xlsx(search=${search},country=${country},city=${city},role=${selectedRole},membershipYear=${membershipYear})}"><i
+                class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
         <a class="btn btn-dark" th:href="@{/dashboard}">
             <i class="bi bi-house-door me-1"></i>
             Home

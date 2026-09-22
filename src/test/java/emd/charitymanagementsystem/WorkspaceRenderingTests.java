@@ -29,6 +29,10 @@ class WorkspaceRenderingTests {
     WebApplicationContext context;
     @Autowired
     YearsRepository yearsRepository;
+    @Autowired
+    emd.charitymanagementsystem.Repository.ProjectRepository projects;
+    @Autowired
+    emd.charitymanagementsystem.Repository.EventRepository events;
     MockMvc mvc;
     Long yearId;
 
@@ -87,5 +91,79 @@ class WorkspaceRenderingTests {
         assertTrue(html.indexOf("mobile-search-trigger") < html.indexOf("id=\"mobileActions\""));
         assertTrue(html.indexOf("mobile-profile-link") < html.indexOf("id=\"appLanguage\""));
         assertTrue(html.indexOf("id=\"themeToggle\"") < html.indexOf("mobile-signout-form"));
+    }
+
+    @Test
+    void projectFiltersCombineAndKeepAnnualTotals() throws Exception {
+        var year = yearsRepository.findById(yearId).orElseThrow();
+        for (int i = 0; i < 3; i++) {
+            var project = new emd.charitymanagementsystem.Models.Project();
+            project.setName("Filter project " + i);
+            project.setYear(year);
+            project.setProjectType(i == 0 ? emd.charitymanagementsystem.Models.ProjectType.STANDARD
+                    : emd.charitymanagementsystem.Models.ProjectType.REVENUE);
+            project.setStatus(i == 2 ? emd.charitymanagementsystem.Models.ProjectStatus.FINISHED
+                    : emd.charitymanagementsystem.Models.ProjectStatus.PLANNED);
+            project.setProjectPrice(10.0);
+            project.setMembers(java.util.Set.of());
+            projects.save(project);
+        }
+        String path = "/years/" + yearId + "/projects";
+        mvc.perform(get(path).param("type", "REVENUE").param("status", "PLANNED")
+                        .with(user("test@example.com").roles("HEAD")))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("projects", hasSize(1)))
+                .andExpect(model().attribute("totalProjectPrice", 30.0))
+                .andExpect(content().string(containsString("Filter project 1")))
+                .andExpect(content().string(containsString("value=\"REVENUE\" selected=\"selected\"")))
+                .andExpect(content().string(containsString("value=\"PLANNED\" selected=\"selected\"")));
+        mvc.perform(get(path).param("status", "PLANNED").with(user("test@example.com").roles("HEAD")))
+                .andExpect(model().attribute("projects", hasSize(2)));
+        mvc.perform(get(path).param("type", "STANDARD").param("status", "FINISHED")
+                        .with(user("test@example.com").roles("HEAD")))
+                .andExpect(content().string(containsString("No projects match the selected filters.")));
+        mvc.perform(get(path).param("type", "").param("status", "").with(user("test@example.com").roles("HEAD")))
+                .andExpect(model().attribute("projects", hasSize(3)));
+    }
+
+    @Test
+    void eventFiltersCombineByTypeAndDate() throws Exception {
+        var year = yearsRepository.findById(yearId).orElseThrow();
+        for (int i = 0; i < 3; i++) {
+            var event = new emd.charitymanagementsystem.Models.Event();
+            event.setPurpose("Filter event " + i);
+            event.setYear(year);
+            event.setEventType(i == 0 ? emd.charitymanagementsystem.Models.EventType.NORMAL
+                    : emd.charitymanagementsystem.Models.EventType.TASK_BASED);
+            event.setDate(java.time.LocalDateTime.now().plusDays(i == 2 ? -2 : 2));
+            event.setMembers(java.util.List.of());
+            events.save(event);
+        }
+        String path = "/years/" + yearId + "/events";
+        mvc.perform(get(path).param("type", "TASK_BASED").param("status", "UPCOMING")
+                        .with(user("test@example.com").roles("HEAD")))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("events", hasSize(1)))
+                .andExpect(content().string(containsString("Filter event 1")))
+                .andExpect(content().string(containsString("value=\"TASK_BASED\" selected=\"selected\"")))
+                .andExpect(content().string(containsString("value=\"UPCOMING\" selected=\"selected\"")));
+        mvc.perform(get(path).param("status", "PAST").with(user("test@example.com").roles("HEAD")))
+                .andExpect(model().attribute("events", hasSize(1)))
+                .andExpect(content().string(containsString("Filter event 2")));
+        mvc.perform(get(path).param("type", "NORMAL").param("status", "PAST")
+                        .with(user("test@example.com").roles("HEAD")))
+                .andExpect(content().string(containsString("No events match the selected filters.")));
+        mvc.perform(get(path).param("type", "").param("status", "").with(user("test@example.com").roles("HEAD")))
+                .andExpect(model().attribute("events", hasSize(3)));
+    }
+
+    @Test
+    void eventStatusHandlesExactTimeAndMissingDate() {
+        var now = java.time.LocalDateTime.of(2026, 9, 22, 12, 0);
+        assertTrue(emd.charitymanagementsystem.Models.EventStatus.fromDate(now, now)
+                == emd.charitymanagementsystem.Models.EventStatus.UPCOMING);
+        assertTrue(emd.charitymanagementsystem.Models.EventStatus.fromDate(now.minusNanos(1), now)
+                == emd.charitymanagementsystem.Models.EventStatus.PAST);
+        org.junit.jupiter.api.Assertions.assertNull(emd.charitymanagementsystem.Models.EventStatus.fromDate(null, now));
     }
 }

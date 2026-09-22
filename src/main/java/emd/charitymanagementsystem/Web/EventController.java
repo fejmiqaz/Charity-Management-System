@@ -21,6 +21,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import emd.charitymanagementsystem.Models.EventType;
+import emd.charitymanagementsystem.Models.EventStatus;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 
 @Controller
 @RequestMapping("/years/{yearId}/events")
@@ -42,12 +48,27 @@ public class EventController {
     }
 
     @GetMapping
-    public String listEvents(@PathVariable Long yearId, Model model) {
+    public String listEvents(@PathVariable Long yearId,
+                             @RequestParam(required = false) EventType type,
+                             @RequestParam(required = false) EventStatus status,
+                             @Value("${app.public-zone:Europe/Skopje}") String timeZone, Model model) {
         Years year = yearsService.findEntityById(yearId);
         List<EventResponseDto> events = eventService.findAllByYearId(yearId);
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(timeZone));
+        Map<Long, EventStatus> eventStatuses = new HashMap<>();
+        events.forEach(event -> eventStatuses.put(event.getId(), EventStatus.fromDate(event.getDate(), now)));
 
         model.addAttribute("year", year);
-        model.addAttribute("events", events);
+        model.addAttribute("events", events.stream()
+                .filter(event -> type == null || (event.getEventType() == null ? EventType.NORMAL : event.getEventType()) == type)
+                .filter(event -> status == null || eventStatuses.get(event.getId()) == status)
+                .toList());
+        model.addAttribute("eventStatuses", eventStatuses);
+        model.addAttribute("types", EventType.values());
+        model.addAttribute("statuses", EventStatus.values());
+        model.addAttribute("selectedType", type);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("filtersActive", type != null || status != null);
         return "events/list";
     }
 

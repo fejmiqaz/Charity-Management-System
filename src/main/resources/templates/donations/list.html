@@ -22,7 +22,8 @@
     </div>
 
     <div class="page-toolbar mb-4">
-        <a class="btn btn-outline-primary" th:href="@{/years/{yearId}/donations/export.xlsx(yearId=${year.id})}"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
+        <a class="btn btn-outline-primary" th:href="@{/years/{yearId}/donations/export.xlsx(yearId=${year.id})}"><i
+                class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
         <a class="btn btn-dark" th:href="@{/years}">
             <i class="bi bi-arrow-left me-1"></i> Back to Years
         </a>
@@ -131,7 +132,8 @@
 
         <div class="summary-row total">
             <span>Total Donation Amount</span>
-            <strong><span class="d-block" th:each="entry : ${currencyTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong>
+            <strong><span class="d-block" th:each="entry : ${currencyTotals}"
+                          th:text="${entry.value} + ' ' + ${entry.key}"></span></strong>
         </div>
 
     </div>

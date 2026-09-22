@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('charity-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.lang=localStorage.getItem('charity-language')||'en'}catch(_){document.documentElement.dataset.theme='dark'}})();</script>
+    <script>(function () {
+        try {
+            document.documentElement.dataset.theme = localStorage.getItem('charity-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.lang = localStorage.getItem('charity-language') || 'en'
+        } catch (_) {
+            document.documentElement.dataset.theme = 'dark'
+        }
+    })();</script>
     <title>Charity · People. Purpose. Impact.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+          rel="stylesheet">
     <link th:href="@{/css/front-page.css}" rel="stylesheet">
     <script th:src="@{/js/front-page-preferences.js}" defer></script>
     <script th:src="@{/js/front-page.js}" defer></script>
@@ -17,15 +25,28 @@
 <header id="siteHeader">
     <nav aria-label="Public navigation">
         <a th:href="@{/}" class="brand"><span class="brand-mark" aria-hidden="true">♥</span><span>Charity<small>PEOPLE. PURPOSE. IMPACT.</small></span></a>
-        <div class="nav-links" id="publicLinks"><a href="#projects">Completed projects</a><a href="#events">Events</a><a href="#progress">Our progress</a>
+        <div class="nav-links" id="publicLinks"><a href="#projects">Completed projects</a><a href="#events">Events</a><a
+                href="#progress">Our progress</a>
             <a class="mobile-staff-link" th:href="@{/login}" sec:authorize="isAnonymous()">Organization login</a>
-            <a class="mobile-staff-link" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">My workspace</a></div>
+            <a class="mobile-staff-link" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">My workspace</a>
+        </div>
         <div class="nav-cta">
-            <label class="public-language"><span aria-hidden="true">🌐</span><span class="sr-only">Language</span><select id="publicLanguage" aria-label="Language"><option value="en">EN</option><option value="sq">SQ</option><option value="fr">FR</option><option value="de">DE</option></select></label>
-            <button class="public-theme" id="publicTheme" type="button" aria-label="Switch to light mode" title="Switch color theme"><span aria-hidden="true">☀</span></button>
-            <a class="btn btn-staff" th:href="@{/login}" sec:authorize="isAnonymous()">Organization login <span aria-hidden="true">↗</span></a>
-            <a class="btn btn-staff" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">My workspace <span aria-hidden="true">↗</span></a>
-            <button type="button" class="menu-toggle" aria-controls="publicLinks" aria-expanded="false" aria-label="Toggle navigation">☰</button>
+            <label class="public-language"><span aria-hidden="true">🌐</span><span class="sr-only">Language</span><select
+                    id="publicLanguage" aria-label="Language">
+                <option value="en">EN</option>
+                <option value="sq">SQ</option>
+                <option value="fr">FR</option>
+                <option value="de">DE</option>
+            </select></label>
+            <button class="public-theme" id="publicTheme" type="button" aria-label="Switch to light mode"
+                    title="Switch color theme"><span aria-hidden="true">☀</span></button>
+            <a class="btn btn-staff" th:href="@{/login}" sec:authorize="isAnonymous()">Organization login <span
+                    aria-hidden="true">↗</span></a>
+            <a class="btn btn-staff" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">My workspace <span
+                    aria-hidden="true">↗</span></a>
+            <button type="button" class="menu-toggle" aria-controls="publicLinks" aria-expanded="false"
+                    aria-label="Toggle navigation">☰
+            </button>
         </div>
     </nav>
 </header>
@@ -36,11 +57,15 @@
             <div>
                 <span class="kicker"><span class="dot" aria-hidden="true"></span>Small actions. Lasting change.</span>
                 <h1 id="heroTitle">Good work starts with <em>people.</em></h1>
-                <p class="lead">Discover the projects we have completed and the moments that bring our community together.</p>
-                <div class="hero-actions"><a href="#projects" class="btn btn-primary">Explore our work <span aria-hidden="true">↗</span></a><a href="#events" class="btn btn-ghost">Upcoming events</a></div>
+                <p class="lead">Discover the projects we have completed and the moments that bring our community
+                    together.</p>
+                <div class="hero-actions"><a href="#projects" class="btn btn-primary">Explore our work <span
+                        aria-hidden="true">↗</span></a><a href="#events" class="btn btn-ghost">Upcoming events</a></div>
                 <div class="hero-stats" aria-label="Published activity totals">
-                    <div class="hero-stat"><b th:text="${completedProjects}">0</b><span>Completed projects shared</span></div>
-                    <div class="hero-stat"><b th:text="${#lists.size(events)}">0</b><span>Upcoming public events</span></div>
+                    <div class="hero-stat"><b th:text="${completedProjects}">0</b><span>Completed projects shared</span>
+                    </div>
+                    <div class="hero-stat"><b th:text="${#lists.size(events)}">0</b><span>Upcoming public events</span>
+                    </div>
                     <div class="hero-stat"><b th:text="${impactYears}">0</b><span>Project years represented</span></div>
                 </div>
             </div>
@@ -48,57 +73,116 @@
                 <div class="hv-row"><span>OUR COMMUNITY, IN MOTION</span><span class="tag">Together</span></div>
                 <div class="community-art" aria-hidden="true"><span>✳</span><i></i><i></i></div>
                 <div class="hv-card" th:if="${!#lists.isEmpty(events)}"><span class="tag">Next public event</span>
-                    <h2 data-no-translate th:text="${events[0].purpose}"></h2><p data-event-datetime th:attr="data-date=${events[0].date},data-zone=${publicZone}" th:text="${#temporals.format(events[0].date,'dd MMM yyyy · HH:mm')} + ' · ' + ${publicZone}"></p></div>
-                <div class="hv-card" th:if="${#lists.isEmpty(events)}"><span class="tag">More to come</span><h2>Room for the next good thing.</h2><p>New public events will appear here when announced.</p></div>
+                    <h2 data-no-translate th:text="${events[0].purpose}"></h2>
+                    <p data-event-datetime th:attr="data-date=${events[0].date},data-zone=${publicZone}"
+                       th:text="${#temporals.format(events[0].date,'dd MMM yyyy · HH:mm')} + ' · ' + ${publicZone}"></p>
+                </div>
+                <div class="hv-card" th:if="${#lists.isEmpty(events)}"><span class="tag">More to come</span>
+                    <h2>Room for the next good thing.</h2>
+                    <p>New public events will appear here when announced.</p></div>
             </div>
         </div>
     </section>
     <section class="campaigns" id="projects" aria-labelledby="projectsTitle">
         <div class="wrap">
-            <div class="section-head"><div><span class="tag">Completed projects</span><h2 id="projectsTitle">Good intentions.<br>Work delivered.</h2></div><p>Explore the completed projects our organization has chosen to share publicly.</p></div>
-            <div class="empty-public" th:if="${#lists.isEmpty(projects)}"><h3>More to share soon</h3><p>Completed project highlights will appear here when ready to share.</p></div>
-            <div class="campaign-list"><article class="campaign-row" th:each="project : ${projects}">
-                <div class="campaign-meta"><span class="tag" th:text="${project.yearValue != null ? project.yearValue : 'Community project'}"></span></div>
-                <div class="campaign-desc"><h3 data-no-translate th:text="${project.name}"></h3></div><div class="campaign-progress"><span class="completed-label">✓ Completed</span></div>
-            </article></div>
+            <div class="section-head">
+                <div><span class="tag">Completed projects</span>
+                    <h2 id="projectsTitle">Good intentions.<br>Work delivered.</h2></div>
+                <p>Explore the completed projects our organization has chosen to share publicly.</p></div>
+            <div class="empty-public" th:if="${#lists.isEmpty(projects)}"><h3>More to share soon</h3>
+                <p>Completed project highlights will appear here when ready to share.</p></div>
+            <div class="campaign-list">
+                <article class="campaign-row" th:each="project : ${projects}">
+                    <div class="campaign-meta"><span class="tag"
+                                                     th:text="${project.yearValue != null ? project.yearValue : 'Community project'}"></span>
+                    </div>
+                    <div class="campaign-desc"><h3 data-no-translate th:text="${project.name}"></h3></div>
+                    <div class="campaign-progress"><span class="completed-label">✓ Completed</span></div>
+                </article>
+            </div>
         </div>
     </section>
     <section class="events" id="events" aria-labelledby="eventsTitle">
         <div class="wrap">
-            <div class="section-head"><div><span class="tag">Coming together</span><h2 id="eventsTitle">The next dates<br>in our community.</h2></div><p>Public events, with the closest upcoming date first. <span th:text="'Times shown in ' + ${publicZone} + '.'"></span></p></div>
-            <div class="empty-public" th:if="${#lists.isEmpty(events)}"><h3>New dates are on their way</h3><p>No upcoming public events have been announced yet.</p></div>
-            <div class="event-grid"><article class="event-card" th:each="event : ${events}" th:attr="data-event-date=${event.date}">
-                <time class="event-date" th:datetime="${event.date}"><span class="d" th:text="${#temporals.format(event.date,'dd')}"></span><span class="m" th:text="${#temporals.format(event.date,'MMM yyyy')}"></span></time>
-                <h3 data-no-translate th:text="${event.purpose}"></h3><p class="event-meta" th:text="${#temporals.format(event.date,'EEEE · HH:mm')}"></p>
-            </article></div>
+            <div class="section-head">
+                <div><span class="tag">Coming together</span>
+                    <h2 id="eventsTitle">The next dates<br>in our community.</h2></div>
+                <p>Public events, with the closest upcoming date first. <span
+                        th:text="'Times shown in ' + ${publicZone} + '.'"></span></p></div>
+            <div class="empty-public" th:if="${#lists.isEmpty(events)}"><h3>New dates are on their way</h3>
+                <p>No upcoming public events have been announced yet.</p></div>
+            <div class="event-grid">
+                <article class="event-card" th:each="event : ${events}" th:attr="data-event-date=${event.date}">
+                    <time class="event-date" th:datetime="${event.date}"><span class="d"
+                                                                               th:text="${#temporals.format(event.date,'dd')}"></span><span
+                            class="m" th:text="${#temporals.format(event.date,'MMM yyyy')}"></span></time>
+                    <h3 data-no-translate th:text="${event.purpose}"></h3>
+                    <p class="event-meta" th:text="${#temporals.format(event.date,'EEEE · HH:mm')}"></p>
+                </article>
+            </div>
         </div>
     </section>
     <section id="progress" aria-labelledby="progressTitle">
         <div class="wrap">
-            <div class="section-head"><div><span class="tag">Our progress</span><h2 id="progressTitle">A clearer picture<br>of our work.</h2></div><p>These charts reflect the projects and events shared on this page. Each count represents a published record.</p></div>
+            <div class="section-head">
+                <div><span class="tag">Our progress</span>
+                    <h2 id="progressTitle">A clearer picture<br>of our work.</h2></div>
+                <p>These charts reflect the projects and events shared on this page. Each count represents a published
+                    record.</p></div>
             <div class="chart-grid">
-                <figure class="chart-panel"><figcaption><h3>Completed projects by year</h3><p>Grouped by the project's assigned year.</p></figcaption>
-                    <p class="empty-public" th:if="${#lists.isEmpty(projectChart)}">Project history will appear as completed projects are published.</p>
-                    <ul class="bar-chart" aria-label="Published completed project counts by year"><li th:each="bar : ${projectChart}">
-                        <span th:text="${bar.label}"></span><span class="chart-track" aria-hidden="true"><i th:style="'width:' + ${bar.width} + '%'"></i></span><strong th:text="${bar.count}"></strong>
-                    </li></ul>
+                <figure class="chart-panel">
+                    <figcaption><h3>Completed projects by year</h3>
+                        <p>Grouped by the project's assigned year.</p></figcaption>
+                    <p class="empty-public" th:if="${#lists.isEmpty(projectChart)}">Project history will appear as
+                        completed projects are published.</p>
+                    <ul class="bar-chart" aria-label="Published completed project counts by year">
+                        <li th:each="bar : ${projectChart}">
+                            <span th:text="${bar.label}"></span><span class="chart-track" aria-hidden="true"><i
+                                th:style="'width:' + ${bar.width} + '%'"></i></span><strong
+                                th:text="${bar.count}"></strong>
+                        </li>
+                    </ul>
                 </figure>
-                <figure class="chart-panel"><figcaption><h3>What's ahead</h3><p>Upcoming public events over the next 12 calendar months.</p></figcaption>
-                    <ul class="bar-chart" aria-label="Upcoming public event counts by month"><li th:each="bar : ${eventChart}">
-                        <span th:text="${bar.label}"></span><span class="chart-track" aria-hidden="true"><i th:style="'width:' + ${bar.width} + '%'"></i></span><strong th:text="${bar.count}"></strong>
-                    </li></ul>
+                <figure class="chart-panel">
+                    <figcaption><h3>What's ahead</h3>
+                        <p>Upcoming public events over the next 12 calendar months.</p></figcaption>
+                    <ul class="bar-chart" aria-label="Upcoming public event counts by month">
+                        <li th:each="bar : ${eventChart}">
+                            <span th:text="${bar.label}"></span><span class="chart-track" aria-hidden="true"><i
+                                th:style="'width:' + ${bar.width} + '%'"></i></span><strong
+                                th:text="${bar.count}"></strong>
+                        </li>
+                    </ul>
                 </figure>
             </div>
         </div>
     </section>
     <section class="portal" id="workspace" aria-labelledby="workspaceTitle">
-        <div class="wrap"><div class="portal-inner"><div class="portal-copy"><span class="tag">For our organization</span><h2 id="workspaceTitle">Your workspace.<br>Your next step.</h2><p>Already part of the team? Sign in to coordinate projects, organize events, and keep your work moving.</p></div>
-            <div class="portal-panel"><div class="icon" aria-hidden="true">↗</div><h3>Everything in one place</h3><p>Your organization tools are ready when you are.</p>
-                <a class="btn btn-primary" th:href="@{/login}" sec:authorize="isAnonymous()">Log in to the workspace</a>
-                <a class="btn btn-primary" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">Open my workspace</a>
-            </div></div></div>
+        <div class="wrap">
+            <div class="portal-inner">
+                <div class="portal-copy"><span class="tag">For our organization</span>
+                    <h2 id="workspaceTitle">Your workspace.<br>Your next step.</h2>
+                    <p>Already part of the team? Sign in to coordinate projects, organize events, and keep your work
+                        moving.</p></div>
+                <div class="portal-panel">
+                    <div class="icon" aria-hidden="true">↗</div>
+                    <h3>Everything in one place</h3>
+                    <p>Your organization tools are ready when you are.</p>
+                    <a class="btn btn-primary" th:href="@{/login}" sec:authorize="isAnonymous()">Log in to the
+                        workspace</a>
+                    <a class="btn btn-primary" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">Open my
+                        workspace</a>
+                </div>
+            </div>
+        </div>
     </section>
 </main>
-<footer><div class="wrap"><div class="footer-bottom"><span th:text="'© ' + ${currentYear} + ' Charity. People. Purpose. Impact.'"></span><a href="#top">Back to top ↑</a></div></div></footer>
+<footer>
+    <div class="wrap">
+        <div class="footer-bottom"><span
+                th:text="'© ' + ${currentYear} + ' Charity. People. Purpose. Impact.'"></span><a href="#top">Back to top
+            ↑</a></div>
+    </div>
+</footer>
 </body>
 </html>

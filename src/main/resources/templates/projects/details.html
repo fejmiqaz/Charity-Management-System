@@ -12,8 +12,12 @@
 
     <h1 class="mb-3">Project Details</h1>
     <nav class="detail-toolbar mb-4" aria-label="Project actions">
-        <a class="btn btn-dark" th:href="@{/years/{yearId}/projects(yearId=${year.id})}"><i class="bi bi-arrow-left me-1"></i> Back to Projects</a>
-        <a class="btn btn-danger" th:href="@{/pdf/years/{yearId}/projects/{projectId}(yearId=${year.id}, projectId=${project.id})}" sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')"><i class="bi bi-file-earmark-pdf me-1"></i> Export as PDF</a>
+        <a class="btn btn-dark" th:href="@{/years/{yearId}/projects(yearId=${year.id})}"><i
+                class="bi bi-arrow-left me-1"></i> Back to Projects</a>
+        <a class="btn btn-danger"
+           th:href="@{/pdf/years/{yearId}/projects/{projectId}(yearId=${year.id}, projectId=${project.id})}"
+           sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')"><i class="bi bi-file-earmark-pdf me-1"></i>
+            Export as PDF</a>
     </nav>
 
     <div class="card detail-hero text-center p-4 mb-4">
@@ -39,7 +43,8 @@
             <span class="kv-value" th:text="${project.name}"></span>
         </div>
         <div class="kv-row"><span class="kv-label">Project type</span><span class="kv-value"
-             th:text="${project.projectType != null and project.projectType.name() == 'REVENUE' ? 'Revenue-generating project' : 'Standard charity project'}"></span></div>
+                                                                            th:text="${project.projectType != null and project.projectType.name() == 'REVENUE' ? 'Revenue-generating project' : 'Standard charity project'}"></span>
+        </div>
 
         <div class="kv-row">
             <span class="kv-label">Description</span>
@@ -101,20 +106,60 @@
     </div>
 
     <section class="card p-4 mt-4" th:if="${project.projectType != null and project.projectType.name() == 'REVENUE'}">
-        <div class="section-heading"><div><h2>Monthly project income</h2><span>Advertising, services and other recurring revenue</span></div><strong class="revenue-total"><span class="d-block" th:each="entry : ${revenueTotals}" th:text="${entry.value}+' '+${entry.key}"></span></strong></div>
-        <div th:if="${activitySuccess}" class="alert alert-success" th:text="${activitySuccess}"></div><div th:if="${activityError}" class="alert alert-danger" th:text="${activityError}"></div>
-        <form class="revenue-entry-grid mb-4" method="post" data-currency-form th:action="@{/years/{yearId}/projects/{projectId}/revenues(yearId=${year.id},projectId=${project.id})}"
+        <div class="section-heading">
+            <div><h2>Monthly project income</h2><span>Advertising, services and other recurring revenue</span></div>
+            <strong class="revenue-total"><span class="d-block" th:each="entry : ${revenueTotals}"
+                                                th:text="${entry.value}+' '+${entry.key}"></span></strong></div>
+        <div th:if="${activitySuccess}" class="alert alert-success" th:text="${activitySuccess}"></div>
+        <div th:if="${activityError}" class="alert alert-danger" th:text="${activityError}"></div>
+        <form class="revenue-entry-grid mb-4" method="post" data-currency-form
+              th:action="@{/years/{yearId}/projects/{projectId}/revenues(yearId=${year.id},projectId=${project.id})}"
               sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','PROJECT_MANAGER')">
-            <div><label class="form-label" for="revenueMonth">Month</label><input class="form-control" id="revenueMonth" name="month" type="month" th:value="${currentMonth}" required></div>
-            <div><label class="form-label" for="revenueCustomer">Customer or advertiser</label><input class="form-control" id="revenueCustomer" name="customer" maxlength="160" required></div>
-            <div><label class="form-label" for="revenueAmount">Income</label><input class="form-control" id="revenueAmount" name="amount" data-currency-amount type="number" min="0.01" step="0.01" required></div>
-            <div><label class="form-label" for="revenueCurrency">Currency</label><select class="form-select" id="revenueCurrency" name="currency" data-currency-code><option>MKD</option><option selected>EUR</option><option>CHF</option></select></div>
+            <div><label class="form-label" for="revenueMonth">Month</label><input class="form-control" id="revenueMonth"
+                                                                                  name="month" type="month"
+                                                                                  th:value="${currentMonth}" required>
+            </div>
+            <div><label class="form-label" for="revenueCustomer">Customer or advertiser</label><input
+                    class="form-control" id="revenueCustomer" name="customer" maxlength="160" required></div>
+            <div><label class="form-label" for="revenueAmount">Income</label><input class="form-control"
+                                                                                    id="revenueAmount" name="amount"
+                                                                                    data-currency-amount type="number"
+                                                                                    min="0.01" step="0.01" required>
+            </div>
+            <div><label class="form-label" for="revenueCurrency">Currency</label><select class="form-select"
+                                                                                         id="revenueCurrency"
+                                                                                         name="currency"
+                                                                                         data-currency-code>
+                <option>MKD</option>
+                <option selected>EUR</option>
+                <option>CHF</option>
+            </select></div>
             <small data-currency-preview aria-live="polite"></small>
-            <div><label class="form-label" for="revenueNote">Note</label><input class="form-control" id="revenueNote" name="note" maxlength="400"></div>
+            <div><label class="form-label" for="revenueNote">Note</label><input class="form-control" id="revenueNote"
+                                                                                name="note" maxlength="400"></div>
             <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg"></i> Record income</button>
         </form>
         <div class="empty-state" th:if="${#lists.isEmpty(revenues)}">No monthly income has been recorded yet.</div>
-        <div class="table-responsive" th:if="${!#lists.isEmpty(revenues)}"><table class="table table-branded"><thead><tr><th>Month</th><th>Customer</th><th>Amount</th><th>Note</th></tr></thead><tbody><tr th:each="revenue:${revenues}"><td th:text="${#temporals.format(revenue.revenueMonth,'MMMM yyyy')}"></td><td th:text="${revenue.customer}"></td><td class="fw-bold text-success" th:text="${revenue.amount}+' '+${revenue.currency}"></td><td th:text="${revenue.note}"></td></tr></tbody></table></div>
+        <div class="table-responsive" th:if="${!#lists.isEmpty(revenues)}">
+            <table class="table table-branded">
+                <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="revenue:${revenues}">
+                    <td th:text="${#temporals.format(revenue.revenueMonth,'MMMM yyyy')}"></td>
+                    <td th:text="${revenue.customer}"></td>
+                    <td class="fw-bold text-success" th:text="${revenue.amount}+' '+${revenue.currency}"></td>
+                    <td th:text="${revenue.note}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
     <section class="card p-4 mt-4" sec:authorize="hasRole('HEAD')" aria-labelledby="publicationTitle">
@@ -122,13 +167,16 @@
         <p>Approve only a title suitable for everyone to read. Publication shares the project title and year;
             descriptions, costs, members and attachments stay private. Only finished projects appear.</p>
         <p class="text-secondary">Changing the title, year or status clears approval.</p>
-        <form method="post" th:action="@{/years/{yearId}/projects/{projectId}/publication(yearId=${year.id},projectId=${project.id})}">
+        <form method="post"
+              th:action="@{/years/{yearId}/projects/{projectId}/publication(yearId=${year.id},projectId=${project.id})}">
             <div class="form-check mb-3">
-                <input class="form-check-input" id="published" name="published" type="checkbox" value="true" th:checked="${project.publicImpact}">
+                <input class="form-check-input" id="published" name="published" type="checkbox" value="true"
+                       th:checked="${project.publicImpact}">
                 <label class="form-check-label" for="published">Approved for public display</label>
             </div>
-            <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary" type="submit">Save publication setting</button>
-            <a class="btn btn-outline-primary" th:href="@{/}">View front page</a></div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary" type="submit">Save publication setting</button>
+                <a class="btn btn-outline-primary" th:href="@{/}">View front page</a></div>
         </form>
     </section>
 

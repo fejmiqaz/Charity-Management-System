@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
 <head><title>Currency converter</title></head>
-<body><div layout:fragment="content" class="container py-4">
+<body>
+<div layout:fragment="content" class="container py-4">
     <h1>Currency converter</h1>
-    <p class="text-secondary">Estimates use the latest available reference rates. Recorded donations and payments retain their original currency.</p>
+    <p class="text-secondary">Estimates use the latest available reference rates. Recorded donations and payments retain
+        their original currency.</p>
     <div class="card p-4" style="max-width: 650px">
         <div class="row g-3 align-items-end">
-            <div class="col-sm-6"><label for="convertAmount" class="form-label">Amount</label><input id="convertAmount" class="form-control" type="number" min="0" step="0.01" value="100" required></div>
-            <div class="col-sm-6"><label for="convertFrom" class="form-label">From</label><select id="convertFrom" class="form-select"><option>MKD</option><option selected>EUR</option><option>CHF</option></select></div>
+            <div class="col-sm-6"><label for="convertAmount" class="form-label">Amount</label><input id="convertAmount"
+                                                                                                     class="form-control"
+                                                                                                     type="number"
+                                                                                                     min="0" step="0.01"
+                                                                                                     value="100"
+                                                                                                     required></div>
+            <div class="col-sm-6"><label for="convertFrom" class="form-label">From</label><select id="convertFrom"
+                                                                                                  class="form-select">
+                <option>MKD</option>
+                <option selected>EUR</option>
+                <option>CHF</option>
+            </select></div>
         </div>
         <div id="conversionResults" class="mt-4" aria-live="polite">Loading rates…</div>
         <small id="conversionSource" class="text-secondary"></small>
     </div>
 </div>
-<th:block layout:fragment="scripts"><script src="/js/converter.js" defer></script></th:block>
-</body></html>
+<th:block layout:fragment="scripts">
+    <script src="/js/converter.js" defer></script>
+</th:block>
+</body>
+</html>

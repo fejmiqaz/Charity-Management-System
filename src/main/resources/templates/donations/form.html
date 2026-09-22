@@ -40,8 +40,11 @@
                            th:field="*{donationAmount}"
                            th:classappend="${#fields.hasErrors('donationAmount')} ? ' is-invalid'">
 
-                    <select class="form-select" style="max-width: 110px" th:field="*{currency}" data-currency-code aria-label="Currency">
-                        <option value="MKD">MKD</option><option value="EUR">EUR</option><option value="CHF">CHF</option>
+                    <select class="form-select" style="max-width: 110px" th:field="*{currency}" data-currency-code
+                            aria-label="Currency">
+                        <option value="MKD">MKD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="CHF">CHF</option>
                     </select>
                 </div>
                 <small class="form-text" data-currency-preview aria-live="polite"></small>
