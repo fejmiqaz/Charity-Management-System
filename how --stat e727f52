@@ -1,0 +1,85 @@
+[33mcommit 408b32c633691416234e90d2ac4088e6fa83bdfb[m
+Author: Ќазими Фејми <fejmi.kjazimi@students.finki.ukim.mk>
+Date:   Tue Sep 22 12:59:09 2026 +0200
+
+    Add multi-currency finance and responsive interface updates
+
+ .../DTO/donation/DonationFormDto.java              |   2 [32m+[m
+ .../DTO/donation/DonationResponseDto.java          |   1 [32m+[m
+ .../DTO/event/EventFormDto.java                    |   2 [32m+[m
+ .../DTO/event/EventResponseDto.java                |   2 [32m+[m
+ .../DTO/project/ProjectFormDto.java                |   4 [32m+[m[31m-[m
+ .../DTO/project/ProjectResponseDto.java            |   2 [32m+[m
+ .../Mapper/DonationMapper.java                     |   2 [32m+[m
+ .../Mapper/EventMapper.java                        |   2 [32m+[m
+ .../Mapper/ProjectMapper.java                      |   2 [32m+[m
+ .../Mapper/YearsMapper.java                        |   1 [32m+[m
+ .../charitymanagementsystem/Models/Currency.java   |   5 [32m+[m
+ .../charitymanagementsystem/Models/Donation.java   |   3 [32m+[m
+ .../emd/charitymanagementsystem/Models/Event.java  |   7 [32m+[m
+ .../charitymanagementsystem/Models/EventTask.java  |  28 [32m++[m
+ .../charitymanagementsystem/Models/EventType.java  |   3 [32m+[m
+ .../Models/MembershipPayment.java                  |   2 [32m+[m
+ .../charitymanagementsystem/Models/Project.java    |   6 [32m+[m
+ .../Models/ProjectRevenue.java                     |  20 [32m++[m
+ .../Models/ProjectType.java                        |   3 [32m+[m
+ .../Models/TaskPayment.java                        |  19 [32m++[m
+ .../Repository/DonationRepository.java             |   4 [32m+[m
+ .../Repository/EventTaskRepository.java            |  10 [32m+[m
+ .../Repository/MembershipPaymentRepository.java    |   6 [32m+[m[31m-[m
+ .../Repository/ProjectRevenueRepository.java       |  18 [32m++[m
+ .../Repository/TaskPaymentRepository.java          |   8 [32m+[m
+ .../Service/DonationService.java                   |   1 [32m+[m
+ .../Implementation/ActivityFinanceService.java     | 104 [32m++++++++[m
+ .../Implementation/DonationServiceImpl.java        |  32 [32m++[m[31m-[m
+ .../Service/Implementation/EventServiceImpl.java   |   3 [32m+[m
+ .../Service/Implementation/ExcelExportService.java |  10 [32m+[m[31m-[m
+ .../Service/Implementation/MemberServiceImpl.java  |  11 [32m+[m
+ .../Service/Implementation/MembershipService.java  |  22 [32m+[m[31m-[m
+ .../Service/Implementation/PdfExportService.java   |  23 [32m+[m[31m-[m
+ .../Service/Implementation/ProjectServiceImpl.java |   3 [32m+[m
+ .../Web/CurrencyController.java                    |  10 [32m+[m
+ .../Web/DonationController.java                    |   4 [32m+[m[31m-[m
+ .../Web/EventController.java                       |  41 [32m+++[m
+ .../Web/HomeController.java                        |   9 [32m+[m[31m-[m
+ .../Web/MembershipController.java                  |   4 [32m+[m[31m-[m
+ .../Web/ProjectController.java                     |  30 [32m++[m[31m-[m
+ .../Web/YearsController.java                       |  18 [32m+[m[31m-[m
+ .../resources/db/manual/2026-09-22-currencies.sql  |  10 [32m+[m
+ src/main/resources/static/css/auth.css             |   1 [32m+[m
+ src/main/resources/static/css/front-page.css       |  41 [32m+++[m
+ src/main/resources/static/css/style.css            | 287 [32m+++++++++++++++++++++[m
+ src/main/resources/static/js/converter.js          |  37 [32m+++[m
+ src/main/resources/static/js/currency-preview.js   |  35 [32m+++[m
+ .../resources/static/js/front-page-preferences.js  | 175 [32m+++++++++++++[m
+ src/main/resources/static/js/main.js               | 139 [32m+++++++++[m[31m-[m
+ src/main/resources/templates/auth/login.html       |   3 [32m+[m
+ src/main/resources/templates/auth/register.html    |   3 [32m+[m
+ src/main/resources/templates/base.html             |  69 [32m+++[m[31m--[m
+ src/main/resources/templates/budgets/details.html  |   8 [32m+[m[31m-[m
+ src/main/resources/templates/budgets/list.html     |   2 [32m+[m[31m-[m
+ src/main/resources/templates/converter.html        |  17 [32m++[m
+ src/main/resources/templates/dashboard.html        |   9 [32m+[m[31m-[m
+ .../resources/templates/donations/details.html     |  14 [32m+[m[31m-[m
+ src/main/resources/templates/donations/form.html   |   7 [32m+[m[31m-[m
+ src/main/resources/templates/donations/list.html   |   6 [32m+[m[31m-[m
+ src/main/resources/templates/events/details.html   |  81 [32m+++[m[31m---[m
+ src/main/resources/templates/events/form.html      |  11 [32m+[m[31m-[m
+ src/main/resources/templates/events/list.html      |   6 [32m+[m[31m-[m
+ src/main/resources/templates/fragments/navbar.html |  37 [32m+[m[31m--[m
+ src/main/resources/templates/index.html            |  16 [32m+[m[31m-[m
+ src/main/resources/templates/members/details.html  |   8 [32m+[m[31m-[m
+ src/main/resources/templates/members/list.html     |   2 [32m+[m[31m-[m
+ .../resources/templates/memberships/history.html   |   2 [32m+[m[31m-[m
+ .../resources/templates/memberships/index.html     |  12 [32m+[m[31m-[m
+ src/main/resources/templates/projects/details.html |  69 [32m++[m[31m---[m
+ src/main/resources/templates/projects/form.html    |  11 [32m+[m[31m-[m
+ src/main/resources/templates/projects/list.html    |   6 [32m+[m[31m-[m
+ src/main/resources/templates/years/details.html    |  33 [32m+[m[31m--[m
+ src/main/resources/templates/years/list.html       |   2 [32m+[m[31m-[m
+ .../ActivityFinanceTests.java                      |  95 [32m+++++++[m
+ .../DashboardQueryTests.java                       |   3 [32m+[m[31m-[m
+ .../charitymanagementsystem/ExcelExportTests.java  |   8 [32m+[m[31m-[m
+ .../charitymanagementsystem/ImpactPageTests.java   |   2 [32m+[m[31m-[m
+ .../WorkspaceRenderingTests.java                   |  20 [32m+[m[31m-[m
+ 78 files changed, 1577 insertions(+), 197 deletions(-)
