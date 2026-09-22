@@ -22,8 +22,6 @@
     </div>
 
     <div class="page-toolbar mb-4">
-        <a class="btn btn-outline-primary" th:href="@{/years/{yearId}/donations/export.xlsx(yearId=${year.id})}"><i
-                class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
         <a class="btn btn-dark" th:href="@{/years}">
             <i class="bi bi-arrow-left me-1"></i> Back to Years
         </a>
@@ -37,8 +35,11 @@
            th:href="@{/pdf/years/{yearId}/donations(yearId=${year.id})}"
            sec:authorize="hasAnyRole('HEAD', 'SUBHEAD')">
             <i class="bi bi-file-earmark-pdf me-1"></i>
-            Export All Donations PDF
+            Donations Report PDF
         </a>
+
+        <a class="btn btn-outline-primary" th:href="@{/years/{yearId}/donations/export.xlsx(yearId=${year.id})}"><i
+                class="bi bi-file-earmark-spreadsheet me-1"></i>Donations Report Excel</a>
 
         <a class="btn btn-success"
            th:href="@{/years/{yearId}/donations/add(yearId=${year.id})}"

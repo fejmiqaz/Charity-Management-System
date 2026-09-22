@@ -17,7 +17,7 @@
         <a class="btn btn-danger"
            th:href="@{/pdf/years/{yearId}/projects/{projectId}(yearId=${year.id}, projectId=${project.id})}"
            sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'PROJECT_MANAGER')"><i class="bi bi-file-earmark-pdf me-1"></i>
-            Export as PDF</a>
+            Project Report PDF</a>
     </nav>
 
     <div class="card detail-hero text-center p-4 mb-4">

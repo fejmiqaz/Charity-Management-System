@@ -36,8 +36,18 @@ public class ExcelExportService {
 
     private byte[] workbook(String name, String[] headers, List<Object[]> rows, Set<Integer> moneyColumns)
             throws IOException {
+        return workbook(List.of(new ReportSheet(name, headers, rows, moneyColumns)));
+    }
+
+    public record ReportSheet(String name, String[] headers, List<Object[]> rows, Set<Integer> moneyColumns) {}
+
+    public byte[] workbook(List<ReportSheet> reports) throws IOException {
         try (var book = new XSSFWorkbook(); var output = new ByteArrayOutputStream()) {
-            var sheet = book.createSheet(name);
+          for (var report : reports) {
+            var headers = report.headers();
+            var rows = report.rows();
+            var moneyColumns = report.moneyColumns();
+            var sheet = book.createSheet(report.name());
             var headerStyle = book.createCellStyle();
             headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -49,6 +59,8 @@ public class ExcelExportService {
             money.setDataFormat(book.createDataFormat().getFormat("#,##0.00"));
             var date = book.createCellStyle();
             date.setDataFormat(book.createDataFormat().getFormat("dd mmm yyyy"));
+            var dateTime = book.createCellStyle();
+            dateTime.setDataFormat(book.createDataFormat().getFormat("dd mmm yyyy hh:mm"));
             var header = sheet.createRow(0);
             for (int c = 0; c < headers.length; c++) {
                 header.createCell(c).setCellValue(headers[c]);
@@ -62,6 +74,9 @@ public class ExcelExportService {
                     if (value instanceof Number number) {
                         cell.setCellValue(number.doubleValue());
                         if (moneyColumns.contains(c)) cell.setCellStyle(money);
+                    } else if (value instanceof java.time.LocalDateTime time) {
+                        cell.setCellValue(time);
+                        cell.setCellStyle(dateTime);
                     } else if (value instanceof LocalDate day) {
                         cell.setCellValue(day);
                         cell.setCellStyle(date);
@@ -77,6 +92,7 @@ public class ExcelExportService {
                 sheet.autoSizeColumn(c);
                 sheet.setColumnWidth(c, Math.min(60 * 256, Math.max(18 * 256, sheet.getColumnWidth(c) + 512)));
             }
+          }
             book.write(output);
             return output.toByteArray();
         }

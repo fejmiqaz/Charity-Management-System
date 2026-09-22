@@ -35,6 +35,12 @@ class ExcelExportTests {
     @Autowired YearsRepository years;
     @Autowired DonationRepository donations;
     @Autowired ExcelExportService excel;
+    @Autowired ProjectRepository projects;
+    @Autowired EventRepository events;
+    @Autowired EventTaskRepository tasks;
+    @Autowired TaskPaymentRepository taskPayments;
+    @Autowired ProjectRevenueRepository revenues;
+    @Autowired MembershipPaymentRepository membershipPayments;
     MockMvc mvc;
 
     @BeforeEach void setup() {
@@ -111,6 +117,163 @@ class ExcelExportTests {
             assertNotEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.getContentType());
             assertTrue(response.getStatus() == 403 || response.getRedirectedUrl() != null
                     || response.getContentAsString().contains("permission to perform this action"));
+        }
+    }
+
+    private Years reportYear(int value) {
+        var year = new Years();
+        year.setYearValue(value);
+        return years.save(year);
+    }
+
+    private XSSFWorkbook report(String path) throws Exception {
+        var result = mvc.perform(get(path).with(user("test@example.com").roles("HEAD")))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Cache-Control", "no-store"))
+                .andExpect(content().contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .andReturn();
+        return new XSSFWorkbook(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+    }
+
+    @Test void projectAndYearReportsRespectYearFiltersAndKeepRevenueCurrencies() throws Exception {
+        var year = reportYear(2031);
+        var other = reportYear(2032);
+        for (int i = 0; i < 3; i++) {
+            var p = new Project();
+            p.setYear(i == 2 ? other : year);
+            p.setName("Project " + i);
+            p.setProjectType(i == 0 ? ProjectType.REVENUE : ProjectType.STANDARD);
+            p.setStatus(i == 0 ? ProjectStatus.ONGOING : ProjectStatus.FINISHED);
+            p.setProjectPrice(123.45);
+            p.setMembers(Set.of());
+            projects.save(p);
+            var r = new ProjectRevenue();
+            r.setProject(p); r.setCustomer("=Untrusted customer");
+            r.setRevenueMonth(LocalDate.of(2031, 1, 1)); r.setAmount(new BigDecimal("25.50"));
+            r.setCurrency(emd.charitymanagementsystem.Models.Currency.CHF);
+            r.setRecordedBy("test"); r.setRecordedAt(java.time.Instant.now());
+            revenues.save(r);
+        }
+        String base = "/years/" + year.getId();
+        try (var book = report(base + "/projects/export.xlsx?type=REVENUE&status=ONGOING")) {
+            assertEquals(1, book.getSheet("Projects").getLastRowNum());
+            assertEquals("Project 0", book.getSheet("Projects").getRow(1).getCell(1).getStringCellValue());
+            assertEquals(123.45, book.getSheet("Projects").getRow(1).getCell(5).getNumericCellValue());
+            var revenue = book.getSheet("Project revenue").getRow(1);
+            assertEquals("CHF", revenue.getCell(5).getStringCellValue());
+            assertEquals(CellType.STRING, revenue.getCell(3).getCellType());
+        }
+        try (var book = report(base + "/projects/export.xlsx?type=REVENUE&status=FINISHED")) {
+            assertEquals(0, book.getSheet("Projects").getLastRowNum());
+            assertEquals(0, book.getSheet("Project revenue").getLastRowNum());
+        }
+        try (var book = report(base + "/export.xlsx")) {
+            assertEquals(5, book.getNumberOfSheets());
+            assertNotNull(book.getSheet("Budget"));
+            assertNotNull(book.getSheet("Donations"));
+            assertNotNull(book.getSheet("Events"));
+            assertEquals(2, book.getSheet("Projects").getLastRowNum());
+            assertEquals(2, book.getSheet("Project revenue").getLastRowNum());
+            assertEquals("No budget set", book.getSheet("Budget").getRow(1).getCell(2).getStringCellValue());
+        }
+    }
+
+    @Test void eventReportsIncludeFilteredDatesTasksPaymentsAndRejectWrongYear() throws Exception {
+        var year = reportYear(2033);
+        var other = reportYear(2034);
+        Long selectedId = null;
+        for (int i = 0; i < 3; i++) {
+            var event = new Event();
+            event.setYear(i == 2 ? other : year); event.setPurpose("Event " + i);
+            event.setMembers(List.of()); event.setEventType(EventType.TASK_BASED);
+            event.setDate(java.time.LocalDateTime.now().plusDays(i == 1 ? -2 : 2));
+            events.save(event);
+            if (i == 0) {
+                selectedId = event.getId();
+                var task = new EventTask(); task.setEvent(event); task.setTitle("Prepare venue");
+                task.setPrice(new BigDecimal("20.00")); task.setCompleted(true); tasks.save(task);
+                var payment = new TaskPayment(); payment.setTask(task); payment.setAmount(new BigDecimal("100.00"));
+                payment.setCurrency(emd.charitymanagementsystem.Models.Currency.MKD);
+                payment.setPaidOn(LocalDate.now()); payment.setRecordedAt(java.time.Instant.now());
+                payment.setRecordedBy("test"); taskPayments.save(payment);
+            }
+        }
+        String base = "/years/" + year.getId() + "/events";
+        try (var book = report(base + "/export.xlsx?type=TASK_BASED&status=UPCOMING")) {
+            assertEquals(1, book.getSheet("Events").getLastRowNum());
+            assertEquals("Event 0", book.getSheet("Events").getRow(1).getCell(1).getStringCellValue());
+            assertTrue(DateUtil.isCellDateFormatted(book.getSheet("Events").getRow(1).getCell(3)));
+        }
+        try (var book = report(base + "/" + selectedId + "/export.xlsx")) {
+            assertEquals(3, book.getNumberOfSheets());
+            assertEquals("Completed", book.getSheet("Tasks").getRow(1).getCell(3).getStringCellValue());
+            assertEquals(20, book.getSheet("Tasks").getRow(1).getCell(4).getNumericCellValue());
+            assertEquals("MKD", book.getSheet("Payments").getRow(1).getCell(4).getStringCellValue());
+            assertEquals(100, book.getSheet("Payments").getRow(1).getCell(3).getNumericCellValue());
+        }
+        var response = mvc.perform(get("/years/" + other.getId() + "/events/" + selectedId + "/export.xlsx")
+                .with(user("test@example.com").roles("HEAD"))).andReturn().getResponse();
+        assertNotEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.getContentType());
+    }
+
+    @Test void membershipReportUsesSelectedYearAndPreservesVoidedReceipts() throws Exception {
+        var member = new Member(); member.setName("Report member"); member.setSurname("Test");
+        member.setEmail("report-" + System.nanoTime() + "@example.com"); member.setPassword("secret");
+        member.setRole(Role.MEMBER); members.save(member);
+        for (int year : List.of(2035, 2036)) {
+            var payment = new MembershipPayment(); payment.setMemberId(member.getId());
+            payment.setMemberName("Report member Test"); payment.setMembershipYear(year);
+            payment.setAmount(new BigDecimal("15.00")); payment.setPaidOn(LocalDate.now());
+            payment.setCurrency(emd.charitymanagementsystem.Models.Currency.CHF);
+            payment.setRecordedAt(java.time.Instant.now()); payment.setRecordedBy("test");
+            if (year == 2035) { payment.setVoidedAt(java.time.Instant.now()); payment.setVoidReason("Correction"); }
+            membershipPayments.save(payment);
+        }
+        try (var book = report("/memberships/export.xlsx?year=2035")) {
+            assertEquals(1, book.getSheet("Payment ledger").getLastRowNum());
+            assertEquals("Voided", book.getSheet("Payment ledger").getRow(1).getCell(5).getStringCellValue());
+            Row row = null;
+            for (Row candidate : book.getSheet("Memberships")) {
+                if (candidate.getRowNum() > 0 && candidate.getCell(0).getNumericCellValue() == member.getId()) row = candidate;
+            }
+            assertNotNull(row);
+            assertEquals("Unpaid", row.getCell(6).getStringCellValue());
+            assertEquals(10, row.getCell(10).getNumericCellValue());
+        }
+        try (var book = report("/memberships/export.xlsx?year=2036")) {
+            Row row = null;
+            for (Row candidate : book.getSheet("Memberships")) {
+                if (candidate.getRowNum() > 0 && candidate.getCell(0).getNumericCellValue() == member.getId()) row = candidate;
+            }
+            assertNotNull(row);
+            assertEquals("Paid", row.getCell(6).getStringCellValue());
+            assertEquals("CHF", row.getCell(8).getStringCellValue());
+            assertEquals(0, row.getCell(10).getNumericCellValue());
+        }
+        var pdfResult = mvc.perform(get("/memberships/export.pdf?year=2035")
+                        .with(user("test@example.com").roles("TREASURER")))
+                .andExpect(status().isOk()).andExpect(content().contentType("application/pdf"))
+                .andExpect(header().string("Cache-Control", "no-store")).andReturn();
+        try (var reader = new com.lowagie.text.pdf.PdfReader(pdfResult.getResponse().getContentAsByteArray())) {
+            var extractor = new com.lowagie.text.pdf.parser.PdfTextExtractor(reader);
+            var text = new StringBuilder();
+            for (int page = 1; page <= reader.getNumberOfPages(); page++) text.append(extractor.getTextFromPage(page));
+            assertTrue(text.toString().contains("Membership year 2035"));
+            assertTrue(text.toString().contains("Voided"));
+            assertTrue(text.toString().contains("Correction"));
+            assertFalse(text.toString().contains("2036"));
+        }
+        String html = mvc.perform(get("/memberships?year=2035")
+                        .with(user("test@example.com").roles("HEAD"))).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        int selector = html.indexOf("id=\"year\"");
+        int formEnd = html.indexOf("</form>", selector);
+        assertTrue(html.indexOf("/memberships/export.pdf?year=2035", selector) < formEnd);
+        assertTrue(html.indexOf("/memberships/export.xlsx?year=2035", selector) < formEnd);
+        for (String path : List.of("/memberships/export.xlsx?year=2035", "/memberships/export.pdf?year=2035", "/years/1/export.xlsx")) {
+            var response = mvc.perform(get(path).with(user("member@example.com").roles("MEMBER"))).andReturn().getResponse();
+            assertNotEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.getContentType());
+            assertNotEquals("application/pdf", response.getContentType());
         }
     }
 }

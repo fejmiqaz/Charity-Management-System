@@ -9,7 +9,7 @@
     <p class="text-secondary">Record dues received from members. Membership covers the selected calendar year.</p>
     <div class="alert alert-success" th:if="${membershipSuccess}" th:text="${membershipSuccess}" role="status"></div>
     <div class="alert alert-danger" th:if="${membershipError}" th:text="${membershipError}" role="alert"></div>
-    <form method="get" th:action="@{/memberships}" class="d-flex gap-2 align-items-end mb-4">
+    <form method="get" th:action="@{/memberships}" class="d-flex flex-wrap gap-2 align-items-end mb-4">
         <div><label for="year" class="form-label">Membership year</label><input class="form-control" id="year"
                                                                                 name="year" type="number" min="1900"
                                                                                 max="2200" th:value="${membershipYear}"
@@ -20,6 +20,10 @@
         </div>
         <button class="btn btn-primary">View year</button>
         <a class="btn btn-outline-secondary" th:href="@{/members(membershipYear=${membershipYear})}">Member statuses</a>
+        <a class="btn btn-danger" th:href="@{/memberships/export.pdf(year=${membershipYear})}">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Memberships Report PDF</a>
+        <a class="btn btn-outline-primary" th:href="@{/memberships/export.xlsx(year=${membershipYear})}">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Memberships Report Excel</a>
     </form>
     <div class="membership-summary mb-4">
         <div class="card p-4"><span class="stat-label">Annual fee</span><strong class="stat-value"

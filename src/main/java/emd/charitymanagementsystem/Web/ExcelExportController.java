@@ -20,6 +20,41 @@ public class ExcelExportController {
     private final YearsService years;
     private final MembershipService memberships;
     private final ExcelExportService excel;
+    private final emd.charitymanagementsystem.Service.Implementation.ActivityExcelReportService reports;
+
+    @GetMapping("/years/{yearId}/export.xlsx")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD')")
+    public ResponseEntity<byte[]> yearReport(@PathVariable Long yearId) throws IOException {
+        return download("year-" + years.findEntityById(yearId).getYearValue(), reports.year(yearId));
+    }
+
+    @GetMapping("/years/{yearId}/projects/export.xlsx")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','PROJECT_MANAGER','VOLUNTEER','MEMBER')")
+    public ResponseEntity<byte[]> projectReport(@PathVariable Long yearId,
+            @RequestParam(required = false) emd.charitymanagementsystem.Models.ProjectType type,
+            @RequestParam(required = false) emd.charitymanagementsystem.Models.ProjectStatus status) throws IOException {
+        return download("projects-" + years.findEntityById(yearId).getYearValue(), reports.projects(yearId, type, status));
+    }
+
+    @GetMapping("/years/{yearId}/events/export.xlsx")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER','VOLUNTEER','MEMBER')")
+    public ResponseEntity<byte[]> eventReport(@PathVariable Long yearId,
+            @RequestParam(required = false) emd.charitymanagementsystem.Models.EventType type,
+            @RequestParam(required = false) emd.charitymanagementsystem.Models.EventStatus status) throws IOException {
+        return download("events-" + years.findEntityById(yearId).getYearValue(), reports.events(yearId, type, status));
+    }
+
+    @GetMapping("/years/{yearId}/events/{eventId}/export.xlsx")
+    public ResponseEntity<byte[]> eventDetailsReport(@PathVariable Long yearId, @PathVariable Long eventId) throws IOException {
+        return download("event-" + eventId + "-" + years.findEntityById(yearId).getYearValue(), reports.event(yearId, eventId));
+    }
+
+    @GetMapping("/memberships/export.xlsx")
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER')")
+    public ResponseEntity<byte[]> membershipReport(@RequestParam(required = false) Integer year) throws IOException {
+        int selectedYear = memberships.checkedYear(year);
+        return download("memberships-" + selectedYear, reports.memberships(selectedYear));
+    }
 
     @GetMapping("/members/export.xlsx")
     public ResponseEntity<byte[]> members(@RequestParam(required = false) String search,

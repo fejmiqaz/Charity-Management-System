@@ -33,7 +33,12 @@
        th:href="@{/pdf/years/{yearId}/projects(yearId=${year.id})}"
        sec:authorize="hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'PROJECT_MANAGER')">
       <i class="bi bi-file-earmark-pdf me-1"></i>
-      Export All Projects PDF
+      Projects Report PDF
+    </a>
+
+    <a class="btn btn-outline-primary"
+       th:href="@{/years/{yearId}/projects/export.xlsx(yearId=${year.id},type=${selectedType},status=${selectedStatus})}">
+      <i class="bi bi-file-earmark-spreadsheet me-1"></i> Projects Report Excel
     </a>
 
     <a class="btn btn-success"

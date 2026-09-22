@@ -41,6 +41,59 @@ const actionTranslations = {
 };
 Object.keys(actionTranslations).forEach(language => Object.assign(charityTranslations[language], actionTranslations[language]));
 
+const reportTranslations = {
+  sq: {
+    "Year Report PDF": "Raporti i vitit PDF",
+    "Project Report PDF": "Raporti i projektit PDF",
+    "Projects Report PDF": "Raporti i projekteve PDF",
+    "Event Report PDF": "Raporti i ngjarjes PDF",
+    "Events Report PDF": "Raporti i ngjarjeve PDF",
+    "Donation Report PDF": "Raporti i donacionit PDF",
+    "Donations Report PDF": "Raporti i donacioneve PDF",
+    "Donations Report Excel": "Raporti i donacioneve Excel",
+    "Budget Report PDF": "Raporti i buxhetit PDF",
+    "Members Report Excel": "Raporti i anëtarëve Excel"
+  },
+  fr: {
+    "Year Report PDF": "Rapport annuel PDF",
+    "Project Report PDF": "Rapport du projet PDF",
+    "Projects Report PDF": "Rapport des projets PDF",
+    "Event Report PDF": "Rapport de l'événement PDF",
+    "Events Report PDF": "Rapport des événements PDF",
+    "Donation Report PDF": "Rapport du don PDF",
+    "Donations Report PDF": "Rapport des dons PDF",
+    "Donations Report Excel": "Rapport des dons Excel",
+    "Budget Report PDF": "Rapport budgétaire PDF",
+    "Members Report Excel": "Rapport des membres Excel"
+  },
+  de: {
+    "Year Report PDF": "Jahresbericht PDF",
+    "Project Report PDF": "Projektbericht PDF",
+    "Projects Report PDF": "Projektübersicht PDF",
+    "Event Report PDF": "Veranstaltungsbericht PDF",
+    "Events Report PDF": "Veranstaltungsübersicht PDF",
+    "Donation Report PDF": "Spendenbericht PDF",
+    "Donations Report PDF": "Spendenübersicht PDF",
+    "Donations Report Excel": "Spendenübersicht Excel",
+    "Budget Report PDF": "Budgetbericht PDF",
+    "Members Report Excel": "Mitgliederbericht Excel"
+  }
+};
+Object.keys(reportTranslations).forEach(language => Object.assign(charityTranslations[language], reportTranslations[language]));
+Object.keys(reportTranslations).forEach(language => {
+  ["Year", "Projects", "Events", "Event"].forEach(subject => {
+    charityTranslations[language][subject + " Report Excel"] =
+      reportTranslations[language][subject + " Report PDF"].replace(/PDF$/, "Excel");
+  });
+});
+Object.assign(charityTranslations.sq, {"Memberships Report Excel": "Raporti i anëtarësimeve Excel"});
+Object.assign(charityTranslations.fr, {"Memberships Report Excel": "Rapport des adhésions Excel"});
+Object.assign(charityTranslations.de, {"Memberships Report Excel": "Mitgliedschaftsbericht Excel"});
+["sq", "fr", "de"].forEach(language => {
+  charityTranslations[language]["Memberships Report PDF"] =
+    charityTranslations[language]["Memberships Report Excel"].replace(/Excel$/, "PDF");
+});
+
 function initThemeAndLanguage() {
   const root = document.documentElement;
   const themeButton = document.getElementById('themeToggle');
