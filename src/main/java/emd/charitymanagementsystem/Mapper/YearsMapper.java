@@ -24,6 +24,7 @@ public class YearsMapper {
     public static YearsDetailsDto toDetailsDto(Years year) {
         double totalDonationsAmount = year.getDonations() != null
                 ? year.getDonations().stream()
+                .filter(d -> d.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR)
                 .mapToDouble(d -> d.getDonationAmount() != null ? d.getDonationAmount() : 0.0)
                 .sum()
                 : 0.0;

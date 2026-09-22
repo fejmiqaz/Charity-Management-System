@@ -29,6 +29,7 @@ public class MembershipController {
         model.addAttribute("membershipYears", memberships.years());
         model.addAttribute("membershipFee", memberships.fee(selectedYear));
         model.addAttribute("membershipTotal", memberships.total(selectedYear));
+        model.addAttribute("membershipTotals", memberships.paymentTotals(selectedYear));
         model.addAttribute("payments", memberId == null ? memberships.payments(selectedYear) : memberships.history(memberId));
         model.addAttribute("members", members.listAll());
         model.addAttribute("selectedMember", memberId);
@@ -38,10 +39,11 @@ public class MembershipController {
 
     @PostMapping("/record")
     public String record(@RequestParam Long memberId, @RequestParam int year,
+                         @RequestParam(required = false) BigDecimal amount, @RequestParam(defaultValue = "EUR") emd.charitymanagementsystem.Models.Currency currency,
                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate paidOn,
                          Authentication authentication, RedirectAttributes flash) {
         try {
-            memberships.record(memberId, year, paidOn, authentication.getName());
+            memberships.record(memberId, year, amount == null ? memberships.fee(year) : amount, currency, paidOn, authentication.getName());
             flash.addFlashAttribute("membershipSuccess", "Membership payment recorded.");
         } catch (IllegalArgumentException e) {
             flash.addFlashAttribute("membershipError", e.getMessage());

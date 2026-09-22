@@ -87,7 +87,7 @@ class ImpactPageTests {
                 .andExpect(content().string(containsString("More to share soon")))
                 .andExpect(model().attribute("completedProjects", 0));
         project("<script>alert(1)</script>", ProjectStatus.FINISHED, true);
-        mvc.perform(get("/")).andExpect(content().string(not(containsString("<script>"))))
+        mvc.perform(get("/")).andExpect(content().string(not(containsString("<script>alert(1)</script>"))))
                 .andExpect(content().string(containsString("&lt;script&gt;")));
     }
 

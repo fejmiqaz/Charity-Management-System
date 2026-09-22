@@ -23,6 +23,9 @@ public class Project {
     private String description;
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean publicImpact = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(32) default 'STANDARD'")
+    private ProjectType projectType = ProjectType.STANDARD;
     private LocalDate dateCreated;
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
@@ -40,5 +43,8 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
     private Set<Member> members;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ProjectRevenue> revenues = new java.util.ArrayList<>();
 
 }

@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class DonationFormDto {
     private Long id;
+    @NotNull(message = "Currency is required")
+    private emd.charitymanagementsystem.Models.Currency currency = emd.charitymanagementsystem.Models.Currency.EUR;
     @NotNull(message = "Donation amount is required")
     @DecimalMin(value = "0.01", message = "Donation amount must be greater than 0")
     private Double donationAmount;

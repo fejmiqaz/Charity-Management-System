@@ -17,6 +17,7 @@ public class HomeController {
     private final BudgetService budgetService;
     private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
     private final emd.charitymanagementsystem.Service.Implementation.BudgetWarningService budgetWarnings;
+    private final emd.charitymanagementsystem.Service.Implementation.ActivityFinanceService activityFinance;
 
     @GetMapping({"/dashboard", "/home"})
     public String home(Model model) {
@@ -25,18 +26,22 @@ public class HomeController {
         long totalProjects = projectService.projectsCount();
         long totalDonationsCount = donationService.donationsCount();
 
-        double totalDonationsAmount = donationService.getTotalDonations();
+        var donationTotals = donationService.totalsByCurrency(null);
+        double totalDonationsAmount = donationTotals.get(emd.charitymanagementsystem.Models.Currency.EUR).doubleValue();
         double totalProjectCost = projectService.getTotalProjectCost();
         double totalBudgetAmount = budgetService.getTotalBudgetAmouunt();
         double membershipIncome = memberships.total().doubleValue();
-        double remainingBudget = (totalDonationsAmount + totalBudgetAmount + membershipIncome) - totalProjectCost;
+        double projectIncome = activityFinance.totalRevenue().doubleValue();
+        double remainingBudget = (totalDonationsAmount + totalBudgetAmount + membershipIncome + projectIncome) - totalProjectCost;
         model.addAttribute("membershipIncome", membershipIncome);
+        model.addAttribute("projectIncome", projectIncome);
 
         model.addAttribute("totalYears", totalYears);
         model.addAttribute("totalMembers", totalMembers);
         model.addAttribute("totalProjects", totalProjects);
         model.addAttribute("totalDonationsCount", totalDonationsCount);
         model.addAttribute("totalDonationsAmount", totalDonationsAmount);
+        model.addAttribute("donationTotals", donationTotals);
         model.addAttribute("totalProjectCost", totalProjectCost);
         model.addAttribute("remainingBudget", remainingBudget);
         model.addAttribute("budgetWarnings", budgetWarnings.warnings());

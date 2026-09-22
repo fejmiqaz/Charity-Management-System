@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,7 +68,24 @@ class WorkspaceRenderingTests {
     void rendersPublicAuthenticationPages() throws Exception {
         for (String path : new String[]{"/login", "/register"}) {
             mvc.perform(get(path)).andExpect(status().isOk())
-                    .andExpect(content().string(containsString("auth-story")));
+                    .andExpect(content().string(containsString("auth-story")))
+                    .andExpect(content().string(containsString("id=\"themeToggle\"")))
+                    .andExpect(content().string(containsString("value=\"sq\"")))
+                    .andExpect(content().string(containsString("value=\"fr\"")))
+                    .andExpect(content().string(containsString("value=\"de\"")));
         }
+    }
+
+    @Test
+    void rendersPersistentThemeAndLanguageControlsInWorkspace() throws Exception {
+        String html = mvc.perform(get("/dashboard").with(user("test@example.com").roles("HEAD")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("id=\"themeToggle\"")))
+                .andExpect(content().string(containsString("id=\"appLanguage\"")))
+                .andExpect(content().string(containsString("data-i18n=\"Overview\"")))
+                .andReturn().getResponse().getContentAsString();
+        assertTrue(html.indexOf("mobile-search-trigger") < html.indexOf("id=\"mobileActions\""));
+        assertTrue(html.indexOf("mobile-profile-link") < html.indexOf("id=\"appLanguage\""));
+        assertTrue(html.indexOf("id=\"themeToggle\"") < html.indexOf("mobile-signout-form"));
     }
 }

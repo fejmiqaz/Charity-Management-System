@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import emd.charitymanagementsystem.Models.ProjectType;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +19,7 @@ import java.util.List;
 public class ProjectFormDto {
 
     private Long id;
+    private ProjectType projectType = ProjectType.STANDARD;
 
     @NotBlank(message = "Project name is required")
     @Size(min = 3, max = 150, message = "Project name must be between 3 and 150 characters")

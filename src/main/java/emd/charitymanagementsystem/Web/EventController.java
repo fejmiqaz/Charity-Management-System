@@ -15,6 +15,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import emd.charitymanagementsystem.Models.EventType;
 
 @Controller
 @RequestMapping("/years/{yearId}/events")
@@ -25,6 +31,7 @@ public class EventController {
     private final YearsService yearsService;
     private final MemberService memberService;
     private final emd.charitymanagementsystem.Service.Implementation.ImpactService impact;
+    private final emd.charitymanagementsystem.Service.Implementation.ActivityFinanceService activityFinance;
 
     @PreAuthorize("hasRole('HEAD')")
     @PostMapping("/{id}/publication")
@@ -54,6 +61,9 @@ public class EventController {
 
         model.addAttribute("year", year);
         model.addAttribute("event", event);
+        model.addAttribute("tasks", activityFinance.tasks(id));
+        model.addAttribute("members", memberService.listAll());
+        model.addAttribute("today", LocalDate.now());
         return "events/details";
     }
 
@@ -68,6 +78,7 @@ public class EventController {
         model.addAttribute("year", year);
         model.addAttribute("event", eventFormDto);
         model.addAttribute("members", memberService.listAll());
+        model.addAttribute("eventTypes", EventType.values());
 
         return "events/form";
     }
@@ -83,6 +94,7 @@ public class EventController {
         model.addAttribute("year", year);
         model.addAttribute("event", eventFormDto);
         model.addAttribute("members", memberService.listAll());
+        model.addAttribute("eventTypes", EventType.values());
 
         return "events/form";
     }
@@ -99,6 +111,7 @@ public class EventController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("year", year);
             model.addAttribute("members", memberService.listAll());
+            model.addAttribute("eventTypes", EventType.values());
             return "events/form";
         }
 
@@ -117,5 +130,33 @@ public class EventController {
                               @PathVariable Long id) {
         eventService.delete(id);
         return "redirect:/years/" + yearId + "/events";
+    }
+
+    @PostMapping("/{eventId}/tasks")
+    public String addTask(@PathVariable Long yearId, @PathVariable Long eventId,
+                          @RequestParam String title, @RequestParam(required=false) String description,
+                          @RequestParam BigDecimal price, @RequestParam(required=false) List<Long> memberIds,
+                          RedirectAttributes flash) {
+        try { activityFinance.addTask(yearId,eventId,title,description,price,memberIds); flash.addFlashAttribute("activitySuccess","Task added."); }
+        catch (IllegalArgumentException e) { flash.addFlashAttribute("activityError",e.getMessage()); }
+        return "redirect:/years/"+yearId+"/events/"+eventId;
+    }
+
+    @PostMapping("/{eventId}/tasks/{taskId}/status")
+    public String taskStatus(@PathVariable Long yearId,@PathVariable Long eventId,@PathVariable Long taskId,
+                             @RequestParam(defaultValue="false") boolean completed) {
+        activityFinance.completeTask(yearId,eventId,taskId,completed);
+        return "redirect:/years/"+yearId+"/events/"+eventId;
+    }
+
+    @PostMapping("/{eventId}/tasks/{taskId}/payments")
+    public String taskPayment(@PathVariable Long yearId,@PathVariable Long eventId,@PathVariable Long taskId,
+                              @RequestParam(required=false) Long memberId,@RequestParam BigDecimal amount,
+                              @RequestParam emd.charitymanagementsystem.Models.Currency currency,
+                              @RequestParam @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate paidOn,
+                              @RequestParam(required=false) String note, Authentication authentication, RedirectAttributes flash) {
+        try { activityFinance.addTaskPayment(yearId,eventId,taskId,memberId,amount,currency,paidOn,note,authentication.getName()); flash.addFlashAttribute("activitySuccess","Payment recorded."); }
+        catch (IllegalArgumentException e) { flash.addFlashAttribute("activityError",e.getMessage()); }
+        return "redirect:/years/"+yearId+"/events/"+eventId;
     }
 }

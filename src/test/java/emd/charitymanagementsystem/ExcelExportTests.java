@@ -60,7 +60,7 @@ class ExcelExportTests {
         try (var book = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
             var sheet = book.getSheetAt(0);
             assertEquals(13, sheet.getLastRowNum());
-            assertEquals(10, sheet.getRow(0).getLastCellNum());
+            assertEquals(11, sheet.getRow(0).getLastCellNum());
             for (Row row : sheet) for (Cell cell : row) {
                 assertFalse(cell.toString().contains("SECRET-PASSWORD"));
                 assertFalse(cell.toString().toLowerCase().contains("account"));
@@ -83,7 +83,7 @@ class ExcelExportTests {
             assertEquals(1, sheet.getLastRowNum());
             assertEquals(2025, sheet.getRow(1).getCell(0).getNumericCellValue());
             assertEquals(1234.56, sheet.getRow(1).getCell(1).getNumericCellValue());
-            assertTrue(sheet.getRow(1).getCell(1).getCellStyle().getDataFormatString().contains("EUR"));
+            assertEquals("EUR", sheet.getRow(1).getCell(2).getStringCellValue());
         }
     }
 
@@ -95,8 +95,8 @@ class ExcelExportTests {
             var row = book.getSheetAt(0).getRow(1);
             assertEquals(CellType.STRING, row.getCell(0).getCellType());
             assertEquals("=1+1", row.getCell(0).getStringCellValue());
-            assertTrue(DateUtil.isCellDateFormatted(row.getCell(9)));
-            assertEquals(payment.getPaidOn(), row.getCell(9).getLocalDateTimeCellValue().toLocalDate());
+            assertTrue(DateUtil.isCellDateFormatted(row.getCell(10)));
+            assertEquals(payment.getPaidOn(), row.getCell(10).getLocalDateTimeCellValue().toLocalDate());
         }
         try (var book = new XSSFWorkbook(new ByteArrayInputStream(excel.members(List.of(), 2026, Map.of())))) {
             assertEquals(0, book.getSheetAt(0).getLastRowNum());

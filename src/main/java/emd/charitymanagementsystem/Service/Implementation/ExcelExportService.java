@@ -22,16 +22,16 @@ public class ExcelExportService {
             var payment = payments.get(member.getId());
             rows.add(new Object[]{member.getName(), member.getSurname(), member.getEmail(), member.getPhone(),
                     member.getCountry(), member.getCity(), year, payment == null ? "Unpaid" : "Paid",
-                    payment == null ? null : payment.getAmount(), payment == null ? null : payment.getPaidOn()});
+                    payment == null ? null : payment.getAmount(), payment == null ? null : payment.getCurrency(), payment == null ? null : payment.getPaidOn()});
         }
         return workbook("Members", new String[]{"First name", "Last name", "Email", "Phone", "Country", "City",
-                "Membership year", "Membership status", "Paid amount (EUR)", "Payment date"}, rows, Set.of(8));
+                "Membership year", "Membership status", "Paid amount", "Currency", "Payment date"}, rows, Set.of(8));
     }
 
     public byte[] donations(List<DonationResponseDto> donations) throws IOException {
-        List<Object[]> rows = donations.stream().map(d -> new Object[]{d.getYearValue(), d.getDonationAmount(),
+        List<Object[]> rows = donations.stream().map(d -> new Object[]{d.getYearValue(), d.getDonationAmount(), d.getCurrency(),
                 d.getMemberNames() == null ? "" : String.join(", ", d.getMemberNames())}).toList();
-        return workbook("Donations", new String[]{"Year", "Amount (EUR)", "Donating members"}, rows, Set.of(1));
+        return workbook("Donations", new String[]{"Year", "Amount", "Currency", "Donating members"}, rows, Set.of(1));
     }
 
     private byte[] workbook(String name, String[] headers, List<Object[]> rows, Set<Integer> moneyColumns)
@@ -46,7 +46,7 @@ public class ExcelExportService {
             font.setColor(IndexedColors.WHITE.getIndex());
             headerStyle.setFont(font);
             var money = book.createCellStyle();
-            money.setDataFormat(book.createDataFormat().getFormat("#,##0.00 \"EUR\""));
+            money.setDataFormat(book.createDataFormat().getFormat("#,##0.00"));
             var date = book.createCellStyle();
             date.setDataFormat(book.createDataFormat().getFormat("dd mmm yyyy"));
             var header = sheet.createRow(0);

@@ -23,6 +23,15 @@
             <input type="hidden" th:field="*{yearId}">
 
             <div class="mb-3">
+                <label for="eventType" class="form-label">Event type</label>
+                <select id="eventType" class="form-select" th:field="*{eventType}">
+                    <option th:each="type : ${eventTypes}" th:value="${type}"
+                            th:text="${type.name() == 'TASK_BASED' ? 'Event with tasks' : 'Normal event'}"></option>
+                </select>
+                <div class="form-text">Task-based events can track work, assigned members, costs and payments.</div>
+            </div>
+
+            <div class="mb-3">
                 <label for="purpose" class="form-label">Purpose</label>
                 <input type="text"
                        id="purpose"

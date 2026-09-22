@@ -29,6 +29,7 @@ public class DonationController {
         model.addAttribute("year", year);
         model.addAttribute("donations", donationService.findByYearId(yearId));
         model.addAttribute("totalDonationsAmount", donationService.totalDonationsAmount(yearId));
+        model.addAttribute("currencyTotals", donationService.totalsByCurrency(yearId));
         return "donations/list";
     }
 
@@ -86,6 +87,7 @@ public class DonationController {
         DonationFormDto formDto = new DonationFormDto();
         formDto.setId(donationResponse.getId());
         formDto.setDonationAmount(donationResponse.getDonationAmount());
+        formDto.setCurrency(donationResponse.getCurrency());
         formDto.setYearId(yearId);
         formDto.setMemberIds(donationResponse.getMemberIds());
 

@@ -17,6 +17,7 @@ public interface DonationService {
 
     @Nullable List<DonationResponseDto> findByYearId(Long yearId);
     Double totalDonationsAmount(Long yearId);
+    java.util.Map<emd.charitymanagementsystem.Models.Currency, java.math.BigDecimal> totalsByCurrency(Long yearId);
     long donationsCount();
     double getTotalDonations();
 }

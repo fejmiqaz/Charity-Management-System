@@ -9,6 +9,7 @@ public class DonationMapper {
     public static DonationResponseDto toDto(Donation donation){
         return new DonationResponseDto(
                 donation.getId(),
+                donation.getCurrency(),
                 donation.getDonationAmount(),
                 donation.getYear() != null ? donation.getYear().getId() : null,
                 donation.getYear() != null ? donation.getYear().getYearValue() : null,
@@ -24,6 +25,7 @@ public class DonationMapper {
     public static DonationFormDto toFormDto(Donation donation){
         return new DonationFormDto(
                 donation.getId(),
+                donation.getCurrency(),
                 donation.getDonationAmount(),
                 donation.getYear() != null ? donation.getYear().getId() : null,
                 donation.getMembers().stream()

@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="d-flex flex-wrap gap-2 mb-4">
+    <div class="page-toolbar mb-4">
         <a class="btn btn-outline-primary" th:href="@{/years/{yearId}/donations/export.xlsx(yearId=${year.id})}"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel</a>
         <a class="btn btn-dark" th:href="@{/years}">
             <i class="bi bi-arrow-left me-1"></i> Back to Years
@@ -73,7 +73,7 @@
                     <td th:text="${donation.id}"></td>
 
                     <td class="fw-bold"
-                        th:text="${donation.donationAmount} + ' €'"></td>
+                        th:text="${donation.donationAmount} + ' ' + ${donation.currency}"></td>
 
                     <td>
             <span class="text-secondary"
@@ -131,7 +131,7 @@
 
         <div class="summary-row total">
             <span>Total Donation Amount</span>
-            <strong th:text="${totalDonationsAmount} + ' €'"></strong>
+            <strong><span class="d-block" th:each="entry : ${currencyTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong>
         </div>
 
     </div>

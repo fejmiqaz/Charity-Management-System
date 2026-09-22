@@ -257,11 +257,16 @@ public class PdfExportService {
 
         addSectionTitle(document, "Financial summary");
         double allocated = budgets.stream().mapToDouble(b -> b.getBudgetAmount() == null ? 0 : b.getBudgetAmount()).sum();
-        double contributed = donations.stream().mapToDouble(d -> d.getDonationAmount() == null ? 0 : d.getDonationAmount()).sum();
+        double contributed = donations.stream().filter(d -> d.getCurrency() == null || d.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR).mapToDouble(d -> d.getDonationAmount() == null ? 0 : d.getDonationAmount()).sum();
         double spent = projects.stream().mapToDouble(p -> p.getProjectPrice() == null ? 0 : p.getProjectPrice()).sum();
         PdfPTable summary = createDetailsTable();
         addDetailRow(summary, "Allocated budget", formatMoney(allocated));
         addDetailRow(summary, "Donations", formatMoney(contributed));
+        for (var currency : emd.charitymanagementsystem.Models.Currency.values()) {
+            if (currency == emd.charitymanagementsystem.Models.Currency.EUR) continue;
+            double total = donations.stream().filter(d -> d.getCurrency() == currency).mapToDouble(d -> d.getDonationAmount() == null ? 0 : d.getDonationAmount()).sum();
+            addDetailRow(summary, "Donations " + currency, String.format(java.util.Locale.US, "%,.2f %s", total, currency));
+        }
         addDetailRow(summary, "Project costs", formatMoney(spent));
         addDetailRow(summary, "Membership income", formatMoney(membershipIncome.doubleValue()));
         addDetailRow(summary, "Remaining budget", formatMoney(allocated + contributed + membershipIncome.doubleValue() - spent));
@@ -737,7 +742,8 @@ public class PdfExportService {
                 "Members"
         );
 
-        double totalDonations = 0.0;
+        java.util.Map<emd.charitymanagementsystem.Models.Currency, Double> totalDonations = new java.util.EnumMap<>(emd.charitymanagementsystem.Models.Currency.class);
+        for (var currency : emd.charitymanagementsystem.Models.Currency.values()) totalDonations.put(currency, 0.0);
         int rowIndex = 0;
 
         for (DonationResponseDto donation : donations) {
@@ -749,7 +755,7 @@ public class PdfExportService {
                             ? donation.getDonationAmount()
                             : 0.0;
 
-            totalDonations += amount;
+            totalDonations.merge(donation.getCurrency() == null ? emd.charitymanagementsystem.Models.Currency.EUR : donation.getCurrency(), amount, Double::sum);
 
             addCell(
                     table,
@@ -759,7 +765,7 @@ public class PdfExportService {
 
             addCell(
                     table,
-                    formatMoney(amount),
+                    String.format(java.util.Locale.US, "%,.2f %s", amount, donation.getCurrency() == null ? emd.charitymanagementsystem.Models.Currency.EUR : donation.getCurrency()),
                     alternativeRow
             );
 
@@ -782,11 +788,8 @@ public class PdfExportService {
 
         document.add(table);
 
-        addTotal(
-                document,
-                "Total donations: "
-                        + formatMoney(totalDonations)
-        );
+        for (var entry : totalDonations.entrySet())
+            addTotal(document, "Total donations: " + String.format(java.util.Locale.US, "%,.2f %s", entry.getValue(), entry.getKey()));
     }
 
     private void addEventsSection(

@@ -29,6 +29,8 @@ public class MembershipPayment {
     private String activeKey;
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
+    @Enumerated(EnumType.STRING) @Column(nullable = false, columnDefinition = "varchar(3) default 'EUR'")
+    private Currency currency = Currency.EUR;
     @Column(nullable = false)
     private LocalDate paidOn;
     @Column(nullable = false)

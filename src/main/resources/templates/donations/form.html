@@ -20,6 +20,7 @@
         <form th:action="@{${donation.id == null ? '/years/' + year.id + '/donations/add' : '/years/' + year.id + '/donations/' + donation.id + '/edit'}}"
               th:object="${donation}"
               method="post"
+              data-currency-form
               novalidate>
 
             <input type="hidden" th:field="*{id}">
@@ -33,13 +34,17 @@
                 <div class="input-group">
                     <input id="donationAmount"
                            type="number"
+                           data-currency-amount
                            step="0.01"
                            class="form-control"
                            th:field="*{donationAmount}"
                            th:classappend="${#fields.hasErrors('donationAmount')} ? ' is-invalid'">
 
-                    <span class="input-group-text">€</span>
+                    <select class="form-select" style="max-width: 110px" th:field="*{currency}" data-currency-code aria-label="Currency">
+                        <option value="MKD">MKD</option><option value="EUR">EUR</option><option value="CHF">CHF</option>
+                    </select>
                 </div>
+                <small class="form-text" data-currency-preview aria-live="polite"></small>
 
                 <div class="invalid-feedback d-block"
                      th:if="${#fields.hasErrors('donationAmount')}"

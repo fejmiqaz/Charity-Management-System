@@ -22,7 +22,7 @@
             <tbody>
             <tr th:each="payment : ${membershipHistory}">
                 <td th:text="${payment.membershipYear}"></td>
-                <td th:text="'€' + ${payment.amount}"></td>
+                <td th:text="${payment.amount} + ' ' + ${payment.currency}"></td>
                 <td th:text="${payment.paidOn}"></td>
                 <td th:text="${payment.paid} ? 'Paid' : 'Voided'"></td>
             </tr>

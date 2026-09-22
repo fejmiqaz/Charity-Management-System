@@ -12,6 +12,10 @@ import java.util.List;
 public interface DonationRepository extends JpaRepository<Donation, Long>, JpaSpecificationExecutor<Donation> {
     @org.springframework.data.jpa.repository.Query("select coalesce(sum(d.donationAmount), 0.0) from Donation d")
     double totalAmount();
+    @org.springframework.data.jpa.repository.Query("select coalesce(sum(d.donationAmount), 0.0) from Donation d where d.currency = emd.charitymanagementsystem.Models.Currency.EUR")
+    double totalEurAmount();
+    @org.springframework.data.jpa.repository.Query("select d.currency, coalesce(sum(d.donationAmount), 0.0) from Donation d group by d.currency")
+    List<Object[]> totalsByCurrency();
     @Nullable
     List<Donation> findByYearId(Long yearId);
     List<Donation> findByMembers_Id(Long memberId);

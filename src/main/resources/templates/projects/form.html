@@ -23,6 +23,15 @@
       <input type="hidden" th:field="*{yearId}">
 
       <div class="mb-3">
+        <label for="projectType" class="form-label">Project type</label>
+        <select id="projectType" class="form-select" th:field="*{projectType}">
+          <option th:each="type : ${projectTypes}" th:value="${type}"
+                  th:text="${type.name() == 'REVENUE' ? 'Revenue-generating project' : 'Standard charity project'}"></option>
+        </select>
+        <div class="form-text">Revenue projects can record income received for each month.</div>
+      </div>
+
+      <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input id="name"
                type="text"

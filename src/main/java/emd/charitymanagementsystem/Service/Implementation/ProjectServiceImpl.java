@@ -5,6 +5,7 @@ import emd.charitymanagementsystem.DTO.project.ProjectResponseDto;
 import emd.charitymanagementsystem.Mapper.ProjectMapper;
 import emd.charitymanagementsystem.Models.Member;
 import emd.charitymanagementsystem.Models.Project;
+import emd.charitymanagementsystem.Models.ProjectType;
 import emd.charitymanagementsystem.Models.Years;
 import emd.charitymanagementsystem.Repository.MemberRepository;
 import emd.charitymanagementsystem.Repository.ProjectRepository;
@@ -51,6 +52,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project project = new Project();
         project.setName(projectFormDto.getName());
+        project.setProjectType(projectFormDto.getProjectType() == null ? ProjectType.STANDARD : projectFormDto.getProjectType());
         project.setDescription(projectFormDto.getDescription());
         project.setStatus(projectFormDto.getStatus());
         project.setProjectPrice(projectFormDto.getProjectPrice());
@@ -84,6 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         project.setName(projectFormDto.getName());
+        project.setProjectType(projectFormDto.getProjectType() == null ? ProjectType.STANDARD : projectFormDto.getProjectType());
         project.setDescription(projectFormDto.getDescription());
         project.setStatus(projectFormDto.getStatus());
         project.setProjectPrice(projectFormDto.getProjectPrice());

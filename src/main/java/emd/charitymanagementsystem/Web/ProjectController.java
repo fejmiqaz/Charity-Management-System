@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.math.BigDecimal;
+import java.time.YearMonth;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import emd.charitymanagementsystem.Models.ProjectType;
 
 @Controller
 @RequestMapping("/years/{yearId}/projects")
@@ -27,6 +33,7 @@ public class ProjectController {
     private final YearsService yearService;
     private final MemberService memberService;
     private final emd.charitymanagementsystem.Service.Implementation.ImpactService impact;
+    private final emd.charitymanagementsystem.Service.Implementation.ActivityFinanceService activityFinance;
 
     @PreAuthorize("hasRole('HEAD')")
     @PostMapping("/{projectId}/publication")
@@ -74,6 +81,7 @@ public class ProjectController {
         model.addAttribute("year", yearService.findById(yearId));
         model.addAttribute("project", projectFormDto);
         model.addAttribute("statuses", ProjectStatus.values());
+        model.addAttribute("projectTypes", ProjectType.values());
         model.addAttribute("members", memberService.listAll());
 
         return "projects/form";
@@ -90,6 +98,7 @@ public class ProjectController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("year", yearService.findById(yearId));
             model.addAttribute("statuses", ProjectStatus.values());
+            model.addAttribute("projectTypes", ProjectType.values());
             model.addAttribute("members", memberService.listAll());
             return "projects/form";
         }
@@ -104,7 +113,12 @@ public class ProjectController {
                           @PathVariable Long projectId,
                           Model model) {
         model.addAttribute("year", yearService.findById(yearId));
-        model.addAttribute("project", projectService.findById(projectId));
+        ProjectResponseDto project = projectService.findById(projectId);
+        model.addAttribute("project", project);
+        model.addAttribute("revenues", activityFinance.revenues(projectId));
+        model.addAttribute("revenueTotal", activityFinance.projectRevenue(projectId));
+        model.addAttribute("revenueTotals", activityFinance.projectRevenueTotals(projectId));
+        model.addAttribute("currentMonth", YearMonth.now());
         return "projects/details";
     }
 
@@ -117,6 +131,7 @@ public class ProjectController {
 
         ProjectFormDto projectFormDto = new ProjectFormDto();
         projectFormDto.setId(project.getId());
+        projectFormDto.setProjectType(project.getProjectType());
         projectFormDto.setName(project.getName());
         projectFormDto.setDescription(project.getDescription());
         projectFormDto.setStatus(project.getStatus());
@@ -127,6 +142,7 @@ public class ProjectController {
         model.addAttribute("year", yearService.findById(yearId));
         model.addAttribute("project", projectFormDto);
         model.addAttribute("statuses", ProjectStatus.values());
+        model.addAttribute("projectTypes", ProjectType.values());
         model.addAttribute("members", memberService.listAll());
 
         return "projects/form";
@@ -145,6 +161,7 @@ public class ProjectController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("year", yearService.findById(yearId));
             model.addAttribute("statuses", ProjectStatus.values());
+            model.addAttribute("projectTypes", ProjectType.values());
             model.addAttribute("members", memberService.listAll());
             return "projects/form";
         }
@@ -159,5 +176,16 @@ public class ProjectController {
                                 @PathVariable Long projectId) {
         projectService.delete(projectId);
         return "redirect:/years/" + yearId + "/projects";
+    }
+
+    @PostMapping("/{projectId}/revenues")
+    public String addRevenue(@PathVariable Long yearId,@PathVariable Long projectId,
+                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") YearMonth month,
+                             @RequestParam String customer,@RequestParam BigDecimal amount,
+                             @RequestParam emd.charitymanagementsystem.Models.Currency currency,
+                             @RequestParam(required=false) String note, Authentication authentication, RedirectAttributes flash) {
+        try { activityFinance.addRevenue(yearId,projectId,month,customer,amount,currency,note,authentication.getName()); flash.addFlashAttribute("activitySuccess","Monthly income recorded."); }
+        catch (IllegalArgumentException e) { flash.addFlashAttribute("activityError",e.getMessage()); }
+        return "redirect:/years/"+yearId+"/projects/"+projectId;
     }
 }

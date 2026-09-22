@@ -11,6 +11,7 @@ public class EventMapper {
     public static EventResponseDto toDto(Event event){
         return new EventResponseDto(
                 event.getId(),
+                event.getEventType(),
                 event.getPurpose(),
                 event.getDate(),
                 event.getMembers().isEmpty() ? List.<Long>of() : event.getMembers().stream().map(Member::getId).toList(),
@@ -24,6 +25,7 @@ public class EventMapper {
     public static EventFormDto toFormDto(Event event){
         return new EventFormDto(
                 event.getId(),
+                event.getEventType(),
                 event.getPurpose(),
                 event.getDate(),
                 event.getMembers().isEmpty() ? List.<Long>of() : event.getMembers().stream().map(Member::getId).toList(),

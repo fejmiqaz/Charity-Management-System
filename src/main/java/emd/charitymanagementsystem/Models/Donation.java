@@ -20,6 +20,9 @@ public class Donation {
     private Long id;
 
     private Double donationAmount;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(3) default 'EUR'")
+    private Currency currency = Currency.EUR;
 
     @ManyToOne
     @JoinColumn(name = "year_id")

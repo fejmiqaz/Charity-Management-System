@@ -1,6 +1,7 @@
 package emd.charitymanagementsystem.Service.Implementation;
 
 import emd.charitymanagementsystem.Models.*;
+import emd.charitymanagementsystem.Models.Currency;
 import emd.charitymanagementsystem.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,11 +66,19 @@ public class MembershipService {
     }
 
     public BigDecimal total() {
-        return payments.total().setScale(2);
+        return paymentTotals(null).get(Currency.EUR);
     }
 
     public BigDecimal total(int year) {
-        return payments.totalForYear(checkedYear(year)).setScale(2);
+        return paymentTotals(checkedYear(year)).get(Currency.EUR);
+    }
+
+    public Map<Currency, BigDecimal> paymentTotals(Integer year) {
+        Map<Currency, BigDecimal> totals = new EnumMap<>(Currency.class);
+        for (Currency currency : Currency.values()) totals.put(currency, BigDecimal.ZERO.setScale(2));
+        for (Object[] row : payments.totalsByCurrency(year))
+            totals.put((Currency) row[0], (BigDecimal) row[1]);
+        return totals;
     }
 
     @Transactional
@@ -91,6 +100,12 @@ public class MembershipService {
     @Transactional
     @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER')")
     public MembershipPayment record(Long memberId, int year, LocalDate paidOn, String recordedBy) {
+        return record(memberId, year, fee(year), Currency.EUR, paidOn, recordedBy);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER')")
+    public MembershipPayment record(Long memberId, int year, BigDecimal amount, Currency currency, LocalDate paidOn, String recordedBy) {
         checkedYear(year);
         if (paidOn == null || paidOn.isAfter(LocalDate.now(ZoneId.of("Europe/Skopje"))))
             throw new IllegalArgumentException("Payment date must be today or earlier.");
@@ -99,14 +114,15 @@ public class MembershipService {
         if (member == null) throw new IllegalArgumentException("Member not found.");
         if (payments.existsByMemberIdAndMembershipYearAndVoidedAtIsNull(memberId, year))
             throw new IllegalArgumentException("Membership is already paid for this year.");
-        BigDecimal amount = fee(year);
         validateAmount(amount);
+        if (currency == null) throw new IllegalArgumentException("Choose a currency.");
         var payment = new MembershipPayment();
         payment.setMemberId(memberId);
         payment.setMemberName(member.getName() + " " + member.getSurname());
         payment.setMembershipYear(year);
         payment.setActiveKey(memberId + ":" + year);
         payment.setAmount(amount.setScale(2));
+        payment.setCurrency(currency);
         payment.setPaidOn(paidOn);
         payment.setRecordedAt(Instant.now());
         payment.setRecordedBy(recordedBy);

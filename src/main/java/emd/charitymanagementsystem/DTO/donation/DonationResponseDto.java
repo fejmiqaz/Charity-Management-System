@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DonationResponseDto {
     private Long id;
+    private emd.charitymanagementsystem.Models.Currency currency;
     private Double donationAmount;
     private Long yearId;
     private Integer yearValue;

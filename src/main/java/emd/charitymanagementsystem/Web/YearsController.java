@@ -27,6 +27,7 @@ public class YearsController {
     private final emd.charitymanagementsystem.Service.MemberService memberService;
     private final emd.charitymanagementsystem.Service.BudgetService budgetService;
     private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
+    private final emd.charitymanagementsystem.Service.Implementation.ActivityFinanceService activityFinance;
 
     @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
     @GetMapping
@@ -80,8 +81,23 @@ public class YearsController {
 
         double budgetAmount = year.getBudgetAmount() != null ? year.getBudgetAmount() : 0.0;
         double membershipIncome = memberships.total(year.getYearValue()).doubleValue();
+        double projectIncome = activityFinance.yearRevenue(id).doubleValue();
         model.addAttribute("membershipIncome", membershipIncome);
-        double remainingBudget = budgetAmount + totalDonations + membershipIncome - totalProjectCosts;
+        var membershipTotals = memberships.paymentTotals(year.getYearValue());
+        model.addAttribute("membershipTotals", membershipTotals);
+        model.addAttribute("projectIncome", projectIncome);
+        model.addAttribute("donationTotals", donationService.totalsByCurrency(id));
+        model.addAttribute("projectIncomeTotals", activityFinance.yearRevenueTotals(id));
+        model.addAttribute("taskPaymentTotals", activityFinance.yearTaskPaymentTotals(id));
+        var activityBalance = new java.util.EnumMap<emd.charitymanagementsystem.Models.Currency, java.math.BigDecimal>(emd.charitymanagementsystem.Models.Currency.class);
+        var donationsByCurrency = donationService.totalsByCurrency(id);
+        var incomeByCurrency = activityFinance.yearRevenueTotals(id);
+        var paymentsByCurrency = activityFinance.yearTaskPaymentTotals(id);
+        for (var currency : emd.charitymanagementsystem.Models.Currency.values())
+            activityBalance.put(currency, donationsByCurrency.get(currency).add(incomeByCurrency.get(currency))
+                    .add(membershipTotals.get(currency)).subtract(paymentsByCurrency.get(currency)));
+        model.addAttribute("activityBalance", activityBalance);
+        double remainingBudget = budgetAmount + totalDonations + membershipIncome + projectIncome - totalProjectCosts;
         boolean exceedsBudget = remainingBudget < 0;
 
         model.addAttribute("year", year);

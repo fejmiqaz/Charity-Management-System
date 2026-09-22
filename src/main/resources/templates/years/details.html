@@ -11,24 +11,27 @@
             <a class="btn btn-primary" sec:authorize="hasAnyRole('HEAD','SUBHEAD')"
                th:href="@{/pdf/years/{id}(id=${year.id})}">Export year PDF</a></div>
     </div>
-    <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Year sections">
-        <a class="btn btn-outline-primary btn-sm" href="#finances">Financial summary</a>
-        <a class="btn btn-outline-primary btn-sm" href="#budget">Budget</a>
-        <a class="btn btn-outline-primary btn-sm" href="#projects" th:if="${projects != null}">Projects</a>
-        <a class="btn btn-outline-primary btn-sm" href="#events" th:if="${events != null}">Events</a>
-        <a class="btn btn-outline-primary btn-sm" href="#donations">Donations</a>
-        <a class="btn btn-outline-primary btn-sm" href="#donors">Donating members</a>
-        <a class="btn btn-outline-primary btn-sm" href="#members">Members</a>
-        <a class="btn btn-outline-primary btn-sm" href="#memberships" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')">Membership payments</a>
+    <nav class="year-section-nav mb-4" aria-label="Year sections">
+        <a href="#finances"><i class="bi bi-graph-up-arrow"></i><span>Financial summary</span></a>
+        <a href="#budget"><i class="bi bi-wallet2"></i><span>Budget</span></a>
+        <a href="#projects" th:if="${projects != null}"><i class="bi bi-kanban"></i><span>Projects</span></a>
+        <a href="#events" th:if="${events != null}"><i class="bi bi-calendar-event"></i><span>Events</span></a>
+        <a href="#donations"><i class="bi bi-heart"></i><span>Donations</span></a>
+        <a href="#donors"><i class="bi bi-person-heart"></i><span>Donating members</span></a>
+        <a href="#members"><i class="bi bi-people"></i><span>Members</span></a>
+        <a href="#memberships" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER')"><i class="bi bi-receipt"></i><span>Membership payments</span></a>
     </nav>
 
     <section id="finances" class="card p-4 mb-4" aria-labelledby="financesTitle">
         <h2 id="financesTitle" class="section-title">Financial summary</h2>
         <div class="summary-row"><span>Allocated budget</span><strong th:text="${#numbers.formatDecimal(budgetAmount,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
-        <div class="summary-row"><span>Total donations</span><strong th:text="${#numbers.formatDecimal(totalDonations,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
-        <div class="summary-row"><span>Membership income</span><strong th:text="${#numbers.formatDecimal(membershipIncome,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <div class="summary-row"><span>Total donations</span><strong><span class="d-block" th:each="entry : ${donationTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong></div>
+        <div class="summary-row"><span>Membership income</span><strong><span class="d-block" th:each="entry : ${membershipTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong></div>
+        <div class="summary-row"><span>Project income</span><strong><span class="d-block" th:each="entry : ${projectIncomeTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong></div>
+        <div class="summary-row"><span>Task payments</span><strong><span class="d-block" th:each="entry : ${taskPaymentTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong></div>
+        <div class="summary-row"><span>Recorded activity balance (donations + income + memberships − task payments)</span><strong><span class="d-block" th:each="entry : ${activityBalance}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong></div>
         <div class="summary-row"><span>Total project cost</span><strong th:text="${#numbers.formatDecimal(totalProjectCosts,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
-        <div class="summary-row total"><span>Remaining budget</span><strong th:text="${#numbers.formatDecimal(remainingBudget,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
+        <div class="summary-row total"><span>Remaining EUR budget</span><strong th:text="${#numbers.formatDecimal(remainingBudget,1,'COMMA',2,'POINT')} + ' EUR'"></strong></div>
         <p class="mb-0 mt-3" th:text="${exceedsBudget ? 'Over budget' : 'Within budget'}" th:classappend="${exceedsBudget ? 'status-bad' : 'status-ok'}"></p>
     </section>
 
@@ -78,7 +81,7 @@
             <thead><tr><th scope="col">Donation</th><th scope="col">Amount</th><th scope="col">Donating members</th></tr></thead>
             <tbody><tr th:each="donation : ${donations}">
                 <td><a th:href="@{/years/{id}/donations/{did}(id=${year.id},did=${donation.id})}" th:text="'Donation #' + ${donation.id}"></a></td>
-                <td th:text="${donation.donationAmount != null ? #numbers.formatDecimal(donation.donationAmount,1,'COMMA',2,'POINT') + ' EUR' : 'Not set'}"></td>
+                <td th:text="${donation.donationAmount != null ? #numbers.formatDecimal(donation.donationAmount,1,'COMMA',2,'POINT') + ' ' + donation.currency : 'Not set'}"></td>
                 <td th:text="${#lists.isEmpty(donation.memberNames) ? 'No member linked' : #strings.listJoin(donation.memberNames, ', ')}"></td>
             </tr></tbody></table></div>
     </section>
@@ -105,7 +108,7 @@
                 <td><span th:text="${member.email}"></span><br><span th:text="${member.phone}"></span></td>
                 <td><span th:text="${member.country}"></span> / <span th:text="${member.city}"></span></td><td th:text="${member.role}"></td>
                 <td><span class="badge" th:classappend="${payment != null ? 'text-bg-success' : 'text-bg-secondary'}" th:text="${payment != null ? 'Paid' : 'Unpaid'}"></span>
-                    <small class="d-block mt-1" th:if="${payment != null}" th:text="${payment.amount} + ' EUR · ' + ${#temporals.format(payment.paidOn,'dd MMM yyyy')}"></small></td>
+                    <small class="d-block mt-1" th:if="${payment != null}" th:text="${payment.amount} + ' ' + ${payment.currency} + ' · ' + ${#temporals.format(payment.paidOn,'dd MMM yyyy')}"></small></td>
             </tr></tbody></table></div>
     </section>
 
@@ -116,7 +119,7 @@
         <div class="table-responsive" th:unless="${#lists.isEmpty(membershipPayments)}"><table class="table table-branded align-middle">
             <thead><tr><th scope="col">Member</th><th scope="col">Amount</th><th scope="col">Paid on</th><th scope="col">Status</th><th scope="col">Void reason</th></tr></thead>
             <tbody><tr th:each="payment : ${membershipPayments}">
-                <td th:text="${payment.memberName}"></td><td th:text="${payment.amount} + ' EUR'"></td>
+                <td th:text="${payment.memberName}"></td><td th:text="${payment.amount} + ' ' + ${payment.currency}"></td>
                 <td th:text="${#temporals.format(payment.paidOn,'dd MMM yyyy')}"></td>
                 <td th:text="${payment.paid ? 'Paid' : 'Voided'}"></td><td th:text="${payment.voidReason}"></td>
             </tr></tbody></table></div>

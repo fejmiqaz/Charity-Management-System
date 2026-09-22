@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <div class="d-flex flex-wrap gap-2 mb-4">
+  <div class="page-toolbar mb-4">
     <a class="btn btn-dark" th:href="@{/years}">
       <i class="bi bi-arrow-left me-1"></i> Back to Years
     </a>
@@ -58,6 +58,7 @@
         <thead>
         <tr>
           <th>Name</th>
+          <th>Type</th>
           <th>Status</th>
           <th>Created Date</th>
           <th>Cost</th>
@@ -69,6 +70,7 @@
         <tbody>
         <tr th:each="project : ${projects}">
           <td class="fw-bold" th:text="${project.name}"></td>
+          <td><span class="badge text-bg-light border" th:text="${project.projectType != null and project.projectType.name() == 'REVENUE' ? 'Revenue' : 'Standard'}"></span></td>
 
           <td>
             <span class="badge rounded-pill"

@@ -62,12 +62,13 @@ public class DonationServiceImpl implements DonationService {
 
         Donation donation = new Donation();
         donation.setDonationAmount(donationFormDto.getDonationAmount());
+        donation.setCurrency(donationFormDto.getCurrency());
         donation.setYear(year);
         donation.setMembers(selectedMembers);
 
         Donation savedDonation = donationRepository.save(donation);
 
-        Budget budget = year.getBudget();
+        Budget budget = donation.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR ? year.getBudget() : null;
         if (budget != null) {
             Double currentAmount = budget.getBudgetAmount() != null ? budget.getBudgetAmount() : 0.0;
             Double donationAmount = savedDonation.getDonationAmount() != null ? savedDonation.getDonationAmount() : 0.0;
@@ -98,14 +99,14 @@ public class DonationServiceImpl implements DonationService {
 
         // If year changed, subtract old donation from old year's budget first
         if (oldYear != null && !oldYear.getId().equals(newYear.getId())) {
-            Budget oldBudget = oldYear.getBudget();
+            Budget oldBudget = existingDonation.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR ? oldYear.getBudget() : null;
             if (oldBudget != null) {
                 Double currentOldBudget = oldBudget.getBudgetAmount() != null ? oldBudget.getBudgetAmount() : 0.0;
                 oldBudget.setBudgetAmount(Math.max(0.0, currentOldBudget - oldAmount));
                 budgetRepository.save(oldBudget);
             }
 
-            Budget newBudget = newYear.getBudget();
+            Budget newBudget = donationFormDto.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR ? newYear.getBudget() : null;
             if (newBudget != null) {
                 Double currentNewBudget = newBudget.getBudgetAmount() != null ? newBudget.getBudgetAmount() : 0.0;
                 newBudget.setBudgetAmount(currentNewBudget + newAmount);
@@ -113,7 +114,7 @@ public class DonationServiceImpl implements DonationService {
             }
         } else {
             // Same year: apply only the difference
-            Double difference = newAmount - oldAmount;
+            Double difference = (donationFormDto.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR ? newAmount : 0.0) - (existingDonation.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR ? oldAmount : 0.0);
             Budget budget = newYear.getBudget();
             if (budget != null) {
                 Double currentAmount = budget.getBudgetAmount() != null ? budget.getBudgetAmount() : 0.0;
@@ -123,6 +124,7 @@ public class DonationServiceImpl implements DonationService {
         }
 
         existingDonation.setDonationAmount(newAmount);
+        existingDonation.setCurrency(donationFormDto.getCurrency());
         existingDonation.setYear(newYear);
         existingDonation.setMembers(selectedMembers);
 
@@ -137,7 +139,7 @@ public class DonationServiceImpl implements DonationService {
 
         Years year = donation.getYear();
         if (year != null) {
-            Budget budget = year.getBudget();
+            Budget budget = donation.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR ? year.getBudget() : null;
 
             if (budget != null) {
                 Double currentAmount = budget.getBudgetAmount() != null ? budget.getBudgetAmount() : 0.0;
@@ -163,6 +165,7 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public Double totalDonationsAmount(Long yearId) {
         return donationRepository.findByYearId(yearId).stream()
+                .filter(d -> d.getCurrency() == emd.charitymanagementsystem.Models.Currency.EUR)
                 .map(Donation::getDonationAmount)
                 .filter(java.util.Objects::nonNull)
                 .mapToDouble(Double::doubleValue)
@@ -176,7 +179,23 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public double getTotalDonations() {
-        return donationRepository.totalAmount();
+        return donationRepository.totalEurAmount();
+    }
+
+    public java.util.Map<emd.charitymanagementsystem.Models.Currency, java.math.BigDecimal> totalsByCurrency(Long yearId) {
+        var totals = new java.util.EnumMap<emd.charitymanagementsystem.Models.Currency, java.math.BigDecimal>(emd.charitymanagementsystem.Models.Currency.class);
+        for (var currency : emd.charitymanagementsystem.Models.Currency.values()) totals.put(currency, java.math.BigDecimal.ZERO.setScale(2));
+        if (yearId == null) {
+            for (Object[] row : donationRepository.totalsByCurrency())
+                totals.put((emd.charitymanagementsystem.Models.Currency) row[0], java.math.BigDecimal.valueOf(((Number) row[1]).doubleValue()).setScale(2));
+            return totals;
+        }
+        var donations = donationRepository.findByYearId(yearId);
+        for (var donation : donations) {
+            if (donation.getDonationAmount() != null)
+                totals.merge(donation.getCurrency(), java.math.BigDecimal.valueOf(donation.getDonationAmount()), java.math.BigDecimal::add);
+        }
+        return totals;
     }
 
     private Set<Member> getMembersFromIds(List<Long> memberIds) {
@@ -195,6 +214,7 @@ public class DonationServiceImpl implements DonationService {
 
     private void validateDonationFormDto(DonationFormDto donationFormDto) {
         if (donationFormDto.getDonationAmount() == null ||
+                donationFormDto.getCurrency() == null ||
                 donationFormDto.getDonationAmount() <= 0 ||
                 donationFormDto.getYearId() == null ||
                 donationFormDto.getMemberIds() == null ||

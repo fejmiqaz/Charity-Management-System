@@ -10,11 +10,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import emd.charitymanagementsystem.Models.EventType;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventFormDto {
     private Long id;
+    private EventType eventType = EventType.NORMAL;
     @NotBlank(message = "Purpose is required")
     @Size(min = 3, max = 255, message = "Purpose must be between 3 and 255 characters")
     private String purpose;

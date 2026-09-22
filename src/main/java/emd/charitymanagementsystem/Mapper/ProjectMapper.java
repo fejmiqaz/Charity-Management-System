@@ -9,6 +9,7 @@ public class ProjectMapper {
     public static ProjectResponseDto toDto(Project project){
         return new ProjectResponseDto(
                 project.getId(),
+                project.getProjectType(),
                 project.getName(),
                 project.getDescription(),
                 project.getStatus(),
@@ -25,6 +26,7 @@ public class ProjectMapper {
     public static ProjectFormDto toFormDto(Project project){
         return new ProjectFormDto(
                 project.getId(),
+                project.getProjectType(),
                 project.getName(),
                 project.getDescription(),
                 project.getStatus(),

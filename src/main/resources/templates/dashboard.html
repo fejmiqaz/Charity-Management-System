@@ -52,15 +52,16 @@
     </section>
     <div class="dashboard-lower">
         <section class="finance-panel">
-            <div class="section-heading"><h2>Financial overview</h2><span>All years · EUR</span></div>
+            <div class="section-heading"><h2>Financial overview</h2><span>All years · EUR budget; donations by currency</span></div>
             <div class="balance-block"><span>Remaining budget</span><strong
                     th:text="${#numbers.formatDecimal(remainingBudget, 1, 'COMMA', 2, 'POINT')} + ' €'">0.00 €</strong>
                 <p>Allocated budgets + donations + memberships − project costs</p></div>
-            <div class="finance-line"><span><i class="bi bi-arrow-down-left"></i> Total donations</span><strong
-                    th:text="${#numbers.formatDecimal(totalDonationsAmount, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong>
+            <div class="finance-line"><span><i class="bi bi-arrow-down-left"></i> Total donations</span><strong><span class="d-block" th:each="entry : ${donationTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong>
             </div>
-            <div class="finance-line"><span>Membership income</span><strong
+            <div class="finance-line"><span><i class="bi bi-arrow-up-right"></i>Membership income</span><strong
                     th:text="${#numbers.formatDecimal(membershipIncome, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong></div>
+            <div class="finance-line"><span><i class="bi bi-arrow-up-right"></i>Project income</span><strong
+                    th:text="${#numbers.formatDecimal(projectIncome, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong></div>
             <div class="finance-line"><span><i class="bi bi-arrow-up-right"></i> Project costs</span><strong
                     th:text="${#numbers.formatDecimal(totalProjectCost, 1, 'COMMA', 2, 'POINT')} + ' €'"></strong></div>
         </section>

@@ -4,6 +4,7 @@ import emd.charitymanagementsystem.DTO.event.EventFormDto;
 import emd.charitymanagementsystem.DTO.event.EventResponseDto;
 import emd.charitymanagementsystem.Mapper.EventMapper;
 import emd.charitymanagementsystem.Models.Event;
+import emd.charitymanagementsystem.Models.EventType;
 import emd.charitymanagementsystem.Models.Member;
 import emd.charitymanagementsystem.Models.Project;
 import emd.charitymanagementsystem.Models.Years;
@@ -54,6 +55,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = new Event();
         event.setPurpose(eventFormDto.getPurpose());
+        event.setEventType(eventFormDto.getEventType() == null ? EventType.NORMAL : eventFormDto.getEventType());
         event.setMembers(members);
         event.setDate(eventFormDto.getDate());
         event.setYear(year);
@@ -80,6 +82,7 @@ public class EventServiceImpl implements EventService {
                 : memberRepository.findAllById(eventFormDto.getMemberIds());
 
         event.setPurpose(eventFormDto.getPurpose());
+        event.setEventType(eventFormDto.getEventType() == null ? EventType.NORMAL : eventFormDto.getEventType());
         event.setMembers(members);
         event.setDate(eventFormDto.getDate());
         event.setYear(year);

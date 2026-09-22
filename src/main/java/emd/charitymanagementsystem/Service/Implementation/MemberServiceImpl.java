@@ -33,6 +33,8 @@ public class MemberServiceImpl implements MemberService {
     private final ProjectRepository projectRepository;
     private final UserAccountRepository userAccountRepository;
     private final BudgetRepository budgetRepository;
+    private final EventTaskRepository eventTaskRepository;
+    private final TaskPaymentRepository taskPaymentRepository;
 
     @Override
     public List<MemberResponseDto> listAll() {
@@ -325,6 +327,15 @@ public class MemberServiceImpl implements MemberService {
         for (Event event : events) {
             event.getMembers().removeIf(m -> m.getId().equals(id));
             eventRepository.save(event);
+        }
+
+        for (EventTask task : eventTaskRepository.findByMembers_Id(id)) {
+            task.getMembers().removeIf(m -> m.getId().equals(id));
+            eventTaskRepository.save(task);
+        }
+        for (TaskPayment payment : taskPaymentRepository.findByMemberId(id)) {
+            payment.setMember(null);
+            taskPaymentRepository.save(payment);
         }
 
         List<Project> projects = projectRepository.findByMembers_Id(id);

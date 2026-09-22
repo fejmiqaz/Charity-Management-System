@@ -25,6 +25,10 @@ public class Event {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean publicVisible = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(32) default 'NORMAL'")
+    private EventType eventType = EventType.NORMAL;
+
     private LocalDateTime date;
 
     @ManyToMany
@@ -32,5 +36,8 @@ public class Event {
 
     @ManyToOne
     private Years year;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventTask> tasks = new java.util.ArrayList<>();
 
 }

@@ -27,7 +27,7 @@
             for new receipts this year</small></div>
         <div class="card p-4"><span class="stat-label"
                                     th:text="'Membership income · ' + ${membershipYear}"></span><strong
-                class="stat-value" th:text="'€' + ${membershipTotal}"></strong><small>Voided receipts excluded</small>
+                class="stat-value"><span class="d-block" th:each="entry : ${membershipTotals}" th:text="${entry.value} + ' ' + ${entry.key}"></span></strong><small>Voided receipts excluded</small>
         </div>
     </div>
     <div class="row g-4 mb-4">
@@ -35,7 +35,7 @@
             <div class="card p-4 h-100"><h2 class="section-title">Record a received payment</h2>
                 <p class="small text-secondary">This records an offline payment already received; it does not charge the
                     member. Do not record it again as a donation.</p>
-                <form th:action="@{/memberships/record}" method="post" class="row g-3"><input type="hidden" name="year"
+                <form th:action="@{/memberships/record}" method="post" class="row g-3" data-currency-form><input type="hidden" name="year"
                                                                                               th:value="${membershipYear}">
                     <div class="col-md-7"><label class="form-label" for="memberId">Member</label><select
                             class="form-select" id="memberId" name="memberId" required>
@@ -47,9 +47,11 @@
                     <div class="col-md-5"><label class="form-label" for="paidOn">Payment received on</label><input
                             class="form-control" id="paidOn" name="paidOn" type="date" th:value="${today}"
                             th:max="${today}" required></div>
+                    <div class="col-md-7"><label class="form-label" for="paymentAmount">Received amount</label><input class="form-control" id="paymentAmount" name="amount" data-currency-amount type="number" min="0.01" step="0.01" th:value="${membershipFee}" required></div>
+                    <div class="col-md-5"><label class="form-label" for="paymentCurrency">Currency</label><select class="form-select" id="paymentCurrency" name="currency" data-currency-code><option>MKD</option><option selected>EUR</option><option>CHF</option></select></div>
+                    <small data-currency-preview aria-live="polite"></small>
                     <div>
-                        <button class="btn btn-primary"
-                                th:text="'Record €' + ${membershipFee} + ' for ' + ${membershipYear}"></button>
+                        <button class="btn btn-primary" th:text="'Record payment for ' + ${membershipYear}"></button>
                     </div>
                 </form>
             </div>
@@ -92,7 +94,7 @@
             <tr th:each="payment : ${payments}">
                 <td th:text="${payment.memberName}"></td>
                 <td th:text="${payment.membershipYear}"></td>
-                <td th:text="'€' + ${payment.amount}"></td>
+                <td th:text="${payment.amount} + ' ' + ${payment.currency}"></td>
                 <td th:text="${payment.paidOn}"></td>
                 <td><span class="badge" th:classappend="${payment.paid} ? 'badge-finished' : 'badge-cancelled'"
                           th:text="${payment.paid} ? 'Paid' : 'Voided'"></span></td>

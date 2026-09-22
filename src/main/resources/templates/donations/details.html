@@ -12,13 +12,13 @@
 
     <h1 class="mb-3">Donation Details</h1>
 
-    <div class="mb-4">
+    <nav class="detail-toolbar mb-4" aria-label="Donation actions">
         <a class="btn btn-dark"
            th:href="@{/years/{yearId}/donations(yearId=${year.id})}">
             <i class="bi bi-arrow-left me-1"></i> Back to Donations
         </a>
 
-        <a class="btn btn-sm btn-danger"
+        <a class="btn btn-danger"
            th:href="@{/pdf/years/{yearId}/donations/{donationId}(
                 yearId=${year.id},
                 donationId=${donation.id}
@@ -27,14 +27,14 @@
             <i class="bi bi-file-earmark-pdf me-1"></i>
             Export as PDF
         </a>
-    </div>
+    </nav>
 
-    <div class="card text-center p-4 mb-4">
+    <div class="card detail-hero text-center p-4 mb-4">
         <i class="bi bi-heart-fill display-4 mb-2"></i>
 
         <span class="display-serif"
               style="font-size: 36px;"
-              th:text="${donation.donationAmount} + ' €'">
+              th:text="${donation.donationAmount} + ' ' + ${donation.currency}">
             0 €
         </span>
     </div>
@@ -50,7 +50,7 @@
         <div class="kv-row">
             <span class="kv-label">Amount</span>
             <span class="kv-value"
-                  th:text="${donation.donationAmount} + ' €'"></span>
+                  th:text="${donation.donationAmount} + ' ' + ${donation.currency}"></span>
         </div>
     </div>
 
@@ -90,7 +90,7 @@
                     <td th:text="${member.country}"></td>
                     <td th:text="${member.city}"></td>
                     <td class="fw-bold"
-                        th:text="${donation.donationAmount} + ' €'"></td>
+                        th:text="${donation.donationAmount} + ' ' + ${donation.currency}"></td>
                 </tr>
                 </tbody>
             </table>

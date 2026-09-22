@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('charity-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.lang=localStorage.getItem('charity-language')||'en'}catch(_){document.documentElement.dataset.theme='dark'}})();</script>
     <title>Charity · People. Purpose. Impact.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link th:href="@{/css/front-page.css}" rel="stylesheet">
+    <script th:src="@{/js/front-page-preferences.js}" defer></script>
     <script th:src="@{/js/front-page.js}" defer></script>
 </head>
 <body>
@@ -15,8 +17,12 @@
 <header id="siteHeader">
     <nav aria-label="Public navigation">
         <a th:href="@{/}" class="brand"><span class="brand-mark" aria-hidden="true">♥</span><span>Charity<small>PEOPLE. PURPOSE. IMPACT.</small></span></a>
-        <div class="nav-links" id="publicLinks"><a href="#projects">Completed projects</a><a href="#events">Events</a><a href="#progress">Our progress</a></div>
+        <div class="nav-links" id="publicLinks"><a href="#projects">Completed projects</a><a href="#events">Events</a><a href="#progress">Our progress</a>
+            <a class="mobile-staff-link" th:href="@{/login}" sec:authorize="isAnonymous()">Organization login</a>
+            <a class="mobile-staff-link" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">My workspace</a></div>
         <div class="nav-cta">
+            <label class="public-language"><span aria-hidden="true">🌐</span><span class="sr-only">Language</span><select id="publicLanguage" aria-label="Language"><option value="en">EN</option><option value="sq">SQ</option><option value="fr">FR</option><option value="de">DE</option></select></label>
+            <button class="public-theme" id="publicTheme" type="button" aria-label="Switch to light mode" title="Switch color theme"><span aria-hidden="true">☀</span></button>
             <a class="btn btn-staff" th:href="@{/login}" sec:authorize="isAnonymous()">Organization login <span aria-hidden="true">↗</span></a>
             <a class="btn btn-staff" th:href="@{/dashboard}" sec:authorize="isAuthenticated()">My workspace <span aria-hidden="true">↗</span></a>
             <button type="button" class="menu-toggle" aria-controls="publicLinks" aria-expanded="false" aria-label="Toggle navigation">☰</button>
@@ -42,7 +48,7 @@
                 <div class="hv-row"><span>OUR COMMUNITY, IN MOTION</span><span class="tag">Together</span></div>
                 <div class="community-art" aria-hidden="true"><span>✳</span><i></i><i></i></div>
                 <div class="hv-card" th:if="${!#lists.isEmpty(events)}"><span class="tag">Next public event</span>
-                    <h2 th:text="${events[0].purpose}"></h2><p th:text="${#temporals.format(events[0].date,'dd MMM yyyy · HH:mm')} + ' · ' + ${publicZone}"></p></div>
+                    <h2 data-no-translate th:text="${events[0].purpose}"></h2><p data-event-datetime th:attr="data-date=${events[0].date},data-zone=${publicZone}" th:text="${#temporals.format(events[0].date,'dd MMM yyyy · HH:mm')} + ' · ' + ${publicZone}"></p></div>
                 <div class="hv-card" th:if="${#lists.isEmpty(events)}"><span class="tag">More to come</span><h2>Room for the next good thing.</h2><p>New public events will appear here when announced.</p></div>
             </div>
         </div>
@@ -53,7 +59,7 @@
             <div class="empty-public" th:if="${#lists.isEmpty(projects)}"><h3>More to share soon</h3><p>Completed project highlights will appear here when ready to share.</p></div>
             <div class="campaign-list"><article class="campaign-row" th:each="project : ${projects}">
                 <div class="campaign-meta"><span class="tag" th:text="${project.yearValue != null ? project.yearValue : 'Community project'}"></span></div>
-                <div class="campaign-desc"><h3 th:text="${project.name}"></h3></div><div class="campaign-progress"><span class="completed-label">✓ Completed</span></div>
+                <div class="campaign-desc"><h3 data-no-translate th:text="${project.name}"></h3></div><div class="campaign-progress"><span class="completed-label">✓ Completed</span></div>
             </article></div>
         </div>
     </section>
@@ -61,9 +67,9 @@
         <div class="wrap">
             <div class="section-head"><div><span class="tag">Coming together</span><h2 id="eventsTitle">The next dates<br>in our community.</h2></div><p>Public events, with the closest upcoming date first. <span th:text="'Times shown in ' + ${publicZone} + '.'"></span></p></div>
             <div class="empty-public" th:if="${#lists.isEmpty(events)}"><h3>New dates are on their way</h3><p>No upcoming public events have been announced yet.</p></div>
-            <div class="event-grid"><article class="event-card" th:each="event : ${events}">
+            <div class="event-grid"><article class="event-card" th:each="event : ${events}" th:attr="data-event-date=${event.date}">
                 <time class="event-date" th:datetime="${event.date}"><span class="d" th:text="${#temporals.format(event.date,'dd')}"></span><span class="m" th:text="${#temporals.format(event.date,'MMM yyyy')}"></span></time>
-                <h3 th:text="${event.purpose}"></h3><p class="event-meta" th:text="${#temporals.format(event.date,'EEEE · HH:mm')}"></p>
+                <h3 data-no-translate th:text="${event.purpose}"></h3><p class="event-meta" th:text="${#temporals.format(event.date,'EEEE · HH:mm')}"></p>
             </article></div>
         </div>
     </section>
