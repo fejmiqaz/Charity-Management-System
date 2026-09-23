@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
+    java.util.List<UserAccount> findByEnabledTrue();
 
     Optional<UserAccount> findByEmailIgnoreCase(String email);
 

@@ -105,6 +105,6 @@ class YearDetailsTests {
                 .andExpect(content().string(containsString("There are no projects for this year.")))
                 .andExpect(content().string(containsString("There are no events for this year.")))
                 .andExpect(content().string(containsString("No members are assigned to this year.")))
-                .andExpect(content().string(containsString("No membership payments recorded for this year.")));
+                .andExpect(content().string(matchesPattern("(?s).*No membership payments recorded for this\\s+year\\..*")));
     }
 }

@@ -94,8 +94,8 @@ class DashboardQueryTests {
                 .andExpect(view().name("dashboard")).andExpect(model().attribute("remainingBudget", 30.0));
         long oneYearQueries = stats.getPrepareStatementCount();
         assertEquals(0, stats.getEntityLoadCount()); assertEquals(0, stats.getCollectionLoadCount());
-        // Includes the aggregate query for revenue-generating project income.
-        assertEquals(11, oneYearQueries);
+        // Includes project income and two bounded scalar queries for the notification header.
+        assertEquals(13, oneYearQueries);
         for (int year = 2026; year <= 2032; year++) seedYear(year);
         em.flush(); em.clear(); stats.clear();
         mvc.perform(get("/home").with(user("test@example.com").roles("HEAD")))

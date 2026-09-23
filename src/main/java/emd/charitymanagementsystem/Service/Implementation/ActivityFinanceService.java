@@ -19,6 +19,7 @@ public class ActivityFinanceService {
     private final ProjectRepository projects;
     private final ProjectRevenueRepository revenues;
     private final MemberRepository members;
+    private final NotificationService notifications;
 
     public List<EventTask> tasks(Long eventId) { return tasks.findByEventIdOrderByIdAsc(eventId); }
     public List<ProjectRevenue> revenues(Long projectId) { return revenues.findByProjectIdOrderByRevenueMonthDescIdDesc(projectId); }
@@ -53,11 +54,21 @@ public class ActivityFinanceService {
         task.setDescription(description == null ? null : description.trim()); task.setPrice(checked);
         if (memberIds != null) task.setMembers(new LinkedHashSet<>(members.findAllById(memberIds)));
         tasks.save(task);
+        notifications.taskAssigned(task);
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER')")
     public void completeTask(Long yearId, Long eventId, Long taskId, boolean completed) {
         event(yearId, eventId); EventTask task = task(eventId, taskId); task.setCompleted(completed);
+    }
+
+    @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER')")
+    public void deleteTask(Long yearId, Long eventId, Long taskId) {
+        Event event = event(yearId, eventId);
+        EventTask task = task(eventId, taskId);
+        notifications.cancelTaskEmails(taskId);
+        event.getTasks().removeIf(item -> item.getId().equals(taskId));
+        tasks.delete(task);
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER','EVENT_MANAGER')")

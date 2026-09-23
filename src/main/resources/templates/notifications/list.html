@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head><title>Notifications</title></head>
+<body>
+<div layout:fragment="content" class="container py-4 notification-inbox">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1 class="mb-1">Notifications</h1><p class="text-secondary mb-0">Your task assignments and upcoming events, all in one place.</p></div>
+        <form th:if="${notificationHeader.unread > 0}" th:action="@{/notifications/read-all}" method="post">
+            <button class="btn btn-outline-primary" type="submit"><i class="bi bi-check2-all me-1" aria-hidden="true"></i> Mark all as read</button>
+        </form>
+    </div>
+    <div class="empty-state" th:if="${notificationPage.empty}">
+        <i class="bi bi-bell display-6" aria-hidden="true"></i><h2 class="h5 mt-3">You're all caught up</h2>
+        <p class="text-secondary mb-0">New task assignments and event reminders will appear here.</p>
+    </div>
+    <article class="card notification-card p-4 mb-3" th:each="item : ${notificationPage.content}"
+             th:id="${'notification-' + item.id}" th:classappend="${item.unread ? 'is-unread' : ''}">
+        <div class="d-flex align-items-start gap-3">
+            <span class="notification-icon"><i class="bi bi-bell" aria-hidden="true"></i></span>
+            <div class="flex-grow-1 notification-copy">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2"><h2 class="h5 mb-0" th:text="${item.title}"></h2>
+                    <span class="badge rounded-pill text-bg-primary" th:if="${item.unread}">New</span></div>
+                <p class="notification-message text-secondary" th:text="${item.message}"></p>
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <a th:if="${item.eventPath != null}" th:href="@{${item.eventPath}}" class="btn btn-sm btn-outline-primary">View event</a>
+                    <form th:if="${item.unread}" th:action="@{/notifications/{id}/read(id=${item.id})}" method="post">
+                        <button class="btn btn-sm btn-outline-secondary" type="submit">Mark as read</button>
+                    </form>
+                    <time class="small text-secondary" th:datetime="${item.createdAt}"
+                          th:text="${#temporals.format(item.createdAt, 'dd MMM yyyy, HH:mm', @environment.getProperty('app.public-zone', 'Europe/Skopje'))}"></time>
+                </div>
+            </div>
+        </div>
+    </article>
+    <nav class="d-flex justify-content-between mt-4" aria-label="Notification pages" th:if="${notificationPage.totalPages > 1}">
+        <a class="btn btn-outline-secondary" th:if="${notificationPage.hasPrevious()}" th:href="@{/notifications(page=${notificationPage.number - 1})}">Newer</a>
+        <span class="text-secondary" th:text="${'Page ' + (notificationPage.number + 1) + ' of ' + notificationPage.totalPages}"></span>
+        <a class="btn btn-outline-secondary" th:if="${notificationPage.hasNext()}" th:href="@{/notifications(page=${notificationPage.number + 1})}">Older</a>
+    </nav>
+</div>
+</body>
+</html>

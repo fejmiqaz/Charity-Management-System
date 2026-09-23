@@ -72,7 +72,7 @@ public class EventController {
         return "events/list";
     }
 
-    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER')")
+    @PreAuthorize("hasAnyRole('HEAD', 'SUBHEAD', 'TREASURER', 'EVENT_MANAGER', 'MEMBER')")
     @GetMapping("/{id}")
     public String details(@PathVariable Long yearId,
                           @PathVariable Long id,
@@ -168,6 +168,18 @@ public class EventController {
                              @RequestParam(defaultValue="false") boolean completed) {
         activityFinance.completeTask(yearId,eventId,taskId,completed);
         return "redirect:/years/"+yearId+"/events/"+eventId;
+    }
+
+    @PostMapping("/{eventId}/tasks/{taskId}/delete")
+    public String deleteTask(@PathVariable Long yearId, @PathVariable Long eventId,
+                             @PathVariable Long taskId, RedirectAttributes flash) {
+        try {
+            activityFinance.deleteTask(yearId, eventId, taskId);
+            flash.addFlashAttribute("activitySuccess", "Task and its recorded payments deleted.");
+        } catch (IllegalArgumentException exception) {
+            flash.addFlashAttribute("activityError", exception.getMessage());
+        }
+        return "redirect:/years/" + yearId + "/events/" + eventId;
     }
 
     @PostMapping("/{eventId}/tasks/{taskId}/payments")

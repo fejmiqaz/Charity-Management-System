@@ -180,6 +180,8 @@ function initDeleteConfirmation() {
       modalText.textContent = label
         ? 'Are you sure you want to delete "' + label + '"?'
         : "Are you sure you want to delete this item?";
+      const warning = btn.getAttribute("data-delete-warning");
+      if (warning) modalText.textContent += " " + warning;
       modal.show();
     });
   });

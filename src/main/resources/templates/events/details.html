@@ -127,6 +127,14 @@
                     <button class="btn btn-sm btn-outline-primary"
                             th:text="${task.completed}?'Reopen task':'Mark completed'"></button>
                 </form>
+                <form method="post"
+                      th:action="@{/years/{yearId}/events/{eventId}/tasks/{taskId}/delete(yearId=${year.id},eventId=${event.id},taskId=${task.id})}">
+                    <button type="button" class="btn btn-sm btn-danger co-delete-trigger"
+                            title="Delete task" th:attr="aria-label=${'Delete task: ' + task.title},data-item-label=${task.title}"
+                            data-delete-warning="This also permanently removes all payments recorded for this task and cancels pending assignment emails.">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                    </button>
+                </form>
             </div>
             <details class="mt-3" sec:authorize="hasAnyRole('HEAD','SUBHEAD','TREASURER','EVENT_MANAGER')">
                 <summary>Record a payment</summary>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<details th:fragment="bell" class="notification-menu" id="notificationMenu"
+         sec:authorize="isAuthenticated()" th:if="${notificationHeader != null}">
+    <summary class="notification-bell" title="Notifications"
+             th:attr="aria-label=${'Notifications, ' + notificationHeader.unread + ' unread'}">
+        <i class="bi bi-bell" aria-hidden="true"></i>
+        <span class="notification-count" th:if="${notificationHeader.unread > 0}"
+              th:text="${notificationHeader.unread > 99 ? '99+' : notificationHeader.unread}" aria-hidden="true"></span>
+    </summary>
+    <div class="notification-panel">
+        <div class="notification-panel-heading"><strong>Notifications</strong>
+            <span class="text-secondary" th:text="${notificationHeader.unread + ' unread'}"></span></div>
+        <div class="notification-empty" th:if="${#lists.isEmpty(notificationHeader.items)}">
+            <i class="bi bi-bell" aria-hidden="true"></i><strong>You're all caught up</strong>
+            <span>Task assignments and upcoming event reminders will appear here.</span>
+        </div>
+        <a class="notification-preview" th:each="item : ${notificationHeader.items}"
+           th:classappend="${item.unread ? 'is-unread' : ''}" th:href="@{/notifications} + '#notification-' + ${item.id}">
+            <span class="notification-dot" th:if="${item.unread}" aria-label="Unread"></span>
+            <strong th:text="${item.title}"></strong><span th:text="${item.message}"></span>
+        </a>
+        <a class="notification-view-all" th:href="@{/notifications}">View all notifications <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+    </div>
+</details>
+</body>
+</html>

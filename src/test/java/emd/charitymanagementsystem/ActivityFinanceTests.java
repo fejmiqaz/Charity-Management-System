@@ -30,6 +30,10 @@ import static org.hamcrest.Matchers.containsString;
 class ActivityFinanceTests {
     @Autowired ActivityFinanceService service; @Autowired YearsRepository years; @Autowired EventRepository events;
     @Autowired ProjectRepository projects; @Autowired MemberRepository members;
+    @Autowired EventTaskRepository tasks;
+    @Autowired TaskPaymentRepository payments;
+    @Autowired EmailDeliveryRepository emails;
+    @Autowired jakarta.persistence.EntityManager entityManager;
     @Autowired WebApplicationContext context; MockMvc mvc; Years year; Member member;
 
     @BeforeEach void setup(){ mvc=MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build(); year=new Years();year.setYearValue(2028);years.saveAndFlush(year);
@@ -91,5 +95,65 @@ class ActivityFinanceTests {
                 .andExpect(status().isOk()).andExpect(content().string(containsString("Event tasks")));
         mvc.perform(get("/years/"+year.getId()+"/projects/"+project.getId()).with(user("head@example.com").roles("HEAD")))
                 .andExpect(status().isOk()).andExpect(content().string(containsString("Monthly project income")));
+    }
+
+    private Event taskEvent() {
+        Event event = new Event(); event.setPurpose("Task deletion test"); event.setDate(LocalDateTime.now().plusDays(2));
+        event.setYear(year); event.setEventType(EventType.TASK_BASED); event.setMembers(new ArrayList<>());
+        events.saveAndFlush(event);
+        service.addTask(year.getId(), event.getId(), "Build stand", "Materials", BigDecimal.TEN, List.of(member.getId()));
+        return event;
+    }
+
+    @Test void deletingTaskRemovesPaymentsKeepsMemberAndEventAndCancelsQueuedEmail() {
+        Event event = taskEvent(); EventTask task = service.tasks(event.getId()).get(0);
+        service.addTaskPayment(year.getId(), event.getId(), task.getId(), member.getId(), BigDecimal.ONE,
+                LocalDate.now(), "Advance", "head");
+        Long paymentId = task.getPayments().get(0).getId();
+        Long deliveryId = emails.findAll().stream().filter(e -> task.getId().equals(e.getTaskId()))
+                .findFirst().orElseThrow().getId();
+        service.deleteTask(year.getId(), event.getId(), task.getId());
+        entityManager.flush(); entityManager.clear();
+        assertFalse(tasks.existsById(task.getId())); assertFalse(payments.existsById(paymentId));
+        assertTrue(events.existsById(event.getId())); assertTrue(members.existsById(member.getId()));
+        assertTrue(service.tasks(event.getId()).isEmpty());
+        assertEquals(EmailDelivery.Status.CANCELLED, emails.findById(deliveryId).orElseThrow().getStatus());
+    }
+
+    @Test void taskDeletionRejectsWrongEventAndYear() {
+        Event event = taskEvent(); Event other = taskEvent();
+        Long taskId = service.tasks(event.getId()).get(0).getId();
+        assertThrows(IllegalArgumentException.class, () -> service.deleteTask(year.getId(), other.getId(), taskId));
+        assertThrows(IllegalArgumentException.class, () -> service.deleteTask(year.getId() + 1000, event.getId(), taskId));
+        assertTrue(tasks.existsById(taskId));
+    }
+
+    @Test void taskDeleteControlAndEndpointRespectRolesAndCsrf() throws Exception {
+        Event event = taskEvent(); Long taskId = service.tasks(event.getId()).get(0).getId();
+        String details = "/years/" + year.getId() + "/events/" + event.getId();
+        String deletion = details + "/tasks/" + taskId + "/delete";
+        for (String role : List.of("MEMBER", "VOLUNTEER", "TREASURER")) {
+            mvc.perform(get(details).with(user("viewer").roles(role)))
+                    .andExpect(content().string(org.hamcrest.Matchers.not(containsString(deletion))));
+            var denied = mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post(deletion)
+                            .with(user("viewer").roles(role))
+                            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()));
+            if (role.equals("TREASURER")) denied.andExpect(redirectedUrl("/access-denied"));
+            else denied.andExpect(view().name("error/access-denied"));
+            assertTrue(tasks.existsById(taskId));
+        }
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post(deletion).with(user("head").roles("HEAD")))
+                .andExpect(redirectedUrl("/access-denied"));
+        assertTrue(tasks.existsById(taskId));
+        for (String role : List.of("HEAD", "SUBHEAD", "EVENT_MANAGER")) {
+            mvc.perform(get(details).with(user("manager").roles(role)))
+                    .andExpect(status().isOk()).andExpect(content().string(containsString(deletion)))
+                    .andExpect(content().string(containsString("data-delete-warning")));
+        }
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post(deletion)
+                        .with(user("manager").roles("EVENT_MANAGER"))
+                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(redirectedUrl(details)).andExpect(flash().attribute("activitySuccess", "Task and its recorded payments deleted."));
+        entityManager.flush(); entityManager.clear(); assertFalse(tasks.existsById(taskId));
     }
 }
