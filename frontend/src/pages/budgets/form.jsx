@@ -1,0 +1,7 @@
+import {useState} from 'react';
+import {useNavigate,useParams,useLocation} from 'react-router-dom';
+import {budgetApi} from '../../api/api';
+import useResource from '../../hooks/useResource';
+import {Back,Field,Save,ResourceState} from '../../components/Template';
+import {ErrorAlert} from '../../components/Common';
+export default function BudgetForm(){const {yearId}=useParams(),nav=useNavigate(),{pathname}=useLocation(),edit=pathname.includes('edit'),[f,setF]=useState({budgetAmount:'',description:'',memberIds:[],donationIds:[]}),[error,setError]=useState(null),[busy,setBusy]=useState(false);const r=useResource(async()=>{if(edit)setF(await budgetApi.get(yearId));return true},[yearId,edit]);async function submit(e){e.preventDefault();setBusy(true);try{const body={...f,budgetAmount:Number(f.budgetAmount)};edit?await budgetApi.update(yearId,body):await budgetApi.create(yearId,body);nav(`/years/${yearId}/budget`)}catch(e){setError(e)}finally{setBusy(false)}}return <ResourceState {...r}><div className="container py-4"><h1 className="mb-4">{edit?'Edit Budget':'Add Budget'}</h1><div className="card p-4" style={{maxWidth:700}}><ErrorAlert error={error}/><form onSubmit={submit}><Field name="budgetAmount" label="Amount" type="number" min="0" step="0.01" form={f} setForm={setF} error={error} required/><Field name="description" label="Description" form={f} setForm={setF} error={error} required/><Save busy={busy}/></form></div><div className="mt-3"><Back to={`/years/${yearId}/budget`}/></div></div></ResourceState>}

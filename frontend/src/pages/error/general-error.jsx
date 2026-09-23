@@ -1,0 +1,2 @@
+import {Link} from 'react-router-dom';
+export default function GeneralError({error}){return <div className="container py-4"><div className="card p-4"><p className="eyebrow">LET'S GET YOU BACK ON TRACK</p><h1>We couldn't complete that.</h1><p className="text-secondary" role="alert">{error?.message||'Please try again.'}</p><div><Link className="btn btn-primary" to="/dashboard">Back to overview</Link></div></div></div>}

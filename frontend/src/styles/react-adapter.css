@@ -1,0 +1,9 @@
+/* React-only bridge: preserves the original Thymeleaf workspace visual language. */
+html,body,#root{min-height:100%;margin:0} body{background:var(--dashboard-bg,var(--paper))}
+.workspace{min-height:100vh}.workspace-shell{min-height:100vh}.workspace main>.container{max-width:1320px}
+.header-brand{text-decoration:none}.app-brand{text-decoration:none}.app-brand .brand-subtitle{display:block}
+.notification-bell-button{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid var(--dashboard-border,var(--line));border-radius:12px;color:var(--dashboard-heading,var(--ink-900));background:var(--dashboard-surface,#fff);text-decoration:none}
+.notification-count{position:absolute;right:-4px;top:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:var(--rose);color:#fff;font:700 10px/19px var(--font-body);text-align:center}
+.react-json{margin:0;white-space:pre-wrap;color:var(--dashboard-heading,var(--ink-900));font-family:var(--font-mono);font-size:13px}
+.table-branded{--bs-table-bg:transparent}.table-branded tbody td{color:var(--dashboard-heading,var(--ink-900))}
+@media(max-width:900px){.workspace .app-sidebar{transform:translateX(-100%)}.workspace-shell{margin-left:0!important}.workspace-topbar{left:0!important}.mobile-menu{display:inline-flex!important}}

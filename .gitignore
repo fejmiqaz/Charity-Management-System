@@ -33,5 +33,4 @@ build/
 .vscode/
 
 logs/
-
-frontend
+*.log

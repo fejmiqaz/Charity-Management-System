@@ -1,0 +1,50 @@
+/* React integration only. Original Thymeleaf theme files above remain the source of truth. */
+html, body, #root { min-height: 100%; }
+body { margin: 0; }
+body.auth-page #root { display: contents; }
+body.workspace #root { min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+.react-link-button { border: 0; background: none; padding: 0; }
+.react-clickable-row { cursor: pointer; }
+.react-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.react-toolbar-spacer { margin-left: auto; }
+.react-error-fields { margin: .5rem 0 0; padding-left: 1.1rem; }
+.react-error-fields li { margin: .2rem 0; }
+.react-member-label { display:flex; align-items:center; gap:10px; padding:8px; cursor:pointer; }
+.react-member-label input { accent-color:#273f63; }
+.react-member-name { flex:1; }
+.react-member-email { color:var(--dashboard-text); font-size:11px; }
+.react-filter-title { font-size: 18px; font-weight: 700; margin-bottom: 1rem; }
+.react-page-meta { display:flex; justify-content:space-between; gap:12px; margin:18px 0; color:var(--dashboard-text); font-size:13px; }
+.react-empty-actions { margin-top: 14px; }
+.react-details-link { color: inherit; text-decoration: none; }
+.react-details-link:hover { text-decoration: underline; }
+.react-form-card { max-width: 760px; }
+.react-form-card.wide { max-width: 980px; }
+.react-checkbox-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:6px; max-height:250px; overflow:auto; }
+.react-account-button { border:0; background:transparent; }
+.account-menu-panel.react-open { display:block; }
+.mobile-menu-backdrop { display:none; }
+body.workspace.nav-open .mobile-menu-backdrop { display:block; position:fixed; inset:0; z-index:1035; background:rgba(7,20,38,.45); }
+body.workspace.nav-open .app-sidebar { transform:translateX(0); }
+.notification-menu > .notification-panel { display:none; }
+.notification-menu[open] > .notification-panel { display:block; }
+.page-finder.react-dialog { display:none; position:fixed; inset:50% auto auto 50%; transform:translate(-50%,-50%); z-index:1200; }
+.page-finder.react-dialog.open { display:block; }
+.finder-backdrop { position:fixed; inset:0; z-index:1199; background:#141c2777; }
+.auth-story h2 { color: inherit; }
+[data-theme="dark"] .auth-page { background:#0c1624; color:#e8f1fb; }
+[data-theme="dark"] .login-header h1, [data-theme="dark"] .form-group label { color:#e8f1fb!important; }
+[data-theme="dark"] .login-header p, [data-theme="dark"] .register-text { color:#aebed0; }
+[data-theme="dark"] .form-group input { background:#142235; color:#e8f1fb; border-color:#2b3d52; }
+[data-theme="dark"] .register-text a { color:#8dbdff; }
+@media (max-width: 767px) {
+  .workspace-topbar .topbar-tools { display:none; }
+  .workspace-topbar .topbar-right { display:none; }
+  .mobile-menu-backdrop { display:none; }
+}
+/* React behavior for the original Bootstrap/Thymeleaf layout. */
+.account-menu[open]>.account-menu-panel{display:block}.mobile-menu-backdrop{border:0}
+@media(max-width:767px){.workspace-topbar .topbar-right{display:flex}.workspace-topbar .topbar-tools{display:none}}
+[data-theme="dark"] .btn-outline-primary{--bs-btn-color:#9dcbff;--bs-btn-border-color:#587fa8;--bs-btn-hover-color:#0b192c;--bs-btn-hover-bg:#9dcbff;--bs-btn-hover-border-color:#9dcbff}
+.page-finder::backdrop{background:rgba(7,20,38,.55)}

@@ -40,6 +40,7 @@ public class ApiSecurityConfig {
                 .securityContext(c -> c.securityContextRepository(contexts))
                 .requestCache(c -> c.disable())
                 .authorizeHttpRequests(a -> a
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/public/home").permitAll()
                         .requestMatchers("/api/auth/csrf", "/api/auth/login", "/api/auth/register").permitAll()
                         // Match the existing web URL restrictions as well as controller method permissions.
                         .requestMatchers("/api/members/**", "/api/years/*/budget/**").hasAnyRole("HEAD", "SUBHEAD", "TREASURER", "MEMBER")
@@ -54,3 +55,4 @@ public class ApiSecurityConfig {
         return http.build();
     }
 }
+

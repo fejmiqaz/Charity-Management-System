@@ -1,0 +1,1 @@
+export default function ErrorBox({error}){return error?<div className="alert alert-danger">{error?.payload?.message||error?.message||String(error)}</div>:null}

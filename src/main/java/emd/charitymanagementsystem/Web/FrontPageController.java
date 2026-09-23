@@ -45,6 +45,14 @@ public class FrontPageController {
         return "index";
     }
 
+    @GetMapping("/api/public/home")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<Map<String, Object>> publicHome() {
+        var model = new org.springframework.ui.ExtendedModelMap();
+        index(model);
+        return org.springframework.http.ResponseEntity.ok().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body(new LinkedHashMap<>(model.asMap()));
+    }
+
     private List<Bar> bars(Map<String, Long> counts) {
         long max = counts.values().stream().mapToLong(Long::longValue).max().orElse(0);
         return counts.entrySet().stream().map(entry -> new Bar(entry.getKey(), entry.getValue(),
@@ -53,3 +61,6 @@ public class FrontPageController {
 
     public record Bar(String label, long count, double width) {}
 }
+
+
+
