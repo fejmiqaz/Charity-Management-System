@@ -45,7 +45,7 @@ public class ActivityFinanceService {
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER')")
-    public void addTask(Long yearId, Long eventId, String title, String description, BigDecimal price, List<Long> memberIds) {
+    public EventTask addTask(Long yearId, Long eventId, String title, String description, BigDecimal price, List<Long> memberIds) {
         Event event = event(yearId, eventId);
         if (event.getEventType() != EventType.TASK_BASED) throw new IllegalArgumentException("Tasks can only be added to task-based events.");
         if (title == null || title.isBlank() || title.length() > 160) throw new IllegalArgumentException("Enter a task title up to 160 characters.");
@@ -55,6 +55,7 @@ public class ActivityFinanceService {
         if (memberIds != null) task.setMembers(new LinkedHashSet<>(members.findAllById(memberIds)));
         tasks.save(task);
         notifications.taskAssigned(task);
+        return task;
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','EVENT_MANAGER')")
@@ -72,13 +73,13 @@ public class ActivityFinanceService {
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER','EVENT_MANAGER')")
-    public void addTaskPayment(Long yearId, Long eventId, Long taskId, Long memberId, BigDecimal amount,
+    public TaskPayment addTaskPayment(Long yearId, Long eventId, Long taskId, Long memberId, BigDecimal amount,
                                LocalDate paidOn, String note, String actor) {
-        addTaskPayment(yearId, eventId, taskId, memberId, amount, Currency.EUR, paidOn, note, actor);
+        return addTaskPayment(yearId, eventId, taskId, memberId, amount, Currency.EUR, paidOn, note, actor);
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER','EVENT_MANAGER')")
-    public void addTaskPayment(Long yearId, Long eventId, Long taskId, Long memberId, BigDecimal amount,
+    public TaskPayment addTaskPayment(Long yearId, Long eventId, Long taskId, Long memberId, BigDecimal amount,
                                Currency currency, LocalDate paidOn, String note, String actor) {
         event(yearId, eventId); EventTask task = task(eventId, taskId);
         Member member = memberId == null ? null : members.findById(memberId).orElseThrow();
@@ -88,16 +89,17 @@ public class ActivityFinanceService {
         TaskPayment payment = new TaskPayment(); payment.setTask(task); payment.setMember(member);
         payment.setAmount(money(amount, false)); payment.setCurrency(Objects.requireNonNull(currency)); payment.setPaidOn(paidOn); payment.setNote(note == null ? null : note.trim());
         payment.setRecordedBy(actor); payment.setRecordedAt(Instant.now()); taskPayments.save(payment); task.getPayments().add(payment);
+        return payment;
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER','PROJECT_MANAGER')")
-    public void addRevenue(Long yearId, Long projectId, YearMonth month, String customer, BigDecimal amount,
+    public ProjectRevenue addRevenue(Long yearId, Long projectId, YearMonth month, String customer, BigDecimal amount,
                            String note, String actor) {
-        addRevenue(yearId, projectId, month, customer, amount, Currency.EUR, note, actor);
+        return addRevenue(yearId, projectId, month, customer, amount, Currency.EUR, note, actor);
     }
 
     @Transactional @PreAuthorize("hasAnyRole('HEAD','SUBHEAD','TREASURER','PROJECT_MANAGER')")
-    public void addRevenue(Long yearId, Long projectId, YearMonth month, String customer, BigDecimal amount,
+    public ProjectRevenue addRevenue(Long yearId, Long projectId, YearMonth month, String customer, BigDecimal amount,
                            Currency currency, String note, String actor) {
         Project project = project(yearId, projectId);
         if (project.getProjectType() != ProjectType.REVENUE) throw new IllegalArgumentException("Income can only be recorded for revenue projects.");
@@ -106,6 +108,7 @@ public class ActivityFinanceService {
         ProjectRevenue revenue = new ProjectRevenue(); revenue.setProject(project); revenue.setRevenueMonth(month.atDay(1));
         revenue.setCustomer(customer.trim()); revenue.setAmount(money(amount, false)); revenue.setCurrency(Objects.requireNonNull(currency)); revenue.setNote(note == null ? null : note.trim());
         revenue.setRecordedBy(actor); revenue.setRecordedAt(Instant.now()); revenues.save(revenue);
+        return revenue;
     }
 
     private Event event(Long yearId, Long id) { Event event = events.findById(id).orElseThrow(); if(event.getYear()==null || !event.getYear().getId().equals(yearId)) throw new IllegalArgumentException("Event does not belong to this year."); return event; }

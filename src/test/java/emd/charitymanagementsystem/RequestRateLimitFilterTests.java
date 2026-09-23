@@ -53,4 +53,15 @@ class RequestRateLimitFilterTests {
         filter.doFilter(request, response, new MockFilterChain());
         return response;
     }
+
+    @Test void apiAuthenticationSharesWebLimitsAndReturnsJson() throws Exception {
+        var filter = new RequestRateLimitFilter();
+        for (int i = 0; i < 10; i++) request(filter, "POST", i % 2 == 0 ? "/login" : "/api/auth/login", "192.0.2.10");
+        var blocked = request(filter, "POST", "/api/auth/login", "192.0.2.10");
+        assertThat(blocked.getStatus()).isEqualTo(429);
+        assertThat(blocked.getContentType()).startsWith("application/json");
+        assertThat(blocked.getContentAsString()).contains("\"status\":429");
+        for (int i = 0; i < 5; i++) request(filter, "POST", "/api/auth/register", "192.0.2.11");
+        assertThat(request(filter, "POST", "/api/auth/register", "192.0.2.11").getStatus()).isEqualTo(429);
+    }
 }

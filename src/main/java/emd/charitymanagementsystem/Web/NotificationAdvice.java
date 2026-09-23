@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-@ControllerAdvice @RequiredArgsConstructor
+@ControllerAdvice(basePackages = "emd.charitymanagementsystem.Web") @RequiredArgsConstructor
 public class NotificationAdvice {
     private final NotificationService notifications;
     @ModelAttribute

@@ -37,14 +37,18 @@ public class RequestRateLimitFilter extends OncePerRequestFilter {
 
         // Apply the general quota to every request, including static resources and authentication.
         if (!allow("all:" + client, 300, now)
-                || ("POST".equals(method) && "/login".equals(path) && !allow("login:" + client, 10, now))
-                || ("POST".equals(method) && "/register".equals(path) && !allow("register:" + client, 5, now))
-                || (isWrite(method) && !"/login".equals(path) && !"/register".equals(path)
+                || ("POST".equals(method) && ("/login".equals(path) || "/api/auth/login".equals(path)) && !allow("login:" + client, 10, now))
+                || ("POST".equals(method) && ("/register".equals(path) || "/api/auth/register".equals(path)) && !allow("register:" + client, 5, now))
+                || (isWrite(method) && !("/login".equals(path) || "/api/auth/login".equals(path)) && !("/register".equals(path) || "/api/auth/register".equals(path))
                     && !allow("write:" + client, 60, now))) {
             response.setStatus(429);
             response.setHeader("Retry-After", "60");
-            response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write("Too many requests. Please try again in a minute.");
+            if (path.startsWith("/api/")) {
+                emd.charitymanagementsystem.Api.ApiError.write(response, 429);
+            } else {
+                response.setContentType("text/plain;charset=UTF-8");
+                response.getWriter().write("Too many requests. Please try again in a minute.");
+            }
             return;
         }
         chain.doFilter(request, response);
