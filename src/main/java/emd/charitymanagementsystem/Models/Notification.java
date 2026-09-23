@@ -22,4 +22,5 @@ public class Notification {
     private Long eventId;
     @Column(nullable = false) private Instant createdAt;
     private Instant readAt;
+    private Instant clearedAt;
 }

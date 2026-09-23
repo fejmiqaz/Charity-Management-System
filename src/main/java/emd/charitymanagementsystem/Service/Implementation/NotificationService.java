@@ -24,15 +24,15 @@ public class NotificationService {
     public record Header(long unread, List<Item> items) {}
 
     public Header header(String email) {
-        return new Header(notifications.countByRecipientEmailIgnoreCaseAndRecipientEnabledTrueAndReadAtIsNull(email),
-                notifications.findTop5ByRecipientEmailIgnoreCaseAndRecipientEnabledTrueOrderByCreatedAtDescIdDesc(email).stream()
+        return new Header(notifications.countByRecipientEmailIgnoreCaseAndRecipientEnabledTrueAndReadAtIsNullAndClearedAtIsNull(email),
+                notifications.findTop5ByRecipientEmailIgnoreCaseAndRecipientEnabledTrueAndClearedAtIsNullOrderByCreatedAtDescIdDesc(email).stream()
                         .map(n -> new Item(n.getId(), n.getTitle(), n.getMessage(), n.getCreatedAt(), n.getReadAt() == null, null)).toList());
     }
 
     public Page<Item> inbox(String email, int page) {
         var pageable = PageRequest.of(Math.max(0, page), 20);
         return accounts.findByEmailIgnoreCase(email).filter(UserAccount::isEnabled)
-                .map(account -> notifications.findByRecipientIdOrderByCreatedAtDescIdDesc(account.getId(), pageable)
+                .map(account -> notifications.findByRecipientIdAndClearedAtIsNullOrderByCreatedAtDescIdDesc(account.getId(), pageable)
                         .map(n -> item(n, account))).orElse(Page.empty(pageable));
     }
 
@@ -56,6 +56,13 @@ public class NotificationService {
     public void markAllRead(String email) {
         accounts.findByEmailIgnoreCase(email).filter(UserAccount::isEnabled)
                 .ifPresent(a -> notifications.markAllRead(a.getId(), clock.instant()));
+    }
+
+    @Transactional
+    public void clearAll(String email) {
+        // Retain deduplication keys so the scheduler cannot recreate dismissed reminders.
+        accounts.findByEmailIgnoreCase(email).filter(UserAccount::isEnabled)
+                .ifPresent(a -> notifications.clearAll(a.getId(), clock.instant()));
     }
 
     @Transactional

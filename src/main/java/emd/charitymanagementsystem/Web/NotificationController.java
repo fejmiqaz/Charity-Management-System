@@ -28,4 +28,11 @@ public class NotificationController {
         notifications.markAllRead(authentication.getName());
         return "redirect:/notifications";
     }
+
+    @PostMapping("/clear-all")
+    public String clearAll(Authentication authentication, org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
+        notifications.clearAll(authentication.getName());
+        flash.addFlashAttribute("notificationSuccess", "Your notifications have been cleared.");
+        return "redirect:/notifications";
+    }
 }

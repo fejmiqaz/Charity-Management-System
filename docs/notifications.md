@@ -6,6 +6,12 @@ Read and mark-all-read actions require POST and CSRF protection and are scoped t
 the signed-in account, regardless of any supplied notification ID. Notifications
 remain available across logins. Counts refresh on page navigation/reload.
 
+Users can clear all read and unread notifications from their inbox after confirmation.
+Clearing affects only the signed-in user's inbox, header preview and unread count.
+Records are marked with `cleared_at` rather than deleted, preserving deduplication
+so scheduled reminders do not reappear. Future milestones still generate new alerts,
+and clearing does not cancel queued email or change email preferences.
+
 ## What is sent
 
 - Assigning members when creating an event task creates an in-app notification for

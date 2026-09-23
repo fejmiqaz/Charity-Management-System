@@ -192,6 +192,48 @@ class NotificationTests {
         assertEquals(1, service.header("test@example.com").unread());
     }
 
+    @Test void clearingRemovesEveryPageForOnlyTheCurrentUserWithoutRecreatingReminders() throws Exception {
+        service.remindEvent(event.getId());
+        for (int i = 0; i < 23; i++) {
+            Notification n = new Notification(); n.setRecipient(account); n.setDeduplicationKey("clear-test-" + i);
+            n.setTitle("Test notification"); n.setMessage("Test message"); n.setCreatedAt(now);
+            if (i % 2 == 0) n.setReadAt(now);
+            notifications.saveAndFlush(n);
+        }
+        long queued = emails.count();
+        assertEquals(24, service.inbox(account.getEmail(), 0).getTotalElements());
+        mvc.perform(get("/notifications").with(user(account.getEmail()).roles("MEMBER")))
+                .andExpect(content().string(containsString("Clear all notifications")));
+        mvc.perform(post("/notifications/clear-all").param("recipientId", accounts.findByEmailIgnoreCase("test@example.com").orElseThrow().getId().toString())
+                        .with(user(account.getEmail()).roles("MEMBER")).with(csrf()))
+                .andExpect(redirectedUrl("/notifications"))
+                .andExpect(flash().attribute("notificationSuccess", "Your notifications have been cleared."));
+        assertEquals(0, service.inbox(account.getEmail(), 0).getTotalElements());
+        assertTrue(service.inbox(account.getEmail(), 1).isEmpty());
+        assertEquals(0, service.header(account.getEmail()).unread());
+        assertTrue(service.header(account.getEmail()).items().isEmpty());
+        assertEquals(1, service.header("test@example.com").unread());
+        assertEquals(queued, emails.count());
+        service.clearAll(account.getEmail()); // Safe to repeat.
+        service.remindEvent(event.getId()); // Same milestone stays cleared.
+        assertEquals(0, service.inbox(account.getEmail(), 0).getTotalElements());
+        mvc.perform(get("/notifications").with(user(account.getEmail()).roles("MEMBER")))
+                .andExpect(content().string(not(containsString("Clear all notifications"))))
+                .andExpect(content().string(containsString("You're all caught up")));
+        now = now.plus(Duration.ofDays(14));
+        service.remindEvent(event.getId());
+        assertEquals(1, service.header(account.getEmail()).unread());
+    }
+
+    @Test void clearingRequiresAuthenticationAndCsrf() throws Exception {
+        assigned();
+        mvc.perform(post("/notifications/clear-all").with(user(account.getEmail()).roles("MEMBER")))
+                .andExpect(redirectedUrl("/access-denied"));
+        mvc.perform(post("/notifications/clear-all").with(anonymous()).with(csrf()))
+                .andExpect(status().is3xxRedirection());
+        assertEquals(1, service.header(account.getEmail()).unread());
+    }
+
     @Test void schedulerFindsOnlyUpcomingEventsAndQueuesReminders() {
         NotificationScheduler scheduler = new NotificationScheduler(service, sender, events, emails, clock);
         org.springframework.test.util.ReflectionTestUtils.setField(scheduler, "timeZone", "Europe/Skopje");
