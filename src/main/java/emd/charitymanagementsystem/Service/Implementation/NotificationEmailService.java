@@ -71,7 +71,14 @@ public class NotificationEmailService {
             if (delivery.getAttempts() >= 8) delivery.setStatus(EmailDelivery.Status.FAILED);
             else delivery.setNextAttemptAt(clock.instant().plusSeconds(Math.min(21600, 60L << delivery.getAttempts())));
             // Do not put recipient addresses, message contents or SMTP credentials in logs.
-            log.warn("Notification email {} failed on attempt {} ({})", id, delivery.getAttempts(), failure.getClass().getSimpleName());
+//            log.warn("Notification email {} failed on attempt {} ({})", id, delivery.getAttempts(), failure.getClass().getSimpleName());
+            log.error(
+                    "Notification email {} failed on attempt {} message {}",
+                    id,
+                    delivery.getAttempts(),
+                    failure.getMessage(),
+                    failure
+            );
         }
     }
 
