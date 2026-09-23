@@ -1,0 +1,23 @@
+# React
+frontend/node_modules
+frontend/dist
+
+# Spring Boot
+target
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
