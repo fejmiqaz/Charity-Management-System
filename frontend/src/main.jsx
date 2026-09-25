@@ -5,6 +5,7 @@ import "./styles/style.css";
 import "./styles/notifications.css";
 import "./styles/auth.css";
 import "./styles/react.css";
+import "./styles/midnight.css";
 
 createRoot(document.getElementById("root")).render(<StrictMode><App /></StrictMode>);
 
