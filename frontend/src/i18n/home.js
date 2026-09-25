@@ -239,3 +239,5 @@ const translations = {
 };
 export const homeLocales = {en:'en-GB',sq:'sq-AL',fr:'fr-FR',de:'de-DE'};
 export function translateHome(language, text) { return translations[language]?.[text] || text; }
+
+export {translations as homeTranslations};

@@ -1,9 +1,10 @@
+import {formatDate} from '../../i18n/index.js';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { homeLocales, translateHome } from '../../i18n/home';
+import { translateHome } from '../../i18n/home';
 function useHomeText() {
   const {
     language
@@ -36,7 +37,7 @@ function EventDate({
   // Public dates are local to the explicit server zone, not the visitor's zone.
   const value = new Date(`${date}Z`);
   if (Number.isNaN(value.getTime())) return <span>{t("Date to be announced")}</span>;
-  return <time dateTime={date}>{new Intl.DateTimeFormat(homeLocales[language] || 'en-GB', {
+  return <time dateTime={date}>{formatDate(language, value.toISOString(), {
       timeZone: 'UTC',
       ...(compact ? {
         day: '2-digit',
@@ -49,7 +50,7 @@ function EventDate({
         hour: '2-digit',
         minute: '2-digit'
       })
-    }).format(value)}</time>;
+    })}</time>;
 }
 export default function Home() {
   const t = useHomeText(),
@@ -91,5 +92,5 @@ export default function Home() {
     </main><footer className="home-wrap home-footer"><Link className="home-brand" to="/">♥ Charity</Link><span>© {d?.currentYear ?? new Date().getFullYear()} {t("Charity. People. Purpose. Impact.")}</span><a href="#top">{t("Back to top \u2191")}</a></footer>
   </div>;
 }
-function localizeMonth(label,language){const match=/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4})$/.exec(label);if(!match)return label;const month=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(match[1]);return new Intl.DateTimeFormat(homeLocales[language]||'en-GB',{month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(Date.UTC(Number(match[2]),month,1)))}
+function localizeMonth(label,language){const match=/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4})$/.exec(label);if(!match)return label;const month=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(match[1]);return formatDate(language, new Date(Date.UTC(Number(match[2]),month,1)).toISOString(), {month:'short',year:'numeric',timeZone:'UTC'})}
 

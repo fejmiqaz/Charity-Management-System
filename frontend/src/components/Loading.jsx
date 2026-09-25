@@ -1,1 +1,4 @@
-export default function Loading(){return <div className="card p-5 text-center text-secondary"><div className="spinner-border spinner-border-sm me-2"/>Loading…</div>}
+import { T } from "../context/LanguageContext";
+export default function Loading() {
+  return <div className="card p-5 text-center text-secondary"><div className="spinner-border spinner-border-sm me-2" /><T>{"Loading…"}</T></div>;
+}

@@ -1,1 +1,11 @@
-import {useWorkspace} from "../context/WorkspaceContext";export default function YearTitle({title,subtitle}){const{year}=useWorkspace();return <div className="d-flex flex-wrap justify-content-between align-items-center mb-4"><div><h1 className="mb-1">{title}{year?` ${year.yearValue}`:''}</h1>{subtitle&&<p className="text-secondary mb-0">{subtitle}</p>}</div></div>}
+import { T } from "../context/LanguageContext";
+import { useWorkspace } from "../context/WorkspaceContext";
+export default function YearTitle({
+  title,
+  subtitle
+}) {
+  const {
+    year
+  } = useWorkspace();
+  return <div className="d-flex flex-wrap justify-content-between align-items-center mb-4"><div><h1 className="mb-1"><T>{title}</T>{year ? ` ${year.yearValue}` : ''}</h1>{subtitle && <p className="text-secondary mb-0"><T>{subtitle}</T></p>}</div></div>;
+}

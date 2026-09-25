@@ -1,4 +1,4 @@
-import { T } from "../context/LanguageContext";
+import { T, useTranslate } from "../context/LanguageContext";
 import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 export default function ConfirmDialog({
@@ -10,6 +10,7 @@ export default function ConfirmDialog({
   confirmLabel = 'Delete',
   children
 }) {
+  const tr = useTranslate();
   const ref = useRef(null),
     titleId = useId();
   useEffect(() => {
@@ -37,5 +38,5 @@ export default function ConfirmDialog({
       }
     }
   }
-  return createPortal(<><div className="modal-backdrop fade show" /><div className="modal fade show d-block" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex="-1" onKeyDown={keyDown}><div className="modal-dialog modal-dialog-centered" ref={ref}><div className="modal-content"><div className="modal-header"><h2 className="modal-title h5" id={titleId}><i className="bi bi-exclamation-triangle text-danger me-2" />{title}</h2><button className="btn-close" type="button" disabled={busy} aria-label="Close" onClick={onCancel} /></div><div className="modal-body"><p className="mb-0">{message}</p>{children}</div><div className="modal-footer"><button className="btn btn-secondary" type="button" disabled={busy} onClick={onCancel}><T>{"Cancel"}</T></button><button className="btn btn-danger" type="button" disabled={busy} onClick={onConfirm}>{busy ? 'Please wait…' : confirmLabel}</button></div></div></div></div></>, document.body);
+  return createPortal(<><div className="modal-backdrop fade show" /><div className="modal fade show d-block" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex="-1" onKeyDown={keyDown}><div className="modal-dialog modal-dialog-centered" ref={ref}><div className="modal-content"><div className="modal-header"><h2 className="modal-title h5" id={titleId}><i className="bi bi-exclamation-triangle text-danger me-2" /><T>{title}</T></h2><button className="btn-close" type="button" disabled={busy} aria-label={tr("Close")} onClick={onCancel} /></div><div className="modal-body"><p className="mb-0"><T>{message}</T></p>{children}</div><div className="modal-footer"><button className="btn btn-secondary" type="button" disabled={busy} onClick={onCancel}><T>{"Cancel"}</T></button><button className="btn btn-danger" type="button" disabled={busy} onClick={onConfirm}>{busy ? tr('Please wait…') : tr(confirmLabel)}</button></div></div></div></div></>, document.body);
 }

@@ -1,7 +1,39 @@
-import {useEffect,useRef,useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useWorkspace} from '../context/WorkspaceContext';
-import {useAuth} from '../context/AuthContext';
-import {T} from '../context/LanguageContext';
-import {roleOf} from './Template';
-export default function PageFinder({open,onClose}){const dialog=useRef(null),nav=useNavigate(),{yearId}=useWorkspace(),{user}=useAuth(),[q,setQ]=useState('');const role=roleOf(user);const pages=[['Overview','/dashboard'],['Members','/members',['HEAD','SUBHEAD','TREASURER','MEMBER']],['Yearly records','/years',['HEAD','SUBHEAD','MEMBER']],['Memberships','/memberships',['HEAD','SUBHEAD','TREASURER']],...(yearId?[['Projects',`/years/${yearId}/projects`,['HEAD','SUBHEAD','PROJECT_MANAGER','VOLUNTEER','MEMBER']],['Donations',`/years/${yearId}/donations`,['HEAD','SUBHEAD','TREASURER','MEMBER']],['Events',`/years/${yearId}/events`,['HEAD','SUBHEAD','EVENT_MANAGER','VOLUNTEER','MEMBER']],['Budget',`/years/${yearId}/budget`,['HEAD','SUBHEAD','TREASURER','MEMBER']]]:[]),['Currency converter','/converter'],['Notifications','/notifications'],['Profile','/profile']].filter(p=>!p[2]||p[2].includes(role));useEffect(()=>{if(open){setQ('');dialog.current?.showModal()}},[open]);if(!open)return null;const found=pages.filter(p=>p[0].toLowerCase().includes(q.toLowerCase()));return <dialog ref={dialog} className="page-finder" aria-labelledby="finderTitle" onCancel={e=>{e.preventDefault();onClose()}}><div className="finder-heading"><h2 id="finderTitle"><T>Find a page</T></h2><button className="btn btn-sm btn-outline-secondary" onClick={onClose}><T>Close</T></button></div><label className="visually-hidden" htmlFor="finderInput">Search navigation</label><input id="finderInput" autoFocus className="form-control" placeholder="Projects, members, donations..." autoComplete="off" value={q} onChange={e=>setQ(e.target.value)}/><nav id="finderResults" aria-label="Matching pages">{found.map(([label,path])=><a key={path} href={path} onClick={e=>{e.preventDefault();onClose();nav(path)}}><T>{label}</T></a>)}</nav>{!found.length&&<p>No matching pages. Try another section name.</p>}</dialog>}
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useWorkspace } from '../context/WorkspaceContext';
+import { useAuth } from '../context/AuthContext';
+import { T, useTranslate } from '../context/LanguageContext';
+import { roleOf } from './Template';
+export default function PageFinder({
+  open,
+  onClose
+}) {
+  const tr = useTranslate();
+  const dialog = useRef(null),
+    nav = useNavigate(),
+    {
+      yearId
+    } = useWorkspace(),
+    {
+      user
+    } = useAuth(),
+    [q, setQ] = useState('');
+  const role = roleOf(user);
+  const pages = [['Overview', '/dashboard'], ['Members', '/members', ['HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER']], ['Yearly records', '/years', ['HEAD', 'SUBHEAD', 'MEMBER']], ['Memberships', '/memberships', ['HEAD', 'SUBHEAD', 'TREASURER']], ...(yearId ? [['Projects', `/years/${yearId}/projects`, ['HEAD', 'SUBHEAD', 'PROJECT_MANAGER', 'VOLUNTEER', 'MEMBER']], ['Donations', `/years/${yearId}/donations`, ['HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER']], ['Events', `/years/${yearId}/events`, ['HEAD', 'SUBHEAD', 'EVENT_MANAGER', 'VOLUNTEER', 'MEMBER']], ['Budget', `/years/${yearId}/budget`, ['HEAD', 'SUBHEAD', 'TREASURER', 'MEMBER']]] : []), ['Currency converter', '/converter'], ['Notifications', '/notifications'], ['Profile', '/profile']].filter(p => !p[2] || p[2].includes(role));
+  useEffect(() => {
+    if (open) {
+      setQ('');
+      dialog.current?.showModal();
+    }
+  }, [open]);
+  if (!open) return null;
+  const found = pages.filter(p => tr(p[0]).toLocaleLowerCase().includes(q.toLocaleLowerCase()));
+  return <dialog ref={dialog} className="page-finder" aria-labelledby="finderTitle" onCancel={e => {
+    e.preventDefault();
+    onClose();
+  }}><div className="finder-heading"><h2 id="finderTitle"><T>Find a page</T></h2><button className="btn btn-sm btn-outline-secondary" onClick={onClose}><T>Close</T></button></div><label className="visually-hidden" htmlFor="finderInput"><T>{"Search navigation"}</T></label><input id="finderInput" autoFocus className="form-control" placeholder={tr("Projects, members, donations...")} autoComplete="off" value={q} onChange={e => setQ(e.target.value)} /><nav id="finderResults" aria-label={tr("Matching pages")}>{found.map(([label, path]) => <a key={path} href={path} onClick={e => {
+        e.preventDefault();
+        onClose();
+        nav(path);
+      }}><T>{label}</T></a>)}</nav>{!found.length && <p><T>{"No matching pages. Try another section name."}</T></p>}</dialog>;
+}

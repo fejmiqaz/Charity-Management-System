@@ -1,9 +1,10 @@
+import { ErrorText } from './Localized';
 import AccessDenied from "../pages/error/access-denied";
 import GeneralError from "../pages/error/general-error";
-import { T } from "../context/LanguageContext";
+import { T, useTranslate } from "../context/LanguageContext";
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { money } from './Common';
+import { useMoney } from './Common';
 export const roleOf = user => String(user?.role || '').replace(/^ROLE_/, '');
 export function Role({
   roles,
@@ -19,9 +20,9 @@ export function ResourceState({
   error,
   children
 }) {
-  if (loading) return <div className="container py-4" role="status">Loading…</div>;
-  if(error?.status===403)return <AccessDenied/>;
-  if(error)return <GeneralError error={error}/>;
+  if (loading) return <div className="container py-4" role="status"><T>{"Loading…"}</T></div>;
+  if (error?.status === 403) return <AccessDenied />;
+  if (error) return <GeneralError error={error} />;
   return children;
 }
 export function Back({
@@ -33,18 +34,19 @@ export function Back({
 export function Rows({
   items
 }) {
-  return items.map(([label, value]) => <div className="kv-row" key={label}><span className="kv-label"><T>{label}</T></span><span className="kv-value">{value ?? '—'}</span></div>);
+  return items.map(([label, value]) => <div className="kv-row" key={label}><span className="kv-label"><T>{label}</T></span><span className="kv-value">{['Project type', 'Event type', 'Status', 'Role'].includes(label) ? <T>{value ?? '—'}</T> : value ?? '—'}</span></div>);
 }
 export function Totals({
   values
 }) {
+  const money = useMoney();
   return Object.entries(values || {}).map(([currency, amount]) => <span className="d-block" key={currency}>{money(amount, currency)}</span>);
 }
 export function MemberBadges({
   names = [],
   empty
 }) {
-  return names.length ? <div className="d-flex flex-wrap gap-2">{names.map((n, i) => <span className="badge text-bg-light border p-2" key={i}>{n}</span>)}</div> : <div className="empty-state"><i className="bi bi-people display-6" /><p className="mb-0 mt-2">{empty}</p></div>;
+  return names.length ? <div className="d-flex flex-wrap gap-2">{names.map((n, i) => <span className="badge text-bg-light border p-2" key={i}>{n}</span>)}</div> : <div className="empty-state"><i className="bi bi-people display-6" /><p className="mb-0 mt-2"><T>{empty}</T></p></div>;
 }
 export function Field({
   name,
@@ -69,7 +71,7 @@ export function Field({
     })),
     ...props
   };
-  return <div className="mb-3"><label className="form-label" htmlFor={name}><T>{label}</T></label>{children ? <select {...inputProps}>{children}</select> : type === 'textarea' ? <textarea {...inputProps} rows="4" /> : <input {...inputProps} type={type} />} {help && <div className="form-text">{help}</div>}{invalid && <div className="invalid-feedback d-block">{invalid}</div>}</div>;
+  return <div className="mb-3"><label className="form-label" htmlFor={name}><T>{label}</T></label>{children ? <select {...inputProps}>{children}</select> : type === 'textarea' ? <textarea {...inputProps} rows="4" /> : <input {...inputProps} type={type} />} {help && <div className="form-text"><T>{help}</T></div>}{invalid && <div className="invalid-feedback d-block"><ErrorText>{invalid}</ErrorText></div>}</div>;
 }
 export function MemberSelect({
   members,
@@ -78,11 +80,12 @@ export function MemberSelect({
   label = 'Members',
   id = 'memberIds'
 }) {
-  return <div className="mb-3"><label className="form-label" htmlFor={id}><T>{label}</T></label><select className="form-select" id={id} multiple size="6" value={(value || []).map(String)} onChange={e => onChange([...e.target.selectedOptions].map(o => Number(o.value)))}>{members.map(m => <option value={m.id} key={m.id}>{m.name} {m.surname}</option>)}</select><div className="form-text">Hold Ctrl to select more than one member.</div></div>;
+  return <div className="mb-3"><label className="form-label" htmlFor={id}><T>{label}</T></label><select className="form-select" id={id} multiple size="6" value={(value || []).map(String)} onChange={e => onChange([...e.target.selectedOptions].map(o => Number(o.value)))}>{members.map(m => <option value={m.id} key={m.id}>{m.name} {m.surname}</option>)}</select><div className="form-text"><T>{"Hold Ctrl to select more than one member."}</T></div></div>;
 }
 export function Save({
   busy,
   label = 'Save'
 }) {
-  return <button className="btn btn-success" type="submit" disabled={busy}><i className="bi bi-check-lg me-1" />{busy ? 'Saving…' : label}</button>;
+  const tr = useTranslate();
+  return <button className="btn btn-success" type="submit" disabled={busy}><i className="bi bi-check-lg me-1" />{busy ? tr('Saving…') : tr(label)}</button>;
 }
