@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 import Login from './pages/auth/login';
 import Register from './pages/auth/register';
+import AccessDenied from './pages/error/access-denied';
 import Dashboard from './pages/dashboard/index';
 import Years from './pages/years/list';
 import YearForm from './pages/years/form';
@@ -33,6 +34,7 @@ import Notifications from './pages/notifications/list';
 import Converter from './pages/converter/index';
 export default function App(){return <BrowserRouter><LanguageProvider><AuthProvider><WorkspaceProvider><Routes>
  <Route path="/" element={<Home/>}/><Route path="/login" element={<Login/>}/><Route path="/register" element={<Register/>}/>
+ <Route path="/access-denied" element={<AccessDenied/>}/><Route path="/home" element={<Navigate to="/dashboard" replace/>}/>
  <Route element={<ProtectedRoute/>}><Route element={<MainLayout/>}>
  <Route path="/dashboard" element={<Dashboard/>}/>
  <Route path="/years" element={<Years/>}/><Route path="/years/new" element={<YearForm/>}/><Route path="/years/add-form" element={<YearForm/>}/><Route path="/years/:id/edit" element={<YearForm/>}/><Route path="/years/edit-form/:id" element={<YearForm/>}/><Route path="/years/:id" element={<YearDetails/>}/>
@@ -44,4 +46,3 @@ export default function App(){return <BrowserRouter><LanguageProvider><AuthProvi
  <Route path="/profile" element={<Profile/>}/><Route path="/profile/edit" element={<ProfileForm/>}/><Route path="/notifications" element={<Notifications/>}/><Route path="/converter" element={<Converter/>}/>
  </Route></Route><Route path="*" element={<Navigate to="/dashboard" replace/>}/>
  </Routes></WorkspaceProvider></AuthProvider></LanguageProvider></BrowserRouter>}
-

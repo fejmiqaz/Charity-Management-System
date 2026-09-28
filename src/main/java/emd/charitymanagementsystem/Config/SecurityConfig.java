@@ -44,6 +44,9 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/access-denied",
+                                "/index.html",
+                                "/assets/**",
+                                "/favicon.ico",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**"

@@ -42,6 +42,8 @@ WORKDIR /app
 
 COPY --from=backend-build /app/target/*.jar app.jar
 
+ENV APP_FRONTEND_REACT=true
+
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

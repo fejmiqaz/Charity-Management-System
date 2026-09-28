@@ -4,6 +4,7 @@ import emd.charitymanagementsystem.DTO.auth.RegistrationDto;
 import emd.charitymanagementsystem.Service.UserAccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,10 +18,13 @@ public class AuthController {
 
     private final UserAccountService userAccountService;
 
+    @Value("${app.frontend.react:false}")
+    private boolean reactFrontend;
+
 
     @GetMapping("/login")
     public String login() {
-        return "auth/login";
+        return reactFrontend ? "forward:/index.html" : "auth/login";
     }
 
     @GetMapping("/register")
