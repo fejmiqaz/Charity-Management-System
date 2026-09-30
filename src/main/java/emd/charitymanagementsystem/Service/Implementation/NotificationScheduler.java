@@ -33,7 +33,7 @@ public class NotificationScheduler {
     }
 
     @Scheduled(initialDelayString = "${app.notifications.initial-delay-ms:60000}",
-            fixedDelayString = "${app.notifications.email-delay-ms:30000}")
+            fixedDelayString = "${app.notifications.email-delay-ms:300000}")
     public void emails() {
         if (!emailEnabled) return;
         for (Long id : emails.findDue(EmailDelivery.Status.PENDING, clock.instant(), PageRequest.of(0, 50))) {
