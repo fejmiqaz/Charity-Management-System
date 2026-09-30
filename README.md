@@ -1,295 +1,268 @@
 # Charity Management System
 
-![Java](https://img.shields.io/badge/Java-23-orange)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-6DB33F)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.3-6DB33F)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)
-![Docker](https://img.shields.io/badge/Docker-Container-2496ED)
-![Render](https://img.shields.io/badge/Render-Deployed-46E3B7)
-![License](https://img.shields.io/badge/License-MIT-blue)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 
-A full-stack **Charity Management System** built with **Spring Boot**, **Spring Security**, **Thymeleaf**, and **PostgreSQL** to streamline the management of charity organizations.
+**Manage a charity's people, activities, and finances in one place.**
 
-The system provides secure role-based access, complete CRUD functionality, advanced searching, filtering, pagination, PDF reporting, cloud deployment, and a responsive user interface for managing members, donations, events, projects, budgets, and yearly financial records.
+A full-stack application with a React frontend, a Spring Boot backend, and PostgreSQL storage. It brings members, donations, projects, events, annual dues, and financial reports into a shared workspace organized by year. The repository also retains its Thymeleaf interface.
 
----
+[Features](#features) · [Architecture](#architecture) · [Quick start](#quick-start) · [Configuration](#configuration) · [Docker](#docker) · [Development](#development) · [Documentation](#documentation)
 
-# Features
+## Features
 
-## Authentication & Authorization
+| Area | What readers can expect |
+| --- | --- |
+| Dashboard | Overview of members, activities, and financial totals, with navigation to each module. |
+| Members | Manage member records, roles, assignments, and profiles; search, filter, and paginate records. |
+| Donations | Record donations, associate members, and organize contributions by year. |
+| Projects and events | Manage activities, participating members, project progress, and event tasks. |
+| Budgets and years | Group records by year and review budgets and financial summaries. |
+| Membership dues | Record annual payments, set yearly fees, and retain receipt history. |
+| Reports | Export PDF and Excel reports, including yearly financial information. |
+| Notifications | In-app alerts, scheduled event reminders, and optional email delivery through Resend. |
+| Public page | Present published completed projects and upcoming events. |
+| Access control | Session authentication, BCrypt password hashing, CSRF protection, and role-based permissions. |
 
-- Secure authentication with Spring Security
-- BCrypt password encryption
-- Role-based authorization
-- Four permission levels:
-  - HEAD
-  - SUBHEAD
-  - TREASURER
-  - MEMBER
-- Method-level security using `@PreAuthorize`
-- Custom Access Denied page
+### How the workspace fits together
 
----
+1. **Choose a year** to organize the charity's activities and finances.
+2. **Manage people and activities** through member, donation, project, and event records.
+3. **Record financial activity** through budgets and membership receipts.
+4. **Review and share results** using the dashboard and exported reports.
 
-## Dashboard
+### Roles and membership
 
-The dashboard provides an overview of the organization's data, including:
+The application defines nine roles: `HEAD`, `SUBHEAD`, `TREASURER`, `EVENT_MANAGER`, `PROJECT_MANAGER`, `VOLUNTEER`, `MEMBER`, `DONOR`, and `SPONSOR`. Available pages and actions depend on backend authorization rules; not every role can edit every module.
 
-- Total Members
-- Total Donations
-- Total Projects
-- Total Events
-- Current Budget
-- Quick navigation to every module
+**Annual membership payment status is separate from an account's permission role.** Paying dues does not grant administrative access.
 
----
+<details>
+<summary><strong>How annual membership receipts work</strong></summary>
 
-## Member Management
+- `HEAD`, `SUBHEAD`, and `TREASURER` can record received payments and set the fee for a past, current, or future coverage year. The default fee is EUR 10.00.
+- Payments are recorded offline; this feature does not process card charges.
+- The members list shows payment status for the selected year, and profiles show personal payment history. A missing receipt means no payment is recorded, not an automatically calculated debt.
+- Fee changes affect new receipts. To correct an existing receipt, void it with a reason and record a replacement.
+- Receipt name snapshots and payment history survive member deletion. A database constraint prevents duplicate active receipts for the same member and year.
+- Membership income appears in the dashboard, yearly summary, and complete-year PDF. It uses a separate ledger from donations, so the same income should not be entered twice.
 
-- Create, edit, view and delete members
-- Assign organizational roles
-- Link members to yearly records
-- Search by name and email
-- Filter by role, country and city
-- Pagination
+</details>
 
----
+## Architecture
 
-## Donation Management
+```mermaid
+flowchart TD
+    React[React frontend] -->|JSON API and session cookie| API[API controllers]
+    Browser[Browser] --> Web[Thymeleaf controllers]
+    API --> Services[Business services]
+    Web --> Services
+    Services --> Repositories[JPA repositories]
+    Repositories --> DB[(PostgreSQL)]
+    Scheduler[Notification scheduler] --> Services
+    Services --> Reports[PDF and Excel reports]
+    Services --> Email[Resend email API]
+```
 
-- Create, edit and delete donations
-- Assign multiple members
-- Link donations to yearly records
-- Search, filtering and pagination
+Both interfaces share backend services and persistence. Spring Security controls access, DTOs shape API responses, and validation and exception handling support the request flow. API authentication uses a server session cookie and CSRF tokens.
 
----
+| Layer | Technologies |
+| --- | --- |
+| Backend | Java 17, Spring Boot 4.0.3, Spring MVC, Spring Security |
+| Persistence | Spring Data JPA, Hibernate, PostgreSQL |
+| Frontend | React, React Router, Vite; retained Thymeleaf templates and Bootstrap styles |
+| Reporting | OpenPDF, Apache POI |
+| Email | Resend Java SDK |
+| Build and packaging | Maven Wrapper, npm, multi-stage Docker build |
 
-## Event Management
+## Quick start
 
-- Create, edit and delete events
-- Assign participating members
-- Link events to yearly records
-- Search, filtering and pagination
+### 1. Install prerequisites and clone
 
----
+- **JDK 17** with `JAVA_HOME` configured.
+- **PostgreSQL** with an existing database and a user allowed to create/update its tables.
+- **Node.js 22.12 or later in the 22.x series** and npm for the React frontend.
+- **Git**. Maven is provided through the repository's wrapper.
 
-## Project Management
+```bash
+git clone https://github.com/fejmiqaz/Charity-Management-System.git
+cd Charity-Management-System
+```
 
-- Create, edit and delete projects
-- Assign project members
-- Track project status
-- Link projects to yearly records
-- Search, filtering and pagination
+### 2. Configure and start the backend
 
----
+Set the following environment variables in the terminal that starts Spring Boot. Replace the example database credentials and administrator password with your own values.
 
-## Budget Management
+**PowerShell (Windows)**
 
-- Manage yearly budgets
-- Associate budgets with yearly records
+```powershell
+$env:DATABASE_URL = 'jdbc:postgresql://localhost:5432/charity_management'
+$env:DATABASE_USERNAME = 'charity_user'
+$env:DATABASE_PASSWORD = 'replace-with-database-password'
+$env:ADMIN_EMAIL = 'admin@example.com'
+$env:ADMIN_PASSWORD = 'replace-with-a-strong-password'
+$env:API_ALLOWED_ORIGINS = 'http://localhost:5173'
+.\mvnw.cmd spring-boot:run
+```
 
----
+<details>
+<summary><strong>Bash (Linux / macOS)</strong></summary>
 
-## Year Management
+```bash
+export DATABASE_URL='jdbc:postgresql://localhost:5432/charity_management'
+export DATABASE_USERNAME='charity_user'
+export DATABASE_PASSWORD='replace-with-database-password'
+export ADMIN_EMAIL='admin@example.com'
+export ADMIN_PASSWORD='replace-with-a-strong-password'
+export API_ALLOWED_ORIGINS='http://localhost:5173'
+./mvnw spring-boot:run
+```
 
-- Create, edit and delete yearly records
-- Connect budgets, members, donations, projects and events
-- Search and pagination
+If the wrapper is not executable, run `chmod +x mvnw` first.
 
----
+</details>
 
-# Additional Features
+The backend runs at [localhost:8080](http://localhost:8080). On startup, it creates a `HEAD` account for `ADMIN_EMAIL` if that email does not already exist. Changing the bootstrap password later does not reset an existing account's password.
 
-- PDF export functionality
-- Global exception handling using `@ControllerAdvice`
-- Application logging with **SLF4J** & **Logback**
-- Server-side validation using Jakarta Validation
-- Responsive Bootstrap 5 interface
-- Dockerized application
-- Cloud deployment on Render
-- Neon PostgreSQL cloud database
-- Per-client request limits: 300 total requests, 10 login attempts, 5 registrations, and 60 data-changing requests per minute. Excess requests receive HTTP 429 with a `Retry-After` header.
+The current `spring.jpa.hibernate.ddl-auto=update` setting creates or updates application tables; it does not create the PostgreSQL database itself. Supply backend variables through your shell, IDE, or deployment environment; a root `.env` file is not automatically loaded by this setup.
 
----
+### 3. Start the React frontend
 
-# Technology Stack
+Open a second terminal at the repository root:
 
-## Backend
+```bash
+cd frontend
+npm ci
+npm run dev -- --port 5173 --strictPort
+```
 
-- Java 23
-- Spring Boot 4
-- Spring MVC
-- Spring Data JPA
-- Spring Security
-- Hibernate
-- Maven
+Before starting Vite, ensure `frontend/.env` contains the local API address shown in [frontend/.env.example](frontend/.env.example):
 
-## Frontend
+```dotenv
+VITE_API_BASE_URL=http://localhost:8080
+```
 
-- Thymeleaf
-- Bootstrap 5
-- HTML5
-- CSS3
+Open [localhost:5173](http://localhost:5173) and sign in with the administrator email and password configured above. Keep both terminals running. Use `localhost` consistently so the browser's session behavior matches the configured origin.
 
-## Database
+> **Backend-only option:** Skip the frontend steps to use the retained Thymeleaf pages at port 8080. React routing is enabled in the Docker image, which bundles the compiled frontend.
 
-- PostgreSQL
-- Neon Cloud Database
+## Configuration
 
-## Deployment
+Backend settings are defined in [application.properties](src/main/resources/application.properties).
 
-- Docker
-- Render
-- GitHub
+| Environment variable | Default | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | Required | PostgreSQL JDBC connection URL. |
+| `DATABASE_USERNAME` | Required | Database username. |
+| `DATABASE_PASSWORD` | Required | Database password. |
+| `ADMIN_EMAIL` | Required | Email for the initial administrator account. |
+| `ADMIN_PASSWORD` | Required | Password used when creating that account. |
+| `ADMIN_NAME` | `System Administrator` | Initial administrator display name. |
+| `API_ALLOWED_ORIGINS` | Empty | Exact frontend origins, comma-separated; empty allows same-origin only. |
+| `PUBLIC_TIME_ZONE` | `Europe/Skopje` | Time zone for public dates and reminder calculations. |
+| `MEMBERSHIP_DEFAULT_FEE` | `10.00` | Default annual dues; individual years can override it. |
+| `NOTIFICATIONS_SCHEDULING_ENABLED` | `true` | Enables scheduled notification processing. |
+| `NOTIFICATIONS_EMAIL_ENABLED` | `false` | Enables actual email delivery. |
+| `NOTIFICATIONS_FROM` | Empty | Sender address for notification emails. |
+| `RESEND_API_KEY` | Empty | Credential for the Resend HTTPS API. |
+| `APP_BASE_URL` | Empty | Public application URL used in email links. |
+| `RATE_LIMIT_TRUST_PROXY` | `false` | Uses forwarded client addresses when behind a trusted proxy. |
 
----
+### Notifications
 
-# Architecture
+In-app notifications work with email delivery disabled. To deliver email, set `NOTIFICATIONS_EMAIL_ENABLED=true` and configure `RESEND_API_KEY`, `NOTIFICATIONS_FROM`, and `APP_BASE_URL`. The current delivery service uses Resend's HTTPS API.
+
+| Scheduled job | Configured delay | Property |
+| --- | --- | --- |
+| Pending email delivery | 5 minutes | `app.notifications.email-delay-ms=300000` |
+| Event reminder scan | 15 minutes | `app.notifications.reminder-delay-ms=900000` |
+
+Both jobs default to a 60-second initial delay. These are fixed delays after the previous run completes, and the application must remain running for them to execute. Event reminders cover 21, 7, and 1 calendar days before the event.
+
+### Request limits and logs
+
+Per client address, the application allows 300 total requests, 10 login attempts, 5 registrations, and 60 data-changing requests per minute. Excess requests receive HTTP `429` with a `Retry-After` header. Limits are stored in memory, apply per instance, and reset on restart.
+
+Enable `RATE_LIMIT_TRUST_PROXY` only when the application is reachable exclusively through a trusted proxy that sets `X-Forwarded-For`. Application logs are written to `logs/charity-management.log`, with rolling files configured in the application properties.
+
+## Docker
+
+The [Dockerfile](Dockerfile) builds React, copies its output into Spring Boot's static resources, and packages both in a Java 17 runtime image. React routing is enabled with `APP_FRONTEND_REACT=true`; production API requests use the same origin.
+
+```bash
+docker build -t charity-management-system .
+docker run --rm -p 8080:8080 --env-file /path/to/charity.env charity-management-system
+```
+
+Create the environment file outside the repository with the required variables from the configuration table, using `KEY=value` lines. The database URL must point to PostgreSQL reachable from the container; `localhost` inside the container refers to the container itself.
+
+Open [localhost:8080](http://localhost:8080). The image contains the application only; PostgreSQL must run separately.
+
+## Development
+
+### Repository layout
 
 ```text
-Controller
-     │
-     ▼
-Service
-     │
-     ▼
-Repository
-     │
-     ▼
-PostgreSQL
+Charity-Management-System/
+├── frontend/
+│   ├── src/                 # React pages, components, contexts, and styles
+│   ├── tests/               # Frontend API and localization tests
+│   └── package.json         # Development, build, and validation scripts
+├── src/
+│   ├── main/
+│   │   ├── java/emd/charitymanagementsystem/
+│   │   │   ├── Api/         # JSON API controllers
+│   │   │   ├── Config/      # Security, initialization, and app configuration
+│   │   │   ├── DTO/         # Request and response objects
+│   │   │   ├── Mapper/      # Entity/DTO conversion
+│   │   │   ├── Models/      # Entities and domain types
+│   │   │   ├── Repository/  # Persistence interfaces
+│   │   │   ├── Security/    # Authentication support
+│   │   │   ├── Service/     # Business logic and implementations
+│   │   │   └── Web/         # Thymeleaf and export controllers
+│   │   └── resources/
+│   │       ├── static/      # Static web assets
+│   │       ├── templates/   # Thymeleaf views
+│   │       └── application.properties
+│   └── test/                # Backend tests
+├── docs/                    # Feature and API documentation
+├── Dockerfile
+├── pom.xml
+└── mvnw / mvnw.cmd          # Maven Wrapper
 ```
 
-Additional architectural components include:
+### Build and validate
 
-- DTO Layer
-- Mapper Layer
-- Validation
-- Security
-- Logging
-- Global Exception Handling
+Run backend commands from the repository root with the required backend environment configured. On Linux/macOS, replace `.\mvnw.cmd` with `./mvnw`.
 
----
-
-# Project Structure
-
-```text
-src
-├── Config
-├── DTO
-├── Mapper
-├── Models
-├── Repository
-├── Security
-├── Service
-│   └── Implementation
-├── Web
-├── templates
-├── static
-└── resources
+```powershell
+.\mvnw.cmd test
+.\mvnw.cmd clean package
 ```
 
----
+Backend tests cover areas including authorization, membership receipts, notifications, reports, budgeting, and API behavior. Some tests supply their own database settings; the general application context test uses the configured environment. Use a dedicated development/test database.
 
-# Skills Demonstrated
-
-### Backend Development
-
-- Spring Boot
-- Spring MVC
-- Spring Security
-- Spring Data JPA
-- Hibernate
-- REST-oriented architecture principles
-- Layered Architecture
-
-### Database
-
-- PostgreSQL
-- Entity Relationships
-- JPA/Hibernate ORM
-
-### Application Design
-
-- DTO Pattern
-- Repository Pattern
-- Service Layer Pattern
-- Dependency Injection
-- Role-Based Authorization
-- Exception Handling
-- Logging
-- Validation
-- Audit Logging
-
-### Features
-
-- CRUD Operations
-- Pagination
-- Filtering
-- PDF Report Generation
-- Responsive UI
-- Docker Containerization
-- Cloud Deployment
-
----
-
-# Getting Started
-
-## Clone the repository
+Run frontend checks from `frontend/`:
 
 ```bash
-git clone https://github.com/yourusername/Charity-Management-System.git
+npm test
+npm run lint
+npm run check:i18n
+npm run build
 ```
 
-## Build the project
+The frontend build writes to `frontend/dist`; Maven alone does not bundle that output. Use the Docker build above to package both interfaces' assets with the backend.
 
-```bash
-mvn clean install
-```
+## Documentation
 
-## Run the application
-
-```bash
-mvn spring-boot:run
-```
-
-The application will be available at:
-
-```
-http://localhost:8080
-```
-
-Before running locally, configure your PostgreSQL connection inside:
-
-```
-src/main/resources/application.properties
-```
-
----
-
-# Future Improvements
-
-- Excel Export
-- REST API
-- Email Notifications
-- Dashboard Analytics
-- Unit Tests
-- Integration Tests
-
----
-
-# Author
-
-Developed as a full-stack Spring Boot application showcasing enterprise Java development with secure authentication, role-based authorization, layered architecture, cloud deployment, Docker, PostgreSQL, PDF reporting, logging, validation, pagination, filtering, and responsive web design.
-
-## Annual membership dues
-
-- Membership is a calendar-year payment status, separate from permission roles such as HEAD or MEMBER.
-- The Memberships page lets HEAD, SUBHEAD, and TREASURER record received payments, choose a past/current/future coverage year, and set that year's fee. The default is EUR 10.00 (`MEMBERSHIP_DEFAULT_FEE`). This records offline payments; it does not process card charges.
-- The members list shows paid membership or regular/unpaid for the selected membership year. Profiles show the member's own payment history. Missing historical payments mean no payment is recorded, not an automatically calculated debt.
-- Fee changes affect new receipts only. Existing receipts retain the amount originally recorded. To correct a mistake, void the receipt with a reason and record a replacement. The original receipt is retained.
-- Receipt name snapshots and payment history survive member deletion. Membership receipts use a separate ledger, not donation records; do not record the same income twice.
-- Membership income is included in the dashboard, yearly financial summary, and complete-year PDF. A database uniqueness constraint prevents two active receipts for the same member and year.
-- The existing `spring.jpa.hibernate.ddl-auto=update` setting creates the new membership tables at startup. Existing members begin with no membership payments recorded; enter historical receipts as needed.
-
-## Request limiting
-
-The application limits requests in memory per client address. Set `RATE_LIMIT_TRUST_PROXY=true` only when the application is reachable exclusively through a trusted proxy, such as Render, which sets `X-Forwarded-For`; otherwise the application uses the direct connection address. The limits apply independently on each running instance and reset on restart. For multiple instances or large-scale traffic, use a shared rate-limit store or an edge rate limiter. Rate limits reduce automated login attempts and request floods; they do not replace role-based authorization, database credential protection, or backups.
+| Reference | Contents |
+| --- | --- |
+| [JSON API](docs/api.md) | Endpoints, session cookies, CSRF tokens, and frontend origin configuration. |
+| [Exports and budget impact](docs/exports-budget-impact.md) | Reporting and financial behavior. |
+| [Public front page](docs/public-front-page.md) | Public project and event presentation. |
+| [Notification behavior](docs/notifications.md) | Inbox behavior, event milestones, and deduplication. Its older SMTP setup section is superseded by the Resend configuration above. |
+| [Application configuration](src/main/resources/application.properties) | Backend defaults and environment bindings. |
+| [Frontend scripts](frontend/package.json) | Available development and validation commands. |
