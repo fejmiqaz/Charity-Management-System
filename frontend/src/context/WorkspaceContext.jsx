@@ -17,7 +17,7 @@ export function WorkspaceProvider({children}) {
     localStorage.setItem('charity-working-year', String(value));
   }, []);
   useEffect(() => {
-    if (!user) { setYears([]); return; }
+    if (!user || user.passwordSet === false) { setYears([]); return; }
     let active = true;
     optionsApi.years().then(result => {
       if (!active) return;

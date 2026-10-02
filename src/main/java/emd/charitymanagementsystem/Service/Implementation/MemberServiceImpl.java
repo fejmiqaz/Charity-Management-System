@@ -128,6 +128,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberResponseDto create(MemberFormDto memberFormDto) {
+        if (memberFormDto.getPassword() == null || memberFormDto.getPassword().length() < 8)
+            throw new IllegalArgumentException("Password must contain at least 8 characters.");
         limit.check();
         validateMemberFormDto(memberFormDto);
 
@@ -269,17 +271,20 @@ public class MemberServiceImpl implements MemberService {
             userAccountToUpdate.setGoogleSubject(null);
         }
 
-        /*
-         * Do not update the role from the submitted form.
-         * The existing database role stays unchanged.
-         */
+        if (memberFormDto.getRole() != userAccountToUpdate.getRole()) {
+            if (!isHead) throw new AccessDeniedException("Only the Head can change roles.");
+            if (authenticatedUser.getId().equals(userAccountToUpdate.getId()))
+                throw new IllegalArgumentException("Your own role cannot be changed here.");
+            userAccountToUpdate.setRole(memberFormDto.getRole());
+            memberToUpdate.setRole(memberFormDto.getRole());
+        }
 
         if (memberFormDto.getPassword() != null &&
                 !memberFormDto.getPassword().isBlank()) {
 
-            if (memberFormDto.getPassword().length() < 6) {
+            if (memberFormDto.getPassword().length() < 8) {
                 throw new IllegalArgumentException(
-                        "Password must contain at least 6 characters."
+                        "Password must contain at least 8 characters."
                 );
             }
 
@@ -307,6 +312,7 @@ public class MemberServiceImpl implements MemberService {
         log.info("Deleting member with ID: {}", id);
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+        UserAccount accountToDelete = member.getUserAccount();
 
         // Break both sides before deletion: these parents cascade persistence
         // and can otherwise make a removed member persistent again at flush.
@@ -355,6 +361,10 @@ public class MemberServiceImpl implements MemberService {
 
         memberRepository.delete(member);
         memberRepository.flush();
+        if (accountToDelete != null) {
+            userAccountRepository.delete(accountToDelete);
+            userAccountRepository.flush();
+        }
         log.info("Deleted member with ID: {}", id);
     }
 

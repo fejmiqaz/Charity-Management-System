@@ -40,6 +40,37 @@ class GoogleAuthenticationTests {
             .apply(org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity()).build();
     }
 
+    @Test void headChangesRoleFromMemberEditAndBlankPasswordKeepsExistingPassword() throws Exception {
+        var account = registration.register(form("edit-role@gmail.com"));
+        String originalPassword = account.getPassword();
+        mvc().perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/members/" + account.getMember().getId())
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin@example.com").roles("HEAD"))
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType("application/json").content("{\"name\":\"Test\",\"surname\":\"Member\",\"country\":\"MK\",\"city\":\"Skopje\",\"phone\":\"+38970123456\",\"email\":\"edit-role@gmail.com\",\"role\":\"TREASURER\",\"password\":\"\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+        assertEquals(emd.charitymanagementsystem.Models.Role.TREASURER, account.getRole());
+        assertEquals(account.getRole(), account.getMember().getRole());
+        assertEquals(originalPassword, account.getPassword());
+    }
+
+    @Test void googleRegistrationRequiresPasswordBeforeWorkspaceAccess() throws Exception {
+        google.authenticate(identity("onboarding@gmail.com"));
+        var session = new org.springframework.mock.web.MockHttpSession();
+        session.setAttribute("accountAuthenticated", true);
+        var mvc = mvc();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/profile/overview")
+            .session(session).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("onboarding@gmail.com").roles("MEMBER")))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/members")
+            .session(session).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("onboarding@gmail.com").roles("MEMBER")))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/profile/password")
+            .session(session).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("onboarding@gmail.com").roles("MEMBER"))
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType("application/json").content("{\"password\":\"NewPassword123!\",\"confirmPassword\":\"NewPassword123!\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+    }
+
     @Test void googleOnlyUserCreatesPasswordAndCanLoginUsingEmail() throws Exception {
         google.authenticate(identity("password@gmail.com"));
         var account = accounts.findByEmailIgnoreCase("password@gmail.com").orElseThrow();

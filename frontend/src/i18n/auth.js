@@ -1,4 +1,7 @@
 const rows = [
+  ['Change password (optional)','Ndrysho fjalëkalimin (opsionale)','Changer le mot de passe (facultatif)','Passwort ändern (optional)'],
+  ['Create password','Krijo fjalëkalimin','Créer un mot de passe','Passwort erstellen'],
+  ['Create a password before continuing to the workspace.','Krijoni një fjalëkalim para se të vazhdoni.','Créez un mot de passe avant de continuer.','Erstellen Sie ein Passwort, bevor Sie fortfahren.'],
   ['Account access','Qasja në llogari','Accès au compte','Kontozugang'],
   ['Create a password to sign in with your email or unique username.','Krijoni një fjalëkalim për të hyrë me email ose emrin unik të përdoruesit.','Créez un mot de passe pour vous connecter avec votre e-mail ou nom d’utilisateur unique.','Erstellen Sie ein Passwort für die Anmeldung mit E-Mail oder eindeutigem Benutzernamen.'],
   ['Password saved.','Fjalëkalimi u ruajt.','Mot de passe enregistré.','Passwort gespeichert.'],

@@ -47,7 +47,8 @@ public class SecurityConfig {
                     .userInfoEndpoint(info -> info.oidcUserService(request -> googleAccounts.authenticate(delegate.loadUser(request))))
                     .successHandler((request, response, auth) -> {
                         request.getSession().setAttribute("accountAuthenticated", true);
-                        response.sendRedirect(frontend + "/dashboard");
+                        var account = accounts.findByEmailIgnoreCase(auth.getName()).orElseThrow();
+                        response.sendRedirect(frontend + ("!".equals(account.getPassword()) ? "/profile" : "/dashboard"));
                     })
                     .failureHandler((request, response, ex) -> response.sendRedirect(frontend +
                             (ex instanceof org.springframework.security.oauth2.core.OAuth2AuthenticationException oauthError

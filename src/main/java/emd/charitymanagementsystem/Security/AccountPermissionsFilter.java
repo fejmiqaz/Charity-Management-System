@@ -24,6 +24,13 @@ public class AccountPermissionsFilter extends OncePerRequestFilter {
             var account = accounts.findByEmailIgnoreCase(auth.getName()).orElse(null);
             if (account == null) context.setAuthentication(null);
             else {
+                String path = request.getRequestURI();
+                if ("!".equals(account.getPassword()) && path.startsWith("/api/")
+                        && !path.startsWith("/api/auth/") && !path.equals("/api/profile/password")
+                        && !("GET".equals(request.getMethod()) && (path.equals("/api/profile") || path.equals("/api/profile/overview")))) {
+                    emd.charitymanagementsystem.Api.ApiError.write(response, 403);
+                    return;
+                }
                 if (!account.isEnabled()) context.setAuthentication(null);
                 else {
                     var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + account.getRole().name()));

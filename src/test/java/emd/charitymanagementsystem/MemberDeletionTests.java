@@ -66,8 +66,13 @@ class MemberDeletionTests {
             year.getMembers().add(member);
             return member.getId();
         });
+        Long accountId = accounts.findByEmailIgnoreCase("delete@example.com").orElseThrow().getId();
+        long accountCount = accounts.count();
         service.delete(id);
         assertFalse(members.existsById(id), "Member must remain deleted after transaction commits");
+        assertFalse(accounts.existsById(accountId), "Linked login account must also be deleted after commit");
+        assertEquals(accountCount - 1, accounts.count(), "Deletion must free a registration slot");
+        assertTrue(accounts.findByEmailIgnoreCase("test@example.com").isPresent(), "Unrelated administrator must remain");
     }
 
     @Test
