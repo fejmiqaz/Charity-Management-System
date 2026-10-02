@@ -36,6 +36,7 @@ public class MemberServiceImpl implements MemberService {
     private final EventTaskRepository eventTaskRepository;
     private final TaskPaymentRepository taskPaymentRepository;
     private final UsernameService usernames;
+    private final RegistrationLimitService limit;
 
     @Override
     public List<MemberResponseDto> listAll() {
@@ -127,6 +128,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public MemberResponseDto create(MemberFormDto memberFormDto) {
+        limit.check();
         validateMemberFormDto(memberFormDto);
 
         if (userAccountRepository.existsByEmailIgnoreCase(

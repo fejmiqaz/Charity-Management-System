@@ -31,6 +31,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
+        model.addAttribute("googleEnabled", googleEnabled);
         model.addAttribute("registrationDto", new RegistrationDto());
 
         return "auth/register";

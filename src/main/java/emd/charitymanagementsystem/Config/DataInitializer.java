@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 public class DataInitializer {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final emd.charitymanagementsystem.Repository.RegistrationQuotaRepository quota;
+    private final org.springframework.transaction.PlatformTransactionManager transactions;
     private final emd.charitymanagementsystem.Service.Implementation.UsernameService usernames;
     @Value("${app.admin.name}")
     private String adminName;
@@ -24,7 +26,12 @@ public class DataInitializer {
 
     @PostConstruct
     public void init() {
-        createInitialAdminAccount();
+        if (!quota.existsById(1L)) quota.saveAndFlush(new emd.charitymanagementsystem.Models.RegistrationQuota());
+        new org.springframework.transaction.support.TransactionTemplate(transactions).executeWithoutResult(status -> {
+            quota.lockQuota();
+            if (userAccountRepository.count() < emd.charitymanagementsystem.Service.Implementation.RegistrationLimitService.MAX_ACCOUNTS)
+                createInitialAdminAccount();
+        });
         usernames.migrate();
     }
 

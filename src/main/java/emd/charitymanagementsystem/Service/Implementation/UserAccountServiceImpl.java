@@ -23,10 +23,12 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final UsernameService usernames;
+    private final RegistrationLimitService limit;
 
     @Override
     @Transactional
     public UserAccount register(RegistrationDto registrationDto) {
+        limit.check();
 
         String email = registrationDto.getEmail().trim().toLowerCase(Locale.ROOT);
 

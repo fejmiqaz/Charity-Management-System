@@ -1,4 +1,5 @@
 const rows = [
+  ['Registration is closed. The organization has reached its limit of 25 accounts.', 'Regjistrimi është mbyllur. Organizata ka arritur kufirin prej 25 llogarish.', 'Les inscriptions sont fermées. La limite de 25 comptes est atteinte.', 'Die Registrierung ist geschlossen. Das Limit von 25 Konten ist erreicht.'],
   ['Email or username', 'Email ose emri i përdoruesit', 'E-mail ou nom d’utilisateur', 'E-Mail oder Benutzername'],
   ['Your username:', 'Emri juaj i përdoruesit:', 'Votre nom d’utilisateur :', 'Ihr Benutzername:'],
   ['Username:', 'Emri i përdoruesit:', 'Nom d’utilisateur :', 'Benutzername:'],

@@ -59,7 +59,7 @@
         <div th:if="${param.profileUpdated}" class="message success-message" role="status">Profile updated. Please sign
             in with your new email address.
         </div>
-        <p th:if="${param.googleError}" class="message error-message">Google sign-in failed. Sign in with your password and link Google from your profile first.</p><a th:if="${googleEnabled}" th:href="@{/oauth2/authorization/google}">Sign in with Google</a><form th:action="@{/login}" method="post">
+        <p th:if="${param.registrationFull}" class="message error-message">Registration is closed. The organization has reached its limit of 25 accounts.</p><p th:if="${param.googleError}" class="message error-message">Google sign-in failed. Sign in with your password and link Google from your profile first.</p><a th:if="${googleEnabled}" th:href="@{/oauth2/authorization/google}">Sign in with Google</a><form th:action="@{/login}" method="post">
 
             <div class="form-group">
                 <label for="username">Email or username</label>

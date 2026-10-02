@@ -43,7 +43,10 @@ public class SecurityConfig {
             http.oauth2Login(oauth -> oauth.loginPage("/login")
                     .userInfoEndpoint(info -> info.oidcUserService(request -> googleAccounts.authenticate(delegate.loadUser(request))))
                     .successHandler((request, response, auth) -> response.sendRedirect(frontend + "/dashboard"))
-                    .failureHandler((request, response, ex) -> response.sendRedirect(frontend + "/login?googleError")));
+                    .failureHandler((request, response, ex) -> response.sendRedirect(frontend +
+                            (ex instanceof org.springframework.security.oauth2.core.OAuth2AuthenticationException oauthError
+                                    && "registration_full".equals(oauthError.getError().getErrorCode())
+                                    ? "/login?registrationFull" : "/login?googleError"))));
         }
         http
                 .authenticationProvider(authenticationProvider())

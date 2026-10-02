@@ -32,6 +32,7 @@ class GoogleAuthenticationTests {
     @Autowired GoogleAccountService google;
     @Autowired emd.charitymanagementsystem.Service.Implementation.UsernameService usernames;
     @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+    @Autowired org.springframework.transaction.PlatformTransactionManager transactions;
 
     @AfterEach void clear() { SecurityContextHolder.clearContext(); }
 
@@ -100,5 +101,62 @@ class GoogleAuthenticationTests {
         assertEquals(account.getEmail(), google.authenticate(identity).getName());
         account.setEnabled(false);
         assertThrows(OAuth2AuthenticationException.class, () -> google.authenticate(identity));
+    }
+
+    @Test void gmailAutomaticallyLinksExistingAccountWithoutCreatingAnotherUser() {
+        var account = registration.register(form("first@gmail.com"));
+        long before = accounts.count();
+        assertEquals(account.getEmail(), google.authenticate(identity("first@gmail.com")).getName());
+        assertEquals("google-123", account.getGoogleSubject());
+        assertEquals(before, accounts.count());
+    }
+
+    @Test void newGoogleUserGetsMemberAccountWithoutLocalPassword() {
+        google.authenticate(identity("new@gmail.com"));
+        var account = accounts.findByEmailIgnoreCase("new@gmail.com").orElseThrow();
+        assertEquals("google-123", account.getGoogleSubject());
+        assertEquals("!", account.getPassword());
+        assertNotNull(account.getMember());
+        assertEquals(emd.charitymanagementsystem.Models.Role.MEMBER, account.getRole());
+    }
+
+    @Test void twentyFifthAccountIsAllowedThenBothRegistrationMethodsRejectNewAccounts() {
+        while (accounts.count() < 24) {
+            accounts.saveAndFlush(emd.charitymanagementsystem.Models.UserAccount.builder()
+                .name("Existing User").email("existing" + accounts.count() + "@gmail.com").password("!")
+                .role(emd.charitymanagementsystem.Models.Role.MEMBER).enabled(true).build());
+        }
+        registration.register(form("last@gmail.com"));
+        accounts.flush();
+        assertEquals(25, accounts.count());
+        assertThrows(IllegalArgumentException.class, () -> registration.register(form("overflow@gmail.com")));
+        assertThrows(OAuth2AuthenticationException.class, () -> google.authenticate(identity("overflow@gmail.com")));
+        // Existing users can still link and log in at capacity.
+        assertEquals("last@gmail.com", google.authenticate(identity("last@gmail.com")).getName());
+        assertEquals(25, accounts.count());
+    }
+
+    @Test
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
+    void simultaneousRegistrationsCannotExceedTwentyFive() throws Exception {
+        String prefix = "quota" + System.nanoTime();
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(2);
+        try {
+            while (accounts.count() < 24) accounts.saveAndFlush(emd.charitymanagementsystem.Models.UserAccount.builder()
+                .name("Existing User").email(prefix + accounts.count() + "@gmail.com").password("!")
+                .role(emd.charitymanagementsystem.Models.Role.MEMBER).enabled(true).build());
+            var first = pool.submit(() -> registration.register(form(prefix + "first@gmail.com")));
+            var second = pool.submit(() -> registration.register(form(prefix + "second@gmail.com")));
+            int succeeded = 0;
+            for (var future : List.of(first, second)) {
+                try { future.get(15, java.util.concurrent.TimeUnit.SECONDS); succeeded++; }
+                catch (java.util.concurrent.ExecutionException ex) { assertInstanceOf(IllegalArgumentException.class, ex.getCause()); }
+            }
+            assertEquals(1, succeeded);
+            assertEquals(25, accounts.count());
+        } finally {
+            pool.shutdownNow();
+            accounts.deleteAllById(accounts.findAll().stream().filter(a -> a.getEmail().startsWith(prefix)).map(a -> a.getId()).toList());
+        }
     }
 }
