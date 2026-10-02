@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final emd.charitymanagementsystem.Service.Implementation.UsernameService usernames;
     @Value("${app.admin.name}")
     private String adminName;
     @Value("${app.admin.email}")
@@ -24,6 +25,7 @@ public class DataInitializer {
     @PostConstruct
     public void init() {
         createInitialAdminAccount();
+        usernames.migrate();
     }
 
     private void createInitialAdminAccount() {

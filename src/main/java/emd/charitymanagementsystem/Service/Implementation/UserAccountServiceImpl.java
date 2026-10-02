@@ -22,6 +22,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final UserAccountRepository userAccountRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UsernameService usernames;
 
     @Override
     @Transactional
@@ -48,6 +49,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         UserAccount userAccount = UserAccount.builder()
                 .name(registrationDto.getName() + " " + registrationDto.getSurname())
                 .email(email)
+                .username(usernames.generate(registrationDto.getName(), registrationDto.getSurname()))
                 .password(encodedPassword)
                 .role(Role.MEMBER)
                 .enabled(true)

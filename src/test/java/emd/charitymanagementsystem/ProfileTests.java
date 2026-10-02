@@ -66,6 +66,7 @@ class ProfileTests {
         String updated = "new" + email;
         mvc.perform(change(updated)).andExpect(redirectedUrl("/login?profileUpdated"));
         assertEquals(updated, accounts.findById(accountId).orElseThrow().getEmail());
+        assertNull(accounts.findById(accountId).orElseThrow().getGoogleSubject());
         assertEquals(updated, members.findById(memberId).orElseThrow().getEmail());
     }
 

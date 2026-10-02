@@ -25,12 +25,17 @@ public class AuthApiController {
     private final HttpSessionSecurityContextRepository apiSecurityContextRepository;
     private final UserAccountService accounts;
     private final ProfileService profiles;
+    @org.springframework.beans.factory.annotation.Value("${app.auth.google-enabled:false}")
+    private boolean googleEnabled;
 
     public record Login(@NotBlank @Size(max = 254) String email, @NotBlank @Size(max = 128) String password) {
     }
 
-    public record SessionUser(Long id, String name, String email, String role) {
+    public record SessionUser(Long id, String name, String email, String role, String username, boolean googleLinked) {
     }
+
+    @GetMapping("/providers")
+    public java.util.Map<String, Boolean> providers() { return java.util.Map.of("google", googleEnabled); }
 
     public record Csrf(String headerName, String token) {
     }
@@ -43,7 +48,7 @@ public class AuthApiController {
     @GetMapping("/me")
     public SessionUser me(Authentication authentication) {
         var account = profiles.account(authentication.getName());
-        return new SessionUser(account.getId(), account.getName(), account.getEmail(), account.getRole().name());
+        return sessionUser(account);
     }
 
     @PostMapping("/login")
@@ -61,6 +66,11 @@ public class AuthApiController {
     @ResponseStatus(HttpStatus.CREATED)
     public SessionUser register(@Valid @RequestBody RegistrationDto form) {
         var account = accounts.register(form);
-        return new SessionUser(account.getId(), account.getName(), account.getEmail(), account.getRole().name());
+        return sessionUser(account);
+    }
+
+    private SessionUser sessionUser(emd.charitymanagementsystem.Models.UserAccount account) {
+        return new SessionUser(account.getId(), account.getName(), account.getEmail(), account.getRole().name(),
+                account.getUsername(), account.getGoogleSubject() != null);
     }
 }

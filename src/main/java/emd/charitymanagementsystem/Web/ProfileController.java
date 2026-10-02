@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
     private final ProfileService profiles;
     private final emd.charitymanagementsystem.Service.Implementation.MembershipService memberships;
+    @org.springframework.beans.factory.annotation.Value("${app.auth.google-enabled:false}") private boolean googleEnabled;
 
     @GetMapping
     public String view(Authentication authentication, Model model) {
+        model.addAttribute("googleEnabled", googleEnabled);
         var account = profiles.account(authentication.getName());
         model.addAttribute("account", account);
         model.addAttribute("membershipYear", memberships.currentYear());

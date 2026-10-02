@@ -34,3 +34,7 @@ build/
 
 logs/
 *.log
+
+google-secrets-oauth-dev.json
+
+docs/

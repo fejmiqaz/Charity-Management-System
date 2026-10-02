@@ -22,6 +22,7 @@ public class CustomUserDetailsService
 
         UserAccount account = userAccountRepository
                 .findByEmailIgnoreCase(email.trim())
+                .or(() -> { var matches = userAccountRepository.findAllByUsernameIgnoreCase(email.trim()); return matches.size() == 1 ? java.util.Optional.of(matches.get(0)) : java.util.Optional.empty(); })
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "Account not found."

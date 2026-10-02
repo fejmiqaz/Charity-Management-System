@@ -22,6 +22,13 @@ public class UserAccount {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(length = 220)
+    private String username;
+
+    @Column(unique = true)
+    private String googleSubject;
+
+
     @Column(nullable = false)
     private String password;
 

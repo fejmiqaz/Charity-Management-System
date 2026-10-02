@@ -17,13 +17,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AuthController {
 
     private final UserAccountService userAccountService;
+    @Value("${app.auth.google-enabled:false}") private boolean googleEnabled;
 
     @Value("${app.frontend.react:false}")
     private boolean reactFrontend;
 
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
+        model.addAttribute("googleEnabled", googleEnabled);
         return reactFrontend ? "forward:/index.html" : "auth/login";
     }
 

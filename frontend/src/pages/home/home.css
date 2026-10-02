@@ -33,6 +33,7 @@
 .home-outline { border: 1px solid var(--home-line); background: var(--home-card); }
 .home-outline:hover { background: var(--theme-soft); }
 .home-menu { display: none; }
+.home-mobile-login { display: none; }
 .home-hero { padding: 100px 0 0; }
 .home-hero-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 80px; align-items: center; }
 .home-hero-grid > * { min-width: 0; }
@@ -107,6 +108,7 @@
   .home-nav nav.is-open { display: flex; justify-content: space-between; }
   .home-nav-actions { gap: 6px; }
   .home-nav-actions .home-outline { display: none; }
+  .home-mobile-login { display: inline-flex; order: 2; width: 100%; min-height: 44px; justify-content: center; }
   .home-hero { padding-top: 55px; }
   .home-hero-grid { grid-template-columns: 1fr; gap: 35px; }
   .home-hero h1 { font-size: clamp(2.7rem, 9vw, 4rem); }

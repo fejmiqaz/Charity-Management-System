@@ -18,6 +18,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final AccessDeniedConfig accessDeniedConfig;
+    private final emd.charitymanagementsystem.Security.GoogleAccountService googleAccounts;
+    private final org.springframework.core.env.Environment environment;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,6 +37,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        if (environment.getProperty("app.auth.google-enabled", Boolean.class, false)) {
+            var delegate = new org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService();
+            String frontend = environment.getProperty("app.auth.frontend-url", "").replaceAll("/+$", "");
+            http.oauth2Login(oauth -> oauth.loginPage("/login")
+                    .userInfoEndpoint(info -> info.oidcUserService(request -> googleAccounts.authenticate(delegate.loadUser(request))))
+                    .successHandler((request, response, auth) -> response.sendRedirect(frontend + "/dashboard"))
+                    .failureHandler((request, response, ex) -> response.sendRedirect(frontend + "/login?googleError")));
+        }
         http
                 .authenticationProvider(authenticationProvider())
 
@@ -43,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login",
                                 "/register",
+                                "/oauth2/**",
+                                "/login/oauth2/**",
                                 "/access-denied",
                                 "/index.html",
                                 "/assets/**",

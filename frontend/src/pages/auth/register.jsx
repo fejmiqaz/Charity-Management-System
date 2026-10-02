@@ -31,11 +31,11 @@ export default function Register() {
     setBusy(true);
     setError(null);
     try {
-      await api('/auth/register', {
+      const account = await api('/auth/register', {
         method: 'POST',
         body: f
       });
-      nav('/login?registered');
+      nav('/login?registered&username=' + encodeURIComponent(account.username));
     } catch (e) {
       setError(e);
     } finally {

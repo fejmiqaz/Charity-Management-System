@@ -48,6 +48,9 @@ public class ProfileService {
         member.setEmail(email); member.setPhone(form.getPhone().trim());
         member.setCountry(form.getCountry().trim()); member.setCity(form.getCity().trim());
         account.setName(member.getName() + " " + member.getSurname()); account.setEmail(email);
+        if (emailChanged) {
+            account.setGoogleSubject(null);
+        }
         // Identity, permissions, yearly assignment, and credentials are never bound from this form.
         accounts.flush();
         return emailChanged;

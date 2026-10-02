@@ -35,6 +35,7 @@ public class MemberServiceImpl implements MemberService {
     private final BudgetRepository budgetRepository;
     private final EventTaskRepository eventTaskRepository;
     private final TaskPaymentRepository taskPaymentRepository;
+    private final UsernameService usernames;
 
     @Override
     public List<MemberResponseDto> listAll() {
@@ -160,6 +161,7 @@ public class MemberServiceImpl implements MemberService {
 
         UserAccount userAccount = new UserAccount();
         userAccount.setName(fullName);
+        userAccount.setUsername(usernames.generate(memberFormDto.getName(), memberFormDto.getSurname() == null ? "user" : memberFormDto.getSurname()));
         userAccount.setEmail(memberFormDto.getEmail());
         userAccount.setPassword(encodedPassword);
         userAccount.setRole(memberFormDto.getRole());
@@ -259,7 +261,11 @@ public class MemberServiceImpl implements MemberService {
         }
 
         userAccountToUpdate.setName(fullName);
+        boolean emailChanged = !userAccountToUpdate.getEmail().equalsIgnoreCase(memberFormDto.getEmail());
         userAccountToUpdate.setEmail(memberFormDto.getEmail());
+        if (emailChanged) {
+            userAccountToUpdate.setGoogleSubject(null);
+        }
 
         /*
          * Do not update the role from the submitted form.

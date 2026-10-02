@@ -15,7 +15,7 @@
         <section class="profile-identity">
             <div class="profile-avatar"><i class="bi bi-person"></i></div>
             <h2 th:text="${account.name}"></h2>
-            <p th:text="${account.email}"></p><span class="badge text-bg-light"
+            <p th:text="${account.email}"></p><p>Username: <span th:text="${account.username}"></span></p><a th:if="${googleEnabled and account.googleSubject == null}" th:href="@{/oauth2/authorization/google}">Link Google account</a><p th:if="${account.googleSubject != null}">Google account linked</p><span class="badge text-bg-light"
                                                     th:text="${#strings.replace(account.role.name(), '_', ' ')}"></span>
             <p class="profile-note">Your role is managed by your organization.</p></section>
         <section class="card p-4"><h2 class="section-title">Personal information</h2>

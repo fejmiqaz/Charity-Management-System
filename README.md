@@ -14,6 +14,8 @@ A full-stack application with a React frontend, a Spring Boot backend, and Postg
 
 ## Features
 
+For Google OAuth, password login, and generated usernames, follow the [step-by-step authentication setup](docs/google-authentication.md).
+
 | Area | What readers can expect |
 | --- | --- |
 | Dashboard | Overview of members, activities, and financial totals, with navigation to each module. |

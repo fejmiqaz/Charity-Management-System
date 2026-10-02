@@ -10,6 +10,10 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     Optional<UserAccount> findByEmailIgnoreCase(String email);
 
+    java.util.List<UserAccount> findAllByUsernameIgnoreCase(String username);
+    Optional<UserAccount> findByGoogleSubject(String subject);
+
+
     boolean existsByEmailIgnoreCase(String email);
     boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
 }

@@ -1,9 +1,10 @@
 import legacy from './translations.js';
 import {homeTranslations} from './home.js';
 import additions from './additional.js';
+import auth from './auth.js';
 export const locales = {en: 'en-GB', sq: 'sq-AL', fr: 'fr-FR', de: 'de-DE'};
 export const normalizeLanguage = language => Object.hasOwn(locales, language) ? language : 'en';
-export const catalogs = Object.fromEntries(['sq', 'fr', 'de'].map(language => [language, {...homeTranslations[language], ...legacy[language], ...additions[language]}]));
+export const catalogs = Object.fromEntries(['sq', 'fr', 'de'].map(language => [language, {...homeTranslations[language], ...legacy[language], ...additions[language], ...auth[language]}]));
 const aliases = {HEAD:'Head', SUBHEAD:'Subhead', TREASURER:'Treasurer', PROJECT_MANAGER:'Project Manager', EVENT_MANAGER:'Event Manager', VOLUNTEER:'Volunteer', MEMBER:'Member', APPROVED:'Approved', ON_HOLD:'On Hold', PLANNED:'Planned', ONGOING:'Ongoing', FINISHED:'Finished', CANCELLED:'Cancelled', STANDARD:'Standard', REVENUE:'Revenue', NORMAL:'Normal', TASK_BASED:'With tasks', UPCOMING:'Upcoming', PAST:'Past', UNSCHEDULED:'Unscheduled'};
 export function translate(language, text, values = {}) {
   if (typeof text !== 'string') return text;
