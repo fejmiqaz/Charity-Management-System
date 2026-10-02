@@ -13,7 +13,7 @@ export default function AccountSettings() {
     try { await api('/profile/password', {method:'POST', body:form}); await reload(); setForm({currentPassword:'', password:'', confirmPassword:''}); setSaved(true); }
     catch (e) {setError(e);} finally {setBusy(false);}
   }
-  return <section className="card p-4 my-4"><h2><T>{'Account access'}</T></h2><ErrorAlert error={error}/>
+  return <section className="mt-4 pt-4 border-top"><h2><T>{'Account access'}</T></h2><ErrorAlert error={error}/>
     {!user?.passwordSet && <p><T>{'Create a password before continuing to the workspace.'}</T></p>}
     {saved && <p role="status"><T>{'Password saved.'}</T></p>}
     <details open={user?.passwordSet === false}><summary><T>{user?.passwordSet ? 'Change password (optional)' : 'Create password'}</T></summary><form onSubmit={password}>

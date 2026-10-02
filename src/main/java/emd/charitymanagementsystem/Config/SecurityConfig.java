@@ -48,7 +48,7 @@ public class SecurityConfig {
                     .successHandler((request, response, auth) -> {
                         request.getSession().setAttribute("accountAuthenticated", true);
                         var account = accounts.findByEmailIgnoreCase(auth.getName()).orElseThrow();
-                        response.sendRedirect(frontend + ("!".equals(account.getPassword()) ? "/profile" : "/dashboard"));
+                        response.sendRedirect(frontend + ("!".equals(account.getPassword()) ? "/profile/edit" : "/dashboard"));
                     })
                     .failureHandler((request, response, ex) -> response.sendRedirect(frontend +
                             (ex instanceof org.springframework.security.oauth2.core.OAuth2AuthenticationException oauthError

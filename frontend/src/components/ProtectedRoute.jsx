@@ -8,6 +8,6 @@ export default function ProtectedRoute() {
   } = useAuth();
   const {pathname} = useLocation();
   if (loading) return <div className="d-flex min-vh-100 align-items-center justify-content-center"><T>{"Loading…"}</T></div>;
-  if (user?.passwordSet === false && pathname !== "/profile") return <Navigate to="/profile" replace />;
+  if (user?.passwordSet === false && pathname !== "/profile/edit") return <Navigate to="/profile/edit" replace />;
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
