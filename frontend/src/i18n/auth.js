@@ -1,4 +1,11 @@
 const rows = [
+  ['Account access','Qasja në llogari','Accès au compte','Kontozugang'],
+  ['Create a password to sign in with your email or unique username.','Krijoni një fjalëkalim për të hyrë me email ose emrin unik të përdoruesit.','Créez un mot de passe pour vous connecter avec votre e-mail ou nom d’utilisateur unique.','Erstellen Sie ein Passwort für die Anmeldung mit E-Mail oder eindeutigem Benutzernamen.'],
+  ['Password saved.','Fjalëkalimi u ruajt.','Mot de passe enregistré.','Passwort gespeichert.'],
+  ['Current password','Fjalëkalimi aktual','Mot de passe actuel','Aktuelles Passwort'],
+  ['New password','Fjalëkalimi i ri','Nouveau mot de passe','Neues Passwort'],
+  ['Save password','Ruaj fjalëkalimin','Enregistrer le mot de passe','Passwort speichern'],
+  ['User roles','Rolet e përdoruesve','Rôles des utilisateurs','Benutzerrollen'],
   ['Registration is closed. The organization has reached its limit of 25 accounts.', 'Regjistrimi është mbyllur. Organizata ka arritur kufirin prej 25 llogarish.', 'Les inscriptions sont fermées. La limite de 25 comptes est atteinte.', 'Die Registrierung ist geschlossen. Das Limit von 25 Konten ist erreicht.'],
   ['Email or username', 'Email ose emri i përdoruesit', 'E-mail ou nom d’utilisateur', 'E-Mail oder Benutzername'],
   ['Your username:', 'Emri juaj i përdoruesit:', 'Votre nom d’utilisateur :', 'Ihr Benutzername:'],

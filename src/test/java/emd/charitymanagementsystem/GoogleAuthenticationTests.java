@@ -33,6 +33,58 @@ class GoogleAuthenticationTests {
     @Autowired emd.charitymanagementsystem.Service.Implementation.UsernameService usernames;
     @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
     @Autowired org.springframework.transaction.PlatformTransactionManager transactions;
+    @Autowired org.springframework.web.context.WebApplicationContext webContext;
+
+    org.springframework.test.web.servlet.MockMvc mvc() {
+        return org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(webContext)
+            .apply(org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity()).build();
+    }
+
+    @Test void googleOnlyUserCreatesPasswordAndCanLoginUsingEmail() throws Exception {
+        google.authenticate(identity("password@gmail.com"));
+        var account = accounts.findByEmailIgnoreCase("password@gmail.com").orElseThrow();
+        mvc().perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/profile/password")
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user(account.getEmail()).roles("MEMBER"))
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType("application/json").content("{\"password\":\"NewPassword123!\",\"confirmPassword\":\"NewPassword123!\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+        accounts.flush();
+        assertEquals(account.getPassword(), account.getMember().getPassword());
+        assertEquals(account.getEmail(), apiAuthenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken.unauthenticated(account.getEmail(), "NewPassword123!")).getName());
+        mvc().perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/profile/password")
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user(account.getEmail()).roles("MEMBER"))
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType("application/json").content("{\"password\":\"OtherPassword123!\",\"confirmPassword\":\"OtherPassword123!\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test void headChangesOtherUsersRoleAndMembersCannotChangeRoles() throws Exception {
+        var account = registration.register(form("roles@gmail.com"));
+        String path = "/api/accounts/" + account.getId() + "/role";
+        var mvc = mvc();
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(path)
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user(account.getEmail()).roles("MEMBER"))
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType("application/json").content("{\"role\":\"HEAD\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(path)
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin@example.com").roles("HEAD"))
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType("application/json").content("{\"role\":\"TREASURER\"}"))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+        assertEquals(emd.charitymanagementsystem.Models.Role.TREASURER, account.getRole());
+        assertEquals(account.getRole(), account.getMember().getRole());
+    }
+
+    @Test void staleHeadSessionCannotKeepHeadPermissionsAfterDemotion() throws Exception {
+        var account = registration.register(form("demoted@gmail.com"));
+        var session = new org.springframework.mock.web.MockHttpSession();
+        session.setAttribute("accountAuthenticated", true);
+        mvc().perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/accounts").session(session)
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user(account.getEmail()).roles("HEAD")))
+            .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isForbidden());
+    }
 
     @AfterEach void clear() { SecurityContextHolder.clearContext(); }
 

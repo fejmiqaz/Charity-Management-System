@@ -20,6 +20,7 @@ public class SecurityConfig {
     private final AccessDeniedConfig accessDeniedConfig;
     private final emd.charitymanagementsystem.Security.GoogleAccountService googleAccounts;
     private final org.springframework.core.env.Environment environment;
+    private final emd.charitymanagementsystem.Repository.UserAccountRepository accounts;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,12 +38,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.addFilterAfter(new emd.charitymanagementsystem.Security.AccountPermissionsFilter(accounts),
+                org.springframework.security.web.context.SecurityContextHolderFilter.class);
         if (environment.getProperty("app.auth.google-enabled", Boolean.class, false)) {
             var delegate = new org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService();
             String frontend = environment.getProperty("app.auth.frontend-url", "").replaceAll("/+$", "");
             http.oauth2Login(oauth -> oauth.loginPage("/login")
                     .userInfoEndpoint(info -> info.oidcUserService(request -> googleAccounts.authenticate(delegate.loadUser(request))))
-                    .successHandler((request, response, auth) -> response.sendRedirect(frontend + "/dashboard"))
+                    .successHandler((request, response, auth) -> {
+                        request.getSession().setAttribute("accountAuthenticated", true);
+                        response.sendRedirect(frontend + "/dashboard");
+                    })
                     .failureHandler((request, response, ex) -> response.sendRedirect(frontend +
                             (ex instanceof org.springframework.security.oauth2.core.OAuth2AuthenticationException oauthError
                                     && "registration_full".equals(oauthError.getError().getErrorCode())
@@ -114,7 +120,10 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .successHandler((request, response, auth) -> {
+                            request.getSession().setAttribute("accountAuthenticated", true);
+                            response.sendRedirect("/dashboard");
+                        })
                         .failureUrl("/login?error")
                         .permitAll()
                 )

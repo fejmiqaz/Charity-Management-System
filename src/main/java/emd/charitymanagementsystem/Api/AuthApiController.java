@@ -31,7 +31,7 @@ public class AuthApiController {
     public record Login(@NotBlank @Size(max = 254) String email, @NotBlank @Size(max = 128) String password) {
     }
 
-    public record SessionUser(Long id, String name, String email, String role, String username, boolean googleLinked) {
+    public record SessionUser(Long id, String name, String email, String role, String username, boolean googleLinked, boolean passwordSet) {
     }
 
     @GetMapping("/providers")
@@ -59,6 +59,7 @@ public class AuthApiController {
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
         apiSecurityContextRepository.saveContext(context, request, response);
+        request.getSession().setAttribute("accountAuthenticated", true);
         return me(auth);
     }
 
@@ -71,6 +72,6 @@ public class AuthApiController {
 
     private SessionUser sessionUser(emd.charitymanagementsystem.Models.UserAccount account) {
         return new SessionUser(account.getId(), account.getName(), account.getEmail(), account.getRole().name(),
-                account.getUsername(), account.getGoogleSubject() != null);
+                account.getUsername(), account.getGoogleSubject() != null, !"!".equals(account.getPassword()));
     }
 }
