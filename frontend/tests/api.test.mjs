@@ -9,6 +9,51 @@ test('GET requests include session credentials',async t=>{
   t.mock.method(globalThis,'fetch',async (_url,o)=>{options=o;return new Response('{"totalMembers":4}')});
   assert.equal((await a.dashboardApi.get()).totalMembers,4);assert.equal(options.credentials,'include');
 });
+
+test('account access preserves password and role endpoint contracts',async t=>{
+  const a=await client(),calls=[];
+  t.mock.method(globalThis,'fetch',async(url,options)=>{
+    calls.push({url,options});
+    if(url.endsWith('/csrf'))return Response.json({headerName:'X-CSRF-TOKEN',token:'test-token'});
+    if(url.endsWith('/accounts'))return Response.json([{id:2,name:'Member',email:'member@example.org',role:'MEMBER'}]);
+    return new Response(null,{status:204});
+  });
+  assert.equal((await a.accountsApi.list())[0].id,2);
+  const password={currentPassword:'old-password',password:'new-password',confirmPassword:'new-password'};
+  await a.profileApi.password(password);
+  await a.accountsApi.role(2,'TREASURER');
+  const passwordCall=calls.find(c=>c.url.endsWith('/profile/password'));
+  assert.equal(passwordCall.options.method,'POST');
+  assert.deepEqual(JSON.parse(passwordCall.options.body),password);
+  const roleCall=calls.find(c=>c.url.endsWith('/accounts/2/role'));
+  assert.equal(roleCall.options.method,'PUT');
+  assert.deepEqual(JSON.parse(roleCall.options.body),{role:'TREASURER'});
+  for(const call of [passwordCall,roleCall]){
+    assert.equal(call.options.credentials,'include');
+    assert.equal(call.options.headers['X-CSRF-TOKEN'],'test-token');
+  }
+});
+
+test('Head management and mark-all-read requests preserve credentials and CSRF',async t=>{
+  const a=await client(), calls=[];
+  t.mock.method(globalThis,'fetch',async(url,options)=>{
+    calls.push({url,options});
+    if(url.endsWith('/csrf'))return Response.json({headerName:'X-CSRF-TOKEN',token:'test-token'});
+    return Response.json({});
+  });
+  await a.managementApi.activity({page:2,size:20,action:'DELETE',actorId:7});
+  await a.managementApi.security();
+  await a.managementApi.revokeSession('opaque-reference');
+  await a.notificationsApi.readAll();
+  assert.match(calls[0].url,/\/management\/activity\?page=2&size=20&action=DELETE&actorId=7$/);
+  assert.ok(calls.some(call=>call.url.endsWith('/management/security')));
+  for(const endpoint of ['/management/security/sessions/opaque-reference/revoke','/notifications/read-all']){
+    const call=calls.find(call=>call.url.endsWith(endpoint));
+    assert.equal(call.options.method,'POST');
+    assert.equal(call.options.credentials,'include');
+    assert.equal(call.options.headers['X-CSRF-TOKEN'],'test-token');
+  }
+});
 test('write requests acquire CSRF and serialize JSON',async t=>{
   const a=await client(),calls=[];
   t.mock.method(globalThis,'fetch',async(url,options)=>{calls.push({url,options});return url.endsWith('/csrf')?Response.json({headerName:'X-CSRF-TOKEN',token:'test-token'}):new Response(null,{status:204})});

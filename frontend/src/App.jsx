@@ -1,6 +1,7 @@
 import Home from './pages/home';
-import {LanguageProvider} from "./context/LanguageContext";
-import {BrowserRouter,Navigate,Route,Routes} from 'react-router-dom';
+import {lazy, Suspense} from 'react';
+import {LanguageProvider, T} from "./context/LanguageContext";
+import {createBrowserRouter,createRoutesFromElements,RouterProvider,Outlet,Navigate,Route} from 'react-router-dom';
 import {AuthProvider} from './context/AuthContext';
 import {WorkspaceProvider} from './context/WorkspaceContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -30,9 +31,12 @@ import BudgetDetails from './pages/budgets/details';
 import Memberships from './pages/memberships/index';
 import Profile from './pages/profile/details';
 import ProfileForm from './pages/profile/form';
+const Activity = lazy(() => import('./pages/profile/activity'));
+const Security = lazy(() => import('./pages/profile/security'));
 import Notifications from './pages/notifications/list';
 import Converter from './pages/converter/index';
-export default function App(){return <BrowserRouter><LanguageProvider><AuthProvider><WorkspaceProvider><Routes>
+function Providers(){return <LanguageProvider><AuthProvider><WorkspaceProvider><Suspense fallback={<div className="container py-4" role="status"><T>{'Loading…'}</T></div>}><Outlet /></Suspense></WorkspaceProvider></AuthProvider></LanguageProvider>}
+const router = createBrowserRouter(createRoutesFromElements(<Route element={<Providers />}>
  <Route path="/" element={<Home/>}/><Route path="/login" element={<Login/>}/><Route path="/register" element={<Register/>}/>
  <Route path="/access-denied" element={<AccessDenied/>}/><Route path="/home" element={<Navigate to="/dashboard" replace/>}/>
  <Route element={<ProtectedRoute/>}><Route element={<MainLayout/>}>
@@ -43,6 +47,7 @@ export default function App(){return <BrowserRouter><LanguageProvider><AuthProvi
  <Route path="/years/:yearId/donations" element={<Donations/>}/><Route path="/years/:yearId/donations/add" element={<DonationForm/>}/><Route path="/years/:yearId/donations/:id" element={<DonationDetails/>}/><Route path="/years/:yearId/donations/:id/edit" element={<DonationForm/>}/>
  <Route path="/years/:yearId/events" element={<Events/>}/><Route path="/years/:yearId/events/add" element={<EventForm/>}/><Route path="/years/:yearId/events/add-form" element={<EventForm/>}/><Route path="/years/:yearId/events/:id" element={<EventDetails/>}/><Route path="/years/:yearId/events/:id/edit" element={<EventForm/>}/><Route path="/years/:yearId/events/:id/edit-form" element={<EventForm/>}/>
  <Route path="/years/:yearId/budget" element={<Budget/>}/><Route path="/years/:yearId/budget/add" element={<BudgetForm/>}/><Route path="/years/:yearId/budget/add-form" element={<BudgetForm/>}/><Route path="/years/:yearId/budget/edit" element={<BudgetForm/>}/><Route path="/years/:yearId/budget/edit-form/:id" element={<BudgetForm/>}/><Route path="/years/:yearId/budget/details/:id" element={<BudgetDetails/>}/>
- <Route path="/profile" element={<Profile/>}/><Route path="/profile/edit" element={<ProfileForm/>}/><Route path="/notifications" element={<Notifications/>}/><Route path="/converter" element={<Converter/>}/>
+ <Route path="/profile" element={<Profile/>}/><Route path="/profile/edit" element={<ProfileForm/>}/><Route path="/profile/activity" element={<Activity/>}/><Route path="/profile/security" element={<Security/>}/><Route path="/notifications" element={<Notifications/>}/><Route path="/converter" element={<Converter/>}/>
  </Route></Route><Route path="*" element={<Navigate to="/dashboard" replace/>}/>
- </Routes></WorkspaceProvider></AuthProvider></LanguageProvider></BrowserRouter>}
+ </Route>));
+export default function App(){return <RouterProvider router={router} />;}

@@ -118,3 +118,73 @@ body { background: var(--theme-bg); color: var(--theme-text); }
 .page-link, [data-theme="dark"] .page-link { background: var(--theme-surface); color: var(--theme-accent); border-color: var(--theme-border); }
 .active > .page-link { background: var(--theme-action); color: var(--theme-on-action); border-color: var(--theme-action); }
 .react-member-label input { accent-color: var(--theme-accent); }
+
+/* Profile access: shared palette keeps light and dark Midnight Navy consistent. */
+.account-access { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--theme-border); }
+.access-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+.access-heading h2 { font-size: 1.4rem; margin: 0 0 .25rem; }
+.access-heading p { margin: 0; color: var(--theme-muted); }
+.access-icon { display: grid; place-items: center; flex-shrink: 0; width: 3rem; height: 3rem; border-radius: 12px; background: var(--theme-soft); color: var(--theme-accent); font-size: 1.4rem; }
+.access-panel { padding: 1.5rem; border: 1px solid var(--theme-border); border-radius: 14px; background: var(--theme-surface); margin-bottom: 1rem; }
+.access-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.access-panel-heading h3 { font-size: 1.1rem; margin: 0; }
+.access-status, .access-self { display: inline-flex; align-items: center; gap: .4rem; border-radius: 20px; background: var(--theme-soft); color: var(--theme-accent); font-size: .8rem; font-weight: 600; padding: .35rem .7rem; }
+.access-notice { padding: 1rem; border-left: 3px solid var(--theme-accent); background: var(--theme-soft); border-radius: 4px; }
+.account-access details > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; color: var(--theme-accent); font-weight: 600; padding: .75rem 0; list-style: none; }
+.account-access details > summary::-webkit-details-marker { display: none; }
+.account-access details[open] > summary > i { transform: rotate(180deg); }
+.access-password-form { max-width: 36rem; padding-top: .75rem; }
+.access-password-form fieldset { min-width: 0; }
+.access-password-form .form-group { margin-bottom: 1.25rem; }
+.access-password-form label { display: block; margin-bottom: .5rem; font-weight: 600; }
+.access-password-form small { display: block; margin-top: .5rem; }
+.access-actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.access-role-note { display: flex; align-items: center; gap: .65rem; color: var(--theme-muted); font-size: .9rem; }
+.access-account-row { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; padding: 1.25rem 0; border-top: 1px solid var(--theme-border); }
+.access-account-identity { display: grid; gap: .25rem; min-width: 0; overflow-wrap: anywhere; }
+.access-account-identity > span, .access-account-identity small { color: var(--theme-muted); }
+.access-self { padding: .15rem .5rem; margin-left: .3rem; }
+.access-role-controls { display: flex; gap: .65rem; align-items: center; flex-shrink: 0; }
+.access-role-controls select { width: 13rem; }
+@media (max-width: 767px) {
+  .access-panel { padding: 1rem; }
+  .access-account-row { align-items: stretch; flex-direction: column; gap: .75rem; }
+  .access-role-controls select { width: auto; min-width: 0; flex: 1; }
+  .access-actions > button { flex: 1 1 auto; }
+}
+
+.profile-tabs { display: flex; gap: .5rem; border-bottom: 1px solid var(--theme-border); margin-bottom: 1.75rem; overflow-x: auto; }
+.profile-tabs a { display: flex; align-items: center; gap: .5rem; padding: .85rem 1rem; color: var(--theme-muted); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+.profile-tabs a.active { color: var(--theme-accent); border-bottom-color: var(--theme-accent); font-weight: 600; }
+.profile-tabs a:hover { background: var(--theme-soft); }
+.notification-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: .5rem 1rem; gap: .25rem; }
+.notification-footer .notification-view-all { padding: .6rem .25rem; gap: .75rem; font-size: .8rem; }
+.notification-mark-all { background: none; border: 0; color: var(--theme-accent); font-size: .8rem; font-weight: 600; padding: .6rem .25rem; }
+.notification-mark-all:disabled { color: var(--theme-muted); opacity: .7; cursor: default; }
+.notification-feedback:has(> .alert), .notification-feedback:has(> p) { padding: 1rem 1rem 0; }
+.notification-feedback p { font-size: .85rem; color: var(--theme-accent); }
+.access-role-choice { display: grid; gap: .5rem; width: min(100%, 21rem); flex-shrink: 0; }
+.access-role-choice .access-role-controls select { min-width: 0; flex: 1; width: auto; }
+.access-role-choice small { line-height: 1.5; }
+.profile-google-status { margin: 1rem 0; padding: 1rem; border: 1px solid var(--theme-border); border-radius: 12px; }
+.profile-google-status p { margin: .75rem 0 0; font-size: .85rem; color: var(--theme-muted); }
+.profile-unsaved { padding: .75rem 1rem; border-radius: 8px; background: var(--theme-soft); color: var(--theme-accent); }
+.security-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.security-metrics span { color: var(--theme-muted); }
+.security-metrics strong { font-size: 2rem; color: var(--theme-text); margin-top: .5rem; }
+.security-account-status { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+.audit-row { display: flex; gap: 1rem; padding: 1.5rem; border-bottom: 1px solid var(--theme-border); }
+.audit-row:last-child { border-bottom: 0; }
+.audit-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.audit-title { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.audit-copy > small, .audit-row time { color: var(--theme-muted); font-size: .8rem; }
+.audit-copy p { margin: .6rem 0; }
+.audit-copy summary { font-size: .8rem; cursor: pointer; color: var(--theme-muted); }
+.audit-copy code { display: block; padding: .5rem; margin-top: .5rem; background: var(--theme-soft); color: var(--theme-text); overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .security-metrics { grid-template-columns: 1fr; }
+  .security-account-status { justify-content: flex-start; }
+  .access-role-choice { width: 100%; }
+  .audit-row { flex-wrap: wrap; padding: 1rem; }
+  .audit-row time { width: 100%; padding-left: 4rem; }
+}

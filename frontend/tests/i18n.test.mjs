@@ -4,6 +4,12 @@ import {catalogs,translate,normalizeLanguage,formatDate,formatNumber} from '../s
 import {translateError} from '../src/i18n/errors.js';
 import {notificationTitle,notificationMessage} from '../src/i18n/notifications.js';
 import {auditTranslations} from '../scripts/check-i18n.mjs';
+import {roleDescriptions} from '../src/components/roleDescriptions.js';
+
+test('role explanations and dynamic security statuses are localized',()=>{
+ const dynamicKeys=[...Object.values(roleDescriptions),'Added','Changed','Deleted','Signed in','Signed out','Sign-in failed','Password changed','Role changed','Session ended','Google connected','Google not connected','Enabled','Disabled','You can sign in with your linked Google account.','Connect Google for another way to sign in.'];
+ for(const language of ['sq','fr','de'])for(const key of dynamicKeys)assert.ok(catalogs[language][key],`${language}: ${key}`);
+});
 
 test('all static interface copy is localized, with explicit option values',()=>{
  const {keys,issues}=auditTranslations();assert.ok(keys.length>400);assert.deepEqual(issues,[]);

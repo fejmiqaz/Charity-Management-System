@@ -21,6 +21,8 @@ public class SecurityConfig {
     private final emd.charitymanagementsystem.Security.GoogleAccountService googleAccounts;
     private final org.springframework.core.env.Environment environment;
     private final emd.charitymanagementsystem.Repository.UserAccountRepository accounts;
+    private final emd.charitymanagementsystem.Service.Implementation.ActivityAuditService audit;
+    private final emd.charitymanagementsystem.Service.Implementation.ActiveSessionService sessions;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,6 +42,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.addFilterAfter(new emd.charitymanagementsystem.Security.AccountPermissionsFilter(accounts),
                 org.springframework.security.web.context.SecurityContextHolderFilter.class);
+        http.addFilterAfter(new emd.charitymanagementsystem.Security.ActivityAuditFilter(audit, sessions), emd.charitymanagementsystem.Security.AccountPermissionsFilter.class);
         if (environment.getProperty("app.auth.google-enabled", Boolean.class, false)) {
             var delegate = new org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService();
             String frontend = environment.getProperty("app.auth.frontend-url", "").replaceAll("/+$", "");

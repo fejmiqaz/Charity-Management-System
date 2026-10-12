@@ -26,9 +26,10 @@ public class ApiSecurityConfig {
     @Bean @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http, HttpSessionCsrfTokenRepository csrf,
             HttpSessionSecurityContextRepository contexts, @Value("${app.api.allowed-origins:}") String origins,
-            emd.charitymanagementsystem.Repository.UserAccountRepository accounts) throws Exception {
+            emd.charitymanagementsystem.Repository.UserAccountRepository accounts, emd.charitymanagementsystem.Service.Implementation.ActivityAuditService audit, emd.charitymanagementsystem.Service.Implementation.ActiveSessionService sessions) throws Exception {
         http.addFilterAfter(new emd.charitymanagementsystem.Security.AccountPermissionsFilter(accounts),
                 org.springframework.security.web.context.SecurityContextHolderFilter.class);
+        http.addFilterAfter(new emd.charitymanagementsystem.Security.ActivityAuditFilter(audit, sessions), emd.charitymanagementsystem.Security.AccountPermissionsFilter.class);
         CorsConfiguration cors = new CorsConfiguration();
         cors.setAllowedOrigins(Arrays.stream(origins.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList());
         cors.setAllowCredentials(true); cors.validateAllowCredentials();

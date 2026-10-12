@@ -1,4 +1,5 @@
 import AccountSettings from '../../components/AccountSettings';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard';
 import { T, useTranslate } from "../../context/LanguageContext";
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,8 +18,10 @@ export default function ProfileForm() {
     [f, setF] = useState({}),
     [error, setError] = useState(null),
     [busy, setBusy] = useState(false);
+  const [initial, setInitial] = useState(null);
+  const dirty = initial !== null && JSON.stringify(f) !== JSON.stringify(initial);
   const r = useResource(async () => {
-    setF(await profileApi.get());
+    const profile = await profileApi.get(); setF(profile); setInitial(profile);
     return true;
   });
   async function submit(e) {
@@ -26,6 +29,7 @@ export default function ProfileForm() {
     setBusy(true);
     try {
       const result = await profileApi.update(f);
+      setInitial(f);
       if (result.loginRequired) {
         clearSession();
         nav('/login?profileUpdated');
@@ -39,5 +43,5 @@ export default function ProfileForm() {
       setBusy(false);
     }
   }
-  return <ResourceState {...r}><div className="container py-4"><p className="eyebrow"><T>{"MY PROFILE"}</T></p><h1><T>{"Edit personal information"}</T></h1><p className="text-secondary mb-4"><T>{"Keep your contact details up to date. All fields are required."}</T></p><div className="card p-4 profile-form"><ErrorAlert error={error} /><form onSubmit={submit}><div className="row g-4">{[['name', 'First name'], ['surname', 'Last name'], ['email', 'Email address'], ['phone', 'Phone number'], ['country', 'Country'], ['city', 'City']].map(([name, label]) => <div className="col-md-6" key={name}><Field name={name} label={label} form={f} setForm={setF} error={error} required type={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'text'} /></div>)}</div><div className="profile-email-note mt-4"><i className="bi bi-info-circle me-2" /><T>{"If you change your email, you will be signed out and can sign in again with the new address."}</T></div><div className="d-flex gap-2 mt-4"><button className="btn btn-primary" disabled={busy}>{busy ? tr('Saving…') : tr('Save changes')}</button><Link className="btn btn-outline-secondary" to="/profile"><T>{"Cancel"}</T></Link></div></form><AccountSettings /></div></div></ResourceState>;
+  return <ResourceState {...r}><div className="container py-4"><p className="eyebrow"><T>{"MY PROFILE"}</T></p><h1><T>{"Edit personal information"}</T></h1><p className="text-secondary mb-4"><T>{"Keep your contact details up to date. All fields are required."}</T></p><div className="card p-4 profile-form"><ErrorAlert error={error} /><UnsavedChangesGuard dirty={dirty && !busy} /><form onSubmit={submit}><div className="row g-4">{[['name', 'First name'], ['surname', 'Last name'], ['email', 'Email address'], ['phone', 'Phone number'], ['country', 'Country'], ['city', 'City']].map(([name, label]) => <div className="col-md-6" key={name}><Field name={name} label={label} form={f} setForm={setF} error={error} required type={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'text'} /></div>)}</div><div className="profile-email-note mt-4"><i className="bi bi-info-circle me-2" /><T>{"If you change your email, you will be signed out and can sign in again with the new address."}</T></div><div className="d-flex gap-2 mt-4"><button className="btn btn-primary" disabled={busy}>{busy ? tr('Saving…') : tr('Save changes')}</button><Link className="btn btn-outline-secondary" to="/profile"><T>{"Cancel"}</T></Link></div></form><AccountSettings /></div></div></ResourceState>;
 }
